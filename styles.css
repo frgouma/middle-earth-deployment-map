@@ -1,0 +1,66 @@
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: #1d1a16;
+}
+
+.map-app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+#map {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #efe3c2;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+#map.dragging {
+  cursor: grabbing;
+}
+
+.controls {
+  position: absolute;
+  z-index: 10;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  gap: 6px;
+}
+
+.controls button {
+  min-width: 40px;
+  min-height: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+  background: rgba(239, 227, 194, 0.92);
+  color: #2e261c;
+  font: 600 16px/1 system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.test-marker line {
+  stroke: #9f1d20;
+  stroke-width: 16;
+  stroke-linecap: round;
+}
+
+.test-marker text {
+  fill: #9f1d20;
+  font: 700 54px/1.1 Georgia, serif;
+  paint-order: stroke;
+  stroke: #efe3c2;
+  stroke-width: 10;
+  stroke-linejoin: round;
+}

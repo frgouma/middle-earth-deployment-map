@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Middle-earth Deployment Map — Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="map-app">
+    <div class="controls" aria-label="Map controls">
+      <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
+      <button id="zoom-out" type="button" aria-label="Zoom out">−</button>
+      <button id="reset-view" type="button">Reset</button>
+    </div>
+
+    <svg
+      id="map"
+      viewBox="0 0 4266.6665 3200"
+      role="img"
+      aria-label="Interactive Middle-earth deployment map prototype"
+    >
+      <image
+        href="map.svg"
+        x="0"
+        y="0"
+        width="4266.6665"
+        height="3200"
+        preserveAspectRatio="xMidYMid meet"
+      />
+
+      <g id="overlay" aria-label="Deployment journey overlay">
+        <!-- Temporary test marker only. -->
+        <g class="test-marker" transform="translate(2133.33325 1600)">
+          <line x1="-40" y1="-40" x2="40" y2="40" />
+          <line x1="-40" y1="40" x2="40" y2="-40" />
+          <text x="58" y="-48">X marks the spot</text>
+        </g>
+      </g>
+    </svg>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
