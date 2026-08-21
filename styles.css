@@ -36,6 +36,7 @@ body {
   top: 12px;
   left: 12px;
   display: flex;
+  align-items: center;
   gap: 6px;
 }
 
@@ -48,6 +49,42 @@ body {
   color: #2e261c;
   font: 600 16px/1 system-ui, sans-serif;
   cursor: pointer;
+}
+
+.controls button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.coordinate-readout {
+  min-height: 40px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+  background: rgba(239, 227, 194, 0.92);
+  color: #2e261c;
+  font: 500 14px/1 system-ui, sans-serif;
+}
+
+.journey-path {
+  fill: none;
+  stroke: #9f1d20;
+  stroke-width: 14;
+  stroke-dasharray: 32 24;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.route-reveal-path {
+  fill: none;
+  stroke: white;
+  stroke-width: 22;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .test-marker line {
@@ -63,4 +100,12 @@ body {
   stroke: #efe3c2;
   stroke-width: 10;
   stroke-linejoin: round;
+}
+
+.marker-x2 {
+  opacity: 0;
+}
+
+.x2-label {
+  opacity: 0;
 }

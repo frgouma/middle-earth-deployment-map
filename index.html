@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Middle-earth Deployment Map — Prototype</title>
+  <title>Middle-earth Deployment Map — Prototype 4</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -12,14 +12,23 @@
       <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
       <button id="zoom-out" type="button" aria-label="Zoom out">−</button>
       <button id="reset-view" type="button">Reset</button>
+      <button id="travel" type="button">Travel to X2</button>
+      <output id="coordinates" class="coordinate-readout">x: —, y: —</output>
     </div>
 
     <svg
       id="map"
-      viewBox="0 0 4266.6665 3200"
+      viewBox="850 1550 1500 1125"
       role="img"
       aria-label="Interactive Middle-earth deployment map prototype"
     >
+      <defs>
+        <mask id="route-reveal-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="4266.6665" height="3200">
+          <rect x="0" y="0" width="4266.6665" height="3200" fill="black" />
+          <path id="route-reveal-path" class="route-reveal-path" />
+        </mask>
+      </defs>
+
       <image
         href="map.svg"
         x="0"
@@ -30,11 +39,22 @@
       />
 
       <g id="overlay" aria-label="Deployment journey overlay">
-        <!-- Temporary test marker only. -->
-        <g class="test-marker" transform="translate(2133.33325 1600)">
+        <path
+          id="journey-path"
+          class="journey-path"
+          mask="url(#route-reveal-mask)"
+        />
+
+        <g id="marker-x1" class="test-marker" transform="translate(1250 2050)">
           <line x1="-40" y1="-40" x2="40" y2="40" />
           <line x1="-40" y1="40" x2="40" y2="-40" />
-          <text x="58" y="-48">X marks the spot</text>
+          <text x="58" y="-48">X1</text>
+        </g>
+
+        <g id="marker-x2" class="test-marker marker-x2" transform="translate(2925 1400)">
+          <line class="x2-stroke" x1="-40" y1="-40" x2="40" y2="40" />
+          <line class="x2-stroke" x1="-40" y1="40" x2="40" y2="-40" />
+          <text class="x2-label" x="58" y="-48">X2</text>
         </g>
       </g>
     </svg>
