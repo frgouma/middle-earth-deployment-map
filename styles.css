@@ -49,7 +49,7 @@ body {
 
 .controls button,
 .chapter-selector,
-.coordinate-readout {
+.waypoint-tools {
   min-height: 38px;
   box-sizing: border-box;
   border: 1px solid rgba(0, 0, 0, 0.35);
@@ -97,12 +97,52 @@ body {
   font-weight: 500;
 }
 
-.coordinate-readout {
+.waypoint-tools {
   display: flex;
-  align-items: center;
-  padding: 0 10px;
-  font-size: 13px;
-  font-weight: 500;
+  align-items: stretch;
+  gap: 4px;
+  padding: 4px;
+}
+
+.waypoint-log {
+  width: 245px;
+  min-height: 62px;
+  resize: vertical;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 2px;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.34);
+  color: #2e261c;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.waypoint-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.waypoint-actions button {
+  min-height: 0;
+  flex: 1;
+  padding: 0 7px;
+  border-radius: 2px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .waypoint-tools {
+    width: 100%;
+  }
+
+  .waypoint-log {
+    flex: 1;
+    width: auto;
+  }
 }
 
 .journey-path {
@@ -151,4 +191,30 @@ body {
 
 .chapter-marker.marker-muted {
   opacity: 0.94;
+}
+
+
+
+
+/* Restrained cartographic colour washes.
+   The map artwork remains untouched; tune these opacities independently. */
+.map-tint {
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.map-tint-water {
+  opacity: 0.10;
+}
+
+.map-tint-forest {
+  opacity: 0.22;
+}
+
+.map-tint-river {
+  opacity: 0.18;
+}
+
+.map-tint-mordor {
+  opacity: 0.11;
 }

@@ -30,7 +30,21 @@
       <button id="next-chapter" class="icon-button" type="button"
               aria-label="Next chapter" title="Next chapter">⏭</button>
 
-      <output id="coordinates" class="coordinate-readout">x: —, y: —</output>
+      <div class="waypoint-tools" aria-label="Waypoint logger">
+        <textarea
+          id="waypoint-log"
+          class="waypoint-log"
+          rows="3"
+          readonly
+          aria-label="Recorded waypoint coordinates"
+          placeholder="Click map to add waypoints"
+        ></textarea>
+        <div class="waypoint-actions">
+          <button id="undo-waypoint" type="button" title="Undo last waypoint">Undo</button>
+          <button id="clear-waypoints" type="button" title="Clear waypoints">Clear</button>
+          <button id="copy-waypoints" type="button" title="Copy waypoints">Copy</button>
+        </div>
+      </div>
     </div>
 
     <svg
@@ -41,6 +55,12 @@
     >
       <defs id="route-defs"></defs>
 
+      
+
+      
+
+      
+
       <image
         href="map.svg"
         x="0"
@@ -48,6 +68,42 @@
         width="4266.6665"
         height="3200"
         preserveAspectRatio="xMidYMid meet"
+      />
+
+<image
+        class="map-tint map-tint-water"
+        href="water-tint.png"
+        x="0" y="0"
+        width="4266.6665" height="3200"
+        preserveAspectRatio="xMidYMid meet"
+        pointer-events="none"
+      />
+
+      <image
+        class="map-tint map-tint-forest"
+        href="forest-tint.png"
+        x="0" y="0"
+        width="4266.6665" height="3200"
+        preserveAspectRatio="xMidYMid meet"
+        pointer-events="none"
+      />
+
+      <image
+        class="map-tint map-tint-mordor"
+        href="mordor-tint.png"
+        x="0" y="0"
+        width="4266.6665" height="3200"
+        preserveAspectRatio="xMidYMid meet"
+        pointer-events="none"
+      />
+
+      <image
+        class="map-tint map-tint-river"
+        href="river-tint.png"
+        x="0" y="0"
+        width="4266.6665" height="3200"
+        preserveAspectRatio="xMidYMid meet"
+        pointer-events="none"
       />
 
       <g id="routes-layer" aria-label="Journey routes"></g>

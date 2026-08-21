@@ -8,13 +8,17 @@ const playStoryButton = document.getElementById("play-story");
 const playPauseButton = document.getElementById("play-pause");
 const previousButton = document.getElementById("previous-chapter");
 const nextButton = document.getElementById("next-chapter");
-const coordinates = document.getElementById("coordinates");
+const waypointLog = document.getElementById("waypoint-log");
+const undoWaypointButton = document.getElementById("undo-waypoint");
+const clearWaypointsButton = document.getElementById("clear-waypoints");
+const copyWaypointsButton = document.getElementById("copy-waypoints");
 
 const MAP_WIDTH = 4266.6665;
 const MAP_HEIGHT = 3200;
 const VIEW_ASPECT = MAP_HEIGHT / MAP_WIDTH;
 const MARKER_REFERENCE_WIDTH = 1250;
 const COMPACT_LABEL_VIEW_WIDTH = 3000;
+const CAMERA_POSITION_KEYFRAMES = 5;
 
 const fullView = {
   x: 0,
@@ -79,15 +83,40 @@ const chapters = {
     curveTension: 0.10,
     routeWaypoints: [
       { x: 2069.5, y: 846.9 },
-      { x: 1780, y: 720 },
-      { x: 1430, y: 760 },
+      { x: 1831.5, y: 838.8 },
+      { x: 1751.6, y: 841.9 },
+      { x: 1710.1, y: 808.7 },
+      { x: 1671.8, y: 766.2 },
+      { x: 1633.4, y: 699.8 },
+      { x: 1588.8, y: 678.8 },
+      { x: 1509.9, y: 670.5 },
+      { x: 1471.5, y: 701.7 },
+      { x: 1427.9, y: 739.0 },
+      { x: 1432.1, y: 793.0 },
+      { x: 1484.0, y: 815.8 },
+      { x: 1525.5, y: 852.1 },
+      { x: 1541.0, y: 881.2 },
+      { x: 1547.3, y: 911.2 },
+      { x: 1518.2, y: 940.3 },
+      { x: 1452.8, y: 941.3 },
+      { x: 1404.1, y: 939.3 },
+      { x: 1380.2, y: 956.9 },
+      { x: 1367.8, y: 991.1 },
+      { x: 1353.2, y: 1023.3 },
+      { x: 1337.7, y: 1065.8 },
+      { x: 1286.8, y: 1073.1 },
+      { x: 1245.3, y: 1071.0 },
+      { x: 1174.8, y: 1033.7 },
+      { x: 1143.7, y: 996.3 },
+      { x: 1105.3, y: 956.9 },
+      { x: 1085.6, y: 921.6 },
       { x: 1095.9, y: 880.2 },
     ],
-    camera: [
-      { progress: 0.00, view: locations[1].view },
-      { progress: 0.35, view: centeredView(1760, 760, 1450) },
-      { progress: 0.70, view: centeredView(1380, 800, 1380) },
-      { progress: 1.00, view: locations[2].view },
+    cameraZoom: [
+      { progress: 0.00, width: 950 },
+      { progress: 0.35, width: 1450 },
+      { progress: 0.70, width: 1380 },
+      { progress: 1.00, width: 950 },
     ],
   },
 
@@ -98,18 +127,90 @@ const chapters = {
     curveTension: 0.10,
     routeWaypoints: [
       { x: 1095.9, y: 880.2 },
-      { x: 1450, y: 1080 },
-      { x: 1850, y: 1350 },
-      { x: 2250, y: 1550 },
-      { x: 2670, y: 1830 },
+     { x: 1162.9, y: 866.2 },
+      { x: 1216.1, y: 858.7 },
+      { x: 1249.8, y: 860.2 },
+      { x: 1262.6, y: 901.4 },
+      { x: 1288.8, y: 932.2 },
+      { x: 1306.8, y: 964.4 },
+      { x: 1339.0, y: 1015.4 },
+      { x: 1369.0, y: 1077.6 },
+      { x: 1364.5, y: 1169.0 },
+      { x: 1367.5, y: 1229.7 },
+      { x: 1414.0, y: 1252.2 },
+      { x: 1506.2, y: 1237.2 },
+      { x: 1549.7, y: 1250.7 },
+      { x: 1554.9, y: 1293.5 },
+      { x: 1620.1, y: 1318.9 },
+      { x: 1678.6, y: 1325.7 },
+      { x: 1720.6, y: 1310.7 },
+      { x: 1730.3, y: 1302.5 },
+      { x: 1744.6, y: 1320.4 },
+      { x: 1783.6, y: 1310.7 },
+      { x: 1839.0, y: 1286.7 },
+      { x: 1902.0, y: 1283.7 },
+      { x: 1938.7, y: 1302.5 },
+      { x: 1986.0, y: 1298.7 },
+      { x: 2048.9, y: 1321.2 },
+      { x: 2133.6, y: 1324.2 },
+      { x: 2171.9, y: 1334.0 },
+      { x: 2201.1, y: 1351.2 },
+      { x: 2236.3, y: 1365.4 },
+      { x: 2260.3, y: 1362.4 },
+      { x: 2285.8, y: 1369.2 },
+      { x: 2312.0, y: 1366.7 },
+      { x: 2359.3, y: 1353.2 },
+      { x: 2383.2, y: 1331.4 },
+      { x: 2456.7, y: 1289.5 },
+      { x: 2491.9, y: 1313.4 },
+      { x: 2527.2, y: 1359.9 },
+      { x: 2537.7, y: 1425.9 },
+      { x: 2548.9, y: 1455.1 },
+      { x: 2544.4, y: 1517.3 },
+      { x: 2525.7, y: 1545.8 },
+      { x: 2495.7, y: 1577.3 },
+      { x: 2497.9, y: 1584.8 },
+      { x: 2513.7, y: 1617.8 },
+      { x: 2496.4, y: 1635.8 },
+      { x: 2476.9, y: 1652.3 },
+      { x: 2477.7, y: 1673.3 },
+      { x: 2491.9, y: 1681.7 },
+      { x: 2512.9, y: 1692.9 },
+      { x: 2521.2, y: 1723.7 },
+      { x: 2512.9, y: 1756.7 },
+      { x: 2504.7, y: 1782.9 },
+      { x: 2497.2, y: 1824.1 },
+      { x: 2502.4, y: 1854.9 },
+      { x: 2514.4, y: 1890.1 },
+      { x: 2535.4, y: 1911.1 },
+      { x: 2545.2, y: 1929.8 },
+      { x: 2543.7, y: 1952.3 },
+      { x: 2563.1, y: 1998.9 },
+      { x: 2574.4, y: 2030.4 },
+      { x: 2591.6, y: 2056.0 },
+      { x: 2611.9, y: 2082.3 },
+      { x: 2635.1, y: 2099.5 },
+      { x: 2684.6, y: 2120.5 },
+      { x: 2719.1, y: 2125.7 },
+      { x: 2736.3, y: 2137.7 },
+      { x: 2749.8, y: 2153.5 },
+      { x: 2760.3, y: 2195.5 },
+      { x: 2758.8, y: 2214.2 },
+      { x: 2773.0, y: 2225.4 },
+      { x: 2800.8, y: 2226.9 },
+      { x: 2833.7, y: 2233.7 },
+      { x: 2877.2, y: 2234.4 },
+      { x: 2941.7, y: 2219.4 },
+      { x: 2994.9, y: 2200.7 },
+      { x: 3012.2, y: 2182.0 },
       { x: 3014.4, y: 2144.1 },
     ],
-    camera: [
-      { progress: 0.00, view: locations[2].view },
-      { progress: 0.20, view: centeredView(1450, 1050, 1550) },
-      { progress: 0.45, view: centeredView(1900, 1350, 1750) },
-      { progress: 0.72, view: centeredView(2450, 1700, 1700) },
-      { progress: 1.00, view: locations[3].view },
+    cameraZoom: [
+      { progress: 0.00, width: 950 },
+      { progress: 0.20, width: 1550 },
+      { progress: 0.45, width: 1750 },
+      { progress: 0.72, width: 1700 },
+      { progress: 1.00, width: 950 },
     ],
   },
 
@@ -120,21 +221,80 @@ const chapters = {
     curveTension: 0.10,
     routeWaypoints: [
       { x: 3014.4, y: 2144.1 },
-      { x: 2820, y: 1740 },
-      { x: 2500, y: 1370 },
-      { x: 2050, y: 1080 },
-      { x: 1580, y: 930 },
-      { x: 1120, y: 800 },
+     { x: 3034.0, y: 2195.7 },
+      { x: 3043.4, y: 2244.4 },
+      { x: 3052.7, y: 2299.4 },
+      { x: 3020.6, y: 2335.7 },
+      { x: 2970.7, y: 2350.3 },
+      { x: 2942.7, y: 2335.7 },
+      { x: 2907.5, y: 2327.4 },
+      { x: 2850.4, y: 2312.9 },
+      { x: 2818.2, y: 2287.0 },
+      { x: 2781.9, y: 2272.5 },
+      { x: 2758.1, y: 2256.9 },
+      { x: 2728.0, y: 2246.5 },
+      { x: 2682.3, y: 2312.9 },
+      { x: 2668.8, y: 2356.5 },
+      { x: 2638.7, y: 2395.9 },
+      { x: 2617.0, y: 2438.5 },
+      { x: 2573.4, y: 2461.3 },
+      { x: 2511.1, y: 2467.5 },
+      { x: 2464.4, y: 2491.4 },
+      { x: 2429.2, y: 2490.3 },
+      { x: 2387.7, y: 2472.7 },
+      { x: 2364.8, y: 2435.3 },
+      { x: 2320.2, y: 2462.3 },
+      { x: 2290.1, y: 2463.4 },
+      { x: 2228.9, y: 2470.6 },
+      { x: 2199.9, y: 2460.2 },
+      { x: 2169.8, y: 2437.4 },
+      { x: 2145.9, y: 2412.1 },
+      { x: 2109.6, y: 2391.3 },
+      { x: 2078.5, y: 2332.2 },
+      { x: 2081.6, y: 2252.3 },
+      { x: 2089.9, y: 2213.9 },
+      { x: 2101.3, y: 2179.7 },
+      { x: 2103.4, y: 2098.0 },
+      { x: 2104.4, y: 2054.4 },
+      { x: 2103.4, y: 2006.7 },
+      { x: 2077.3, y: 1958.7 },
+      { x: 2052.6, y: 1935.4 },
+      { x: 1982.7, y: 1935.4 },
+      { x: 1892.1, y: 1968.3 },
+      { x: 1822.1, y: 1987.5 },
+      { x: 1625.1, y: 1956.5 },
+      { x: 1538.0, y: 1978.3 },
+      { x: 1438.2, y: 1907.5 },
+      { x: 1396.5, y: 1840.4 },
+      { x: 1358.4, y: 1722.5 },
+      { x: 1382.0, y: 1651.3 },
+      { x: 1507.2, y: 1544.3 },
+      { x: 1498.1, y: 1475.3 },
+      { x: 1460.0, y: 1413.6 },
+      { x: 1421.9, y: 1399.1 },
+      { x: 1291.3, y: 1371.5 },
+      { x: 1209.6, y: 1358.8 },
+      { x: 1149.7, y: 1339.9 },
+      { x: 1086.2, y: 1318.1 },
+      { x: 941.0, y: 1300.0 },
+      { x: 870.3, y: 1319.9 },
+      { x: 777.7, y: 1334.5 },
+      { x: 750.5, y: 1277.1 },
+      { x: 716.0, y: 1153.0 },
+      { x: 685.2, y: 1114.5 },
+      { x: 685.2, y: 1052.4 },
+      { x: 708.8, y: 946.8 },
+      { x: 741.4, y: 906.9 },
       { x: 748.2, y: 847.0 },
     ],
-    camera: [
-      { progress: 0.00, view: locations[3].view },
-      { progress: 0.16, view: centeredView(2800, 1750, 1550) },
-      { progress: 0.36, view: centeredView(2400, 1350, 1800) },
-      { progress: 0.56, view: centeredView(1950, 1050, 1900) },
-      { progress: 0.76, view: centeredView(1450, 850, 1750) },
-      { progress: 0.90, view: centeredView(1000, 820, 1450) },
-      { progress: 1.00, view: locations[4].view },
+    cameraZoom: [
+      { progress: 0.00, width: 950 },
+      { progress: 0.16, width: 1550 },
+      { progress: 0.36, width: 1800 },
+      { progress: 0.56, width: 1900 },
+      { progress: 0.76, width: 1750 },
+      { progress: 0.90, width: 1450 },
+      { progress: 1.00, width: 950 },
     ],
   },
 
@@ -150,12 +310,12 @@ const chapters = {
       { x: 1170, y: 900 },
       { x: 1303.4, y: 1018.9 },
     ],
-    camera: [
-      { progress: 0.00, view: locations[4].view },
-      { progress: 0.28, view: centeredView(850, 780, 1400) },
-      { progress: 0.58, view: centeredView(1050, 830, 1400) },
-      { progress: 0.82, view: centeredView(1210, 930, 1325) },
-      { progress: 1.00, view: locations[5].view },
+    cameraZoom: [
+      { progress: 0.00, width: 950 },
+      { progress: 0.28, width: 1400 },
+      { progress: 0.58, width: 1400 },
+      { progress: 0.82, width: 1325 },
+      { progress: 1.00, width: 950 },
     ],
   },
 };
@@ -180,6 +340,7 @@ let compactLabelsActive = null;
 let selectedState = "intro";
 let view = { ...fullView };
 let drag = null;
+let waypoints = [];
 
 let animationRun = 0;
 let currentFrameId = null;
@@ -271,6 +432,73 @@ function applyView() {
   );
   updateMarkerScales();
   updateMarkerLabels();
+}
+
+function formatWaypoint(point) {
+  return `{ x: ${point.x.toFixed(1)}, y: ${point.y.toFixed(1)} },`;
+}
+
+function renderWaypointLog() {
+  waypointLog.value = waypoints.map(formatWaypoint).join("\n");
+  waypointLog.scrollTop = waypointLog.scrollHeight;
+
+  undoWaypointButton.disabled = waypoints.length === 0;
+  clearWaypointsButton.disabled = waypoints.length === 0;
+  copyWaypointsButton.disabled = waypoints.length === 0;
+}
+
+function addWaypoint(point) {
+  waypoints.push({
+    x: Number(point.x.toFixed(1)),
+    y: Number(point.y.toFixed(1)),
+  });
+  renderWaypointLog();
+}
+
+function undoWaypoint() {
+  if (waypoints.length === 0) return;
+  waypoints.pop();
+  renderWaypointLog();
+}
+
+function clearWaypoints() {
+  waypoints = [];
+  renderWaypointLog();
+}
+
+async function copyWaypoints() {
+  if (waypoints.length === 0) return;
+
+  const text = waypoints.map(formatWaypoint).join("\n");
+  let copied = false;
+
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(text);
+      copied = true;
+    } catch {
+      copied = false;
+    }
+  }
+
+  if (!copied) {
+    waypointLog.focus();
+    waypointLog.select();
+
+    try {
+      copied = document.execCommand("copy");
+    } catch {
+      copied = false;
+    }
+
+    window.getSelection()?.removeAllRanges();
+  }
+
+  const originalText = copyWaypointsButton.textContent;
+  copyWaypointsButton.textContent = copied ? "Copied" : "Select";
+  window.setTimeout(() => {
+    copyWaypointsButton.textContent = originalText;
+  }, 1000);
 }
 
 function svgPointFromClient(clientX, clientY) {
@@ -625,11 +853,11 @@ function updateControls() {
   }
 }
 
-function cameraViewForProgress(chapter, progress) {
-  const frames = chapter.camera;
+function cameraWidthForProgress(chapter, progress) {
+  const frames = chapter.cameraZoom;
 
   if (progress <= frames[0].progress) {
-    return { ...frames[0].view };
+    return frames[0].width;
   }
 
   for (let i = 0; i < frames.length - 1; i += 1) {
@@ -641,15 +869,68 @@ function cameraViewForProgress(chapter, progress) {
         (progress - current.progress) /
         (next.progress - current.progress);
 
-      return interpolateView(
-        current.view,
-        next.view,
-        easeInOut(localProgress)
-      );
+      return current.width +
+        (next.width - current.width) * easeInOut(localProgress);
     }
   }
 
-  return { ...frames[frames.length - 1].view };
+  return frames[frames.length - 1].width;
+}
+
+function cameraPositionFramesForChapter(chapterNumber) {
+  const route = routeElements.get(chapterNumber);
+  const frames = [];
+
+  // Five representative camera positions across the complete rendered route.
+  // The red line may contain dozens of detailed waypoints, but the camera only
+  // reacts to these few broad positions.
+  for (let i = 0; i < CAMERA_POSITION_KEYFRAMES; i += 1) {
+    const progress = i / (CAMERA_POSITION_KEYFRAMES - 1);
+    const point = route.path.getPointAtLength(route.length * progress);
+
+    frames.push({
+      progress,
+      x: point.x,
+      y: point.y,
+    });
+  }
+
+  return frames;
+}
+
+function cameraCenterForProgress(frames, progress) {
+  if (progress <= frames[0].progress) {
+    return { x: frames[0].x, y: frames[0].y };
+  }
+
+  for (let i = 0; i < frames.length - 1; i += 1) {
+    const current = frames[i];
+    const next = frames[i + 1];
+
+    if (progress <= next.progress) {
+      const localProgress =
+        (progress - current.progress) /
+        (next.progress - current.progress);
+
+      const eased = easeInOut(localProgress);
+
+      return {
+        x: current.x + (next.x - current.x) * eased,
+        y: current.y + (next.y - current.y) * eased,
+      };
+    }
+  }
+
+  const last = frames[frames.length - 1];
+  return { x: last.x, y: last.y };
+}
+
+function cameraViewForProgress(chapterNumber, progress, positionFrames) {
+  const chapter = chapters[chapterNumber];
+  const center = cameraCenterForProgress(positionFrames, progress);
+  const width = cameraWidthForProgress(chapter, progress);
+
+  return centeredView(center.x, center.y, width);
 }
 
 function revealMarker(locationNumber, runId) {
@@ -668,6 +949,8 @@ function revealMarker(locationNumber, runId) {
 function animateRoute(chapterNumber, runId) {
   const chapter = chapters[chapterNumber];
   const route = routeElements.get(chapterNumber);
+  const cameraPositionFrames =
+    cameraPositionFramesForChapter(chapterNumber);
 
   route.path.style.display = "";
   route.reveal.style.strokeDashoffset = `${route.length}`;
@@ -678,7 +961,11 @@ function animateRoute(chapterNumber, runId) {
       route.reveal.style.strokeDashoffset =
         `${route.length * (1 - progress)}`;
 
-      view = cameraViewForProgress(chapter, progress);
+      view = cameraViewForProgress(
+        chapterNumber,
+        progress,
+        cameraPositionFrames
+      );
       applyView();
     },
     runId
@@ -957,13 +1244,19 @@ function endDrag(event) {
 
   if (!wasMoved) {
     const point = svgPointFromClient(event.clientX, event.clientY);
-    coordinates.value =
-      `x: ${point.x.toFixed(1)}, y: ${point.y.toFixed(1)}`;
+    addWaypoint(point);
   }
 }
 
 svg.addEventListener("pointerup", endDrag);
 svg.addEventListener("pointercancel", endDrag);
+
+
+undoWaypointButton.addEventListener("click", undoWaypoint);
+clearWaypointsButton.addEventListener("click", clearWaypoints);
+copyWaypointsButton.addEventListener("click", copyWaypoints);
+
+renderWaypointLog();
 
 buildMarkers();
 buildRoutes();
