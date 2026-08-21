@@ -3,31 +3,41 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Middle-earth Deployment Map — Prototype 4</title>
+  <title>Middle-earth Deployment Map</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="map-app">
-    <div class="controls" aria-label="Map controls">
-      <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
-      <button id="zoom-out" type="button" aria-label="Zoom out">−</button>
-      <button id="reset-view" type="button">Reset</button>
-      <button id="travel" type="button">Travel to X2</button>
+    <div class="controls" aria-label="Journey controls">
+      <label class="chapter-selector">
+        <span>Chapter</span>
+        <select id="chapter-select">
+          <option value="intro">Introduction</option>
+          <option value="1">I — The Council of CIT</option>
+          <option value="2">II — Concerning Docker</option>
+          <option value="3">III — An Unexpected Container</option>
+          <option value="4">IV — The Grey Havens of Harbor</option>
+          <option value="all">Complete journey</option>
+        </select>
+      </label>
+
+      <button id="play-pause" class="icon-button" type="button"
+              aria-label="Play" title="Play">▶</button>
+      <button id="previous-chapter" class="icon-button" type="button"
+              aria-label="Previous chapter" title="Previous chapter">⏮</button>
+      <button id="next-chapter" class="icon-button" type="button"
+              aria-label="Next chapter" title="Next chapter">⏭</button>
+
       <output id="coordinates" class="coordinate-readout">x: —, y: —</output>
     </div>
 
     <svg
       id="map"
-      viewBox="850 1550 1500 1125"
+      viewBox="0 0 4266.6665 3200"
       role="img"
-      aria-label="Interactive Middle-earth deployment map prototype"
+      aria-label="Interactive Middle-earth deployment journey"
     >
-      <defs>
-        <mask id="route-reveal-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="4266.6665" height="3200">
-          <rect x="0" y="0" width="4266.6665" height="3200" fill="black" />
-          <path id="route-reveal-path" class="route-reveal-path" />
-        </mask>
-      </defs>
+      <defs id="route-defs"></defs>
 
       <image
         href="map.svg"
@@ -38,25 +48,8 @@
         preserveAspectRatio="xMidYMid meet"
       />
 
-      <g id="overlay" aria-label="Deployment journey overlay">
-        <path
-          id="journey-path"
-          class="journey-path"
-          mask="url(#route-reveal-mask)"
-        />
-
-        <g id="marker-x1" class="test-marker" transform="translate(1250 2050)">
-          <line x1="-40" y1="-40" x2="40" y2="40" />
-          <line x1="-40" y1="40" x2="40" y2="-40" />
-          <text x="58" y="-48">X1</text>
-        </g>
-
-        <g id="marker-x2" class="test-marker marker-x2" transform="translate(2925 1400)">
-          <line class="x2-stroke" x1="-40" y1="-40" x2="40" y2="40" />
-          <line class="x2-stroke" x1="-40" y1="40" x2="40" y2="-40" />
-          <text class="x2-label" x="58" y="-48">X2</text>
-        </g>
-      </g>
+      <g id="routes-layer" aria-label="Journey routes"></g>
+      <g id="markers-layer" aria-label="Chapter markers"></g>
     </svg>
   </main>
 

@@ -35,38 +35,67 @@ body {
   z-index: 10;
   top: 12px;
   left: 12px;
+  right: 12px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
+  pointer-events: none;
 }
 
-.controls button {
-  min-width: 40px;
-  min-height: 40px;
+.controls > * {
+  pointer-events: auto;
+}
+
+.controls button,
+.chapter-selector,
+.coordinate-readout {
+  min-height: 38px;
+  box-sizing: border-box;
   border: 1px solid rgba(0, 0, 0, 0.35);
   border-radius: 4px;
-  background: rgba(239, 227, 194, 0.92);
+  background: rgba(239, 227, 194, 0.94);
   color: #2e261c;
-  font: 600 16px/1 system-ui, sans-serif;
+  font-family: system-ui, sans-serif;
+}
+
+.icon-button {
+  width: 42px;
+  padding: 0;
+  font-size: 18px;
+  font-weight: 600;
   cursor: pointer;
 }
 
 .controls button:disabled {
-  opacity: 0.55;
+  opacity: 0.45;
   cursor: default;
 }
 
+.chapter-selector {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 8px 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chapter-selector select {
+  max-width: 260px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+}
+
 .coordinate-readout {
-  min-height: 40px;
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   padding: 0 10px;
-  border: 1px solid rgba(0, 0, 0, 0.35);
-  border-radius: 4px;
-  background: rgba(239, 227, 194, 0.92);
-  color: #2e261c;
-  font: 500 14px/1 system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .journey-path {
@@ -82,30 +111,35 @@ body {
 .route-reveal-path {
   fill: none;
   stroke: white;
-  stroke-width: 22;
+  stroke-width: 24;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.test-marker line {
-  stroke: #9f1d20;
-  stroke-width: 16;
-  stroke-linecap: round;
+.chapter-marker {
+  pointer-events: none;
 }
 
-.test-marker text {
+.chapter-marker .label-backdrop {
+  fill: #efe3c2;
+  fill-opacity: 0.80;
+}
+
+.chapter-marker .anchor-dot {
   fill: #9f1d20;
-  font: 700 54px/1.1 Georgia, serif;
+}
+
+.chapter-marker .chapter-label {
+  fill: #941b1f;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  font-weight: 700;
   paint-order: stroke;
   stroke: #efe3c2;
-  stroke-width: 10;
+  stroke-width: 7px;
   stroke-linejoin: round;
 }
 
-.marker-x2 {
-  opacity: 0;
-}
-
-.x2-label {
-  opacity: 0;
+.chapter-marker.marker-muted {
+  opacity: 0.94;
 }
