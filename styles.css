@@ -67,6 +67,13 @@ body {
   cursor: pointer;
 }
 
+.story-button {
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .controls button:disabled {
   opacity: 0.45;
   cursor: default;
@@ -127,6 +134,8 @@ body {
 
 .chapter-marker .anchor-dot {
   fill: #9f1d20;
+  stroke: #efe3c2;
+  stroke-width: 3px;
 }
 
 .chapter-marker .chapter-label {

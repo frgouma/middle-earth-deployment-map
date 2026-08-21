@@ -4,6 +4,7 @@ const routesLayer = document.getElementById("routes-layer");
 const markersLayer = document.getElementById("markers-layer");
 
 const chapterSelect = document.getElementById("chapter-select");
+const playStoryButton = document.getElementById("play-story");
 const playPauseButton = document.getElementById("play-pause");
 const previousButton = document.getElementById("previous-chapter");
 const nextButton = document.getElementById("next-chapter");
@@ -13,6 +14,7 @@ const MAP_WIDTH = 4266.6665;
 const MAP_HEIGHT = 3200;
 const VIEW_ASPECT = MAP_HEIGHT / MAP_WIDTH;
 const MARKER_REFERENCE_WIDTH = 1250;
+const COMPACT_LABEL_VIEW_WIDTH = 3000;
 
 const fullView = {
   x: 0,
@@ -166,10 +168,14 @@ const timing = {
   markerReveal: 850,
   startHold: 900,
   overviewToStart: 1400,
+  storyFinalHold: 900,
+  storyFinalOverview: 2000,
 };
 
 const markerElements = new Map();
 const routeElements = new Map();
+
+let compactLabelsActive = null;
 
 let selectedState = "intro";
 let view = { ...fullView };
@@ -179,6 +185,7 @@ let animationRun = 0;
 let currentFrameId = null;
 let isAnimating = false;
 let isPaused = false;
+let isStoryPlaying = false;
 let browseOverview = true;
 
 function stateIsChapter(state) {
@@ -217,12 +224,40 @@ function markerScale() {
   return view.width / MARKER_REFERENCE_WIDTH;
 }
 
+function setBackdropBounds(backdrop, bbox) {
+  const padX = 5;
+  const padY = 3;
+
+  backdrop.setAttribute("x", String(bbox.x - padX));
+  backdrop.setAttribute("y", String(bbox.y - padY));
+  backdrop.setAttribute("width", String(bbox.width + padX * 2));
+  backdrop.setAttribute("height", String(bbox.height + padY * 2));
+}
+
+function updateMarkerLabels(force = false) {
+  const compact = view.width >= COMPACT_LABEL_VIEW_WIDTH;
+
+  if (!force && compact === compactLabelsActive) return;
+  compactLabelsActive = compact;
+
+  for (const marker of markerElements.values()) {
+    marker.label.textContent = compact
+      ? marker.compactText
+      : marker.fullText;
+
+    setBackdropBounds(
+      marker.backdrop,
+      compact ? marker.compactBounds : marker.fullBounds
+    );
+  }
+}
+
 function updateMarkerScales() {
   const scale = markerScale();
 
-  for (const [locationNumber, group] of markerElements.entries()) {
+  for (const [locationNumber, marker] of markerElements.entries()) {
     const location = locations[locationNumber];
-    group.setAttribute(
+    marker.group.setAttribute(
       "transform",
       `translate(${location.x} ${location.y}) scale(${scale})`
     );
@@ -235,6 +270,7 @@ function applyView() {
     `${view.x} ${view.y} ${view.width} ${view.height}`
   );
   updateMarkerScales();
+  updateMarkerLabels();
 }
 
 function svgPointFromClient(clientX, clientY) {
@@ -367,21 +403,31 @@ function buildMarkers() {
     label.classList.add("chapter-label");
     label.setAttribute("x", "14");
     label.setAttribute("y", "6");
-    label.textContent = `${location.roman} · ${location.title}`;
 
+    const fullText = `${location.roman} · ${location.title}`;
+    const compactText = location.roman;
+
+    label.textContent = fullText;
     group.append(backdrop, dot, label);
     markersLayer.appendChild(group);
-    markerElements.set(locationNumber, group);
 
-    const bbox = label.getBBox();
-    const padX = 5;
-    const padY = 3;
+    const fullBounds = label.getBBox();
+    label.textContent = compactText;
+    const compactBounds = label.getBBox();
+    label.textContent = fullText;
 
-    backdrop.setAttribute("x", String(bbox.x - padX));
-    backdrop.setAttribute("y", String(bbox.y - padY));
-    backdrop.setAttribute("width", String(bbox.width + padX * 2));
-    backdrop.setAttribute("height", String(bbox.height + padY * 2));
+    markerElements.set(locationNumber, {
+      group,
+      backdrop,
+      label,
+      fullText,
+      compactText,
+      fullBounds,
+      compactBounds,
+    });
   }
+
+  updateMarkerLabels(true);
 }
 
 function buildRoutes() {
@@ -437,13 +483,13 @@ function buildRoutes() {
 function setMarkerVisible(locationNumber, visible) {
   const marker = markerElements.get(locationNumber);
   if (!marker) return;
-  marker.style.display = visible ? "" : "none";
+  marker.group.style.display = visible ? "" : "none";
 }
 
 function setMarkerOpacity(locationNumber, opacity) {
   const marker = markerElements.get(locationNumber);
   if (!marker) return;
-  marker.style.opacity = String(opacity);
+  marker.group.style.opacity = String(opacity);
 }
 
 function setRouteState(chapterNumber, state) {
@@ -536,6 +582,7 @@ function cancelPlayback() {
   currentFrameId = null;
   isAnimating = false;
   isPaused = false;
+  isStoryPlaying = false;
 }
 
 function updateControls() {
@@ -545,8 +592,9 @@ function updateControls() {
   nextButton.disabled =
     isAnimating || index >= navigationOrder.length - 1;
   chapterSelect.disabled = isAnimating && !isPaused;
+  playStoryButton.disabled = isAnimating;
 
-  if (selectedState === "all") {
+  if (selectedState === "all" && !isStoryPlaying) {
     playPauseButton.disabled = true;
     playPauseButton.textContent = "▶";
     playPauseButton.setAttribute("aria-label", "Play");
@@ -558,12 +606,18 @@ function updateControls() {
 
   if (isAnimating && isPaused) {
     playPauseButton.textContent = "▶";
-    playPauseButton.setAttribute("aria-label", "Resume");
-    playPauseButton.title = "Resume";
+    playPauseButton.setAttribute(
+      "aria-label",
+      isStoryPlaying ? "Resume story" : "Resume"
+    );
+    playPauseButton.title = isStoryPlaying ? "Resume story" : "Resume";
   } else if (isAnimating) {
     playPauseButton.textContent = "⏸";
-    playPauseButton.setAttribute("aria-label", "Pause");
-    playPauseButton.title = "Pause";
+    playPauseButton.setAttribute(
+      "aria-label",
+      isStoryPlaying ? "Pause story" : "Pause"
+    );
+    playPauseButton.title = isStoryPlaying ? "Pause story" : "Pause";
   } else {
     playPauseButton.textContent = "▶";
     playPauseButton.setAttribute("aria-label", "Play");
@@ -675,6 +729,7 @@ async function playSelected({ startFromOverview = false } = {}) {
   cancelPlayback();
   isAnimating = true;
   isPaused = false;
+  isStoryPlaying = false;
   browseOverview = false;
 
   const runId = ++animationRun;
@@ -697,6 +752,58 @@ async function playSelected({ startFromOverview = false } = {}) {
 
   isAnimating = false;
   isPaused = false;
+  updateControls();
+}
+
+
+async function playStory() {
+  if (isAnimating) return;
+
+  cancelPlayback();
+
+  isAnimating = true;
+  isPaused = false;
+  isStoryPlaying = true;
+  browseOverview = false;
+
+  const runId = ++animationRun;
+
+  selectedState = "intro";
+  chapterSelect.value = "intro";
+  setUrlState("intro", true, "push");
+  updateControls();
+
+  let completed = await playIntroduction(runId);
+  if (!completed || runId !== animationRun) return;
+
+  for (let chapterNumber = 1; chapterNumber <= 4; chapterNumber += 1) {
+    selectedState = String(chapterNumber);
+    chapterSelect.value = selectedState;
+    setUrlState(selectedState, true, "replace");
+    updateControls();
+
+    completed = await playChapter(chapterNumber, runId, false);
+    if (!completed || runId !== animationRun) return;
+  }
+
+  if (!(await wait(timing.storyFinalHold, runId))) return;
+  if (!(await animateViewTo(
+    fullView,
+    timing.storyFinalOverview,
+    runId
+  ))) return;
+
+  if (runId !== animationRun) return;
+
+  selectedState = "all";
+  chapterSelect.value = "all";
+  browseOverview = true;
+  isAnimating = false;
+  isPaused = false;
+  isStoryPlaying = false;
+
+  renderCompleteJourney();
+  setUrlState("all", false, "replace");
   updateControls();
 }
 
@@ -752,6 +859,7 @@ function togglePlayPause() {
   });
 }
 
+playStoryButton.addEventListener("click", playStory);
 playPauseButton.addEventListener("click", togglePlayPause);
 
 previousButton.addEventListener("click", () => {
