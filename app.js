@@ -361,8 +361,11 @@ function normalizeState(value) {
 function readInitialState() {
   const params = new URLSearchParams(window.location.search);
   const chapter = normalizeState(params.get("chapter"));
-  const play = params.get("play") === "true";
-  return { chapter, play };
+  const playParam = params.get("play");
+  const play = playParam === "true";
+  const playStoryFromUrl = playParam === "story";
+
+  return { chapter, play, playStoryFromUrl };
 }
 
 function setUrlState(chapter, play, mode = "replace") {
@@ -1171,6 +1174,12 @@ window.addEventListener("popstate", () => {
   cancelPlayback();
 
   const state = readInitialState();
+
+  if (state.playStoryFromUrl) {
+    playStory();
+    return;
+  }
+
   selectedState = state.chapter;
 
   if (state.play && selectedState !== "all") {
@@ -1262,21 +1271,26 @@ buildMarkers();
 buildRoutes();
 
 const initialState = readInitialState();
-selectedState = initialState.chapter;
 
-if (initialState.play && selectedState !== "all") {
-  browseOverview = false;
-  renderSelectedStart(false);
-  setUrlState(selectedState, true, "replace");
-  updateControls();
-  playSelected({ startFromOverview: false });
+if (initialState.playStoryFromUrl) {
+  playStory();
 } else {
-  browseOverview = true;
-  renderSelectedStart(true);
-  setUrlState(
-    selectedState,
-    selectedState === "all" ? false : initialState.play,
-    "replace"
-  );
-  updateControls();
+  selectedState = initialState.chapter;
+
+  if (initialState.play && selectedState !== "all") {
+    browseOverview = false;
+    renderSelectedStart(false);
+    setUrlState(selectedState, true, "replace");
+    updateControls();
+    playSelected({ startFromOverview: false });
+  } else {
+    browseOverview = true;
+    renderSelectedStart(true);
+    setUrlState(
+      selectedState,
+      selectedState === "all" ? false : initialState.play,
+      "replace"
+    );
+    updateControls();
+  }
 }
