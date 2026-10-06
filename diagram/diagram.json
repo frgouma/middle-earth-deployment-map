@@ -1,0 +1,406 @@
+{
+  "canvas": {
+    "width": 4266.6665,
+    "height": 3200
+  },
+  "elements": {
+    "browser": {
+      "id": "browser",
+      "class": "box",
+      "parent": "live-application",
+      "x": 260,
+      "y": 1860,
+      "width": 430,
+      "height": 150,
+      "color": "blue",
+      "title": "Browser"
+    },
+    "configmap": {
+      "id": "configmap",
+      "class": "box",
+      "parent": "kubernetes-config",
+      "x": 1390,
+      "y": 1160,
+      "width": 360,
+      "height": 125,
+      "color": "blue",
+      "title": "ConfigMap",
+      "body": "Ordinary configuration"
+    },
+    "deployment": {
+      "id": "deployment",
+      "class": "box",
+      "parent": "kubernetes-config",
+      "x": 1390,
+      "y": 960,
+      "width": 360,
+      "height": 155,
+      "color": "green",
+      "title": "Deployment",
+      "body": "Desired application state"
+    },
+    "diagram-subtitle": {
+      "id": "diagram-subtitle",
+      "class": "subtitle",
+      "x": 140,
+      "y": 225,
+      "text": "The Council's Map"
+    },
+    "diagram-title": {
+      "id": "diagram-title",
+      "class": "title",
+      "x": 140,
+      "y": 130,
+      "text": "WorldKLEMS deployment architecture"
+    },
+    "django-wagtail": {
+      "id": "django-wagtail",
+      "class": "box",
+      "parent": "web-container",
+      "x": 2680,
+      "y": 2370,
+      "width": 360,
+      "height": 165,
+      "color": "green",
+      "title": "Django / Wagtail",
+      "body": "Application and CMS"
+    },
+    "dns": {
+      "id": "dns",
+      "class": "box",
+      "parent": "live-application",
+      "x": 260,
+      "y": 2110,
+      "width": 430,
+      "height": 160,
+      "color": "blue",
+      "title": "DNS",
+      "body": "worldklems.net"
+    },
+    "docker-build": {
+      "id": "docker-build",
+      "class": "box",
+      "parent": "local-preparation",
+      "x": 260,
+      "y": 1050,
+      "width": 680,
+      "height": 180,
+      "color": "neutral",
+      "title": "Docker build",
+      "body": "Packages application and dependencies"
+    },
+    "docker-image": {
+      "id": "docker-image",
+      "class": "box",
+      "parent": "local-preparation",
+      "x": 260,
+      "y": 1310,
+      "width": 680,
+      "height": 170,
+      "color": "amber",
+      "title": "Docker image",
+      "body": "Deployable artifact"
+    },
+    "dockerfile": {
+      "id": "dockerfile",
+      "class": "box",
+      "parent": "local-preparation",
+      "x": 260,
+      "y": 800,
+      "width": 680,
+      "height": 170,
+      "color": "neutral",
+      "title": "Dockerfile",
+      "body": "Image recipe"
+    },
+    "git-repository": {
+      "id": "git-repository",
+      "class": "box",
+      "parent": "local-preparation",
+      "x": 260,
+      "y": 540,
+      "width": 680,
+      "height": 180,
+      "color": "blue",
+      "title": "WorldKLEMS Git repository",
+      "body": "Django / Wagtail application source"
+    },
+    "gunicorn": {
+      "id": "gunicorn",
+      "class": "box",
+      "parent": "web-container",
+      "x": 2680,
+      "y": 2170,
+      "width": 360,
+      "height": 150,
+      "color": "green",
+      "title": "Gunicorn",
+      "body": "Application server"
+    },
+    "harbor-registry": {
+      "id": "harbor-registry",
+      "class": "box",
+      "parent": "publishing-kubernetes",
+      "x": 1290,
+      "y": 540,
+      "width": 560,
+      "height": 180,
+      "color": "amber",
+      "title": "Harbor registry",
+      "body": "Stores the published Docker image"
+    },
+    "ingress": {
+      "id": "ingress",
+      "class": "box",
+      "parent": "live-application",
+      "x": 800,
+      "y": 1980,
+      "width": 430,
+      "height": 160,
+      "color": "green",
+      "title": "Ingress"
+    },
+    "juicefs-media": {
+      "id": "juicefs-media",
+      "class": "box",
+      "parent": "persistent-state",
+      "x": 3610,
+      "y": 1990,
+      "width": 410,
+      "height": 240,
+      "color": "amber",
+      "title": "JuiceFS / worldklems-media",
+      "body": "Persistent CMS files, images and documents"
+    },
+    "kubectl": {
+      "id": "kubectl",
+      "class": "box",
+      "parent": "publishing-kubernetes",
+      "x": 1960,
+      "y": 800,
+      "width": 560,
+      "height": 180,
+      "color": "purple",
+      "title": "kubectl",
+      "body": "Apply and inspect Kubernetes configuration"
+    },
+    "kubernetes-config": {
+      "id": "kubernetes-config",
+      "class": "cluster",
+      "parent": "publishing-kubernetes",
+      "x": 1290,
+      "y": 800,
+      "width": 560,
+      "height": 650,
+      "color": "blue",
+      "title": "Kubernetes configuration"
+    },
+    "live-application": {
+      "id": "live-application",
+      "class": "cluster",
+      "x": 140,
+      "y": 1640,
+      "width": 3260,
+      "height": 1380,
+      "color": "green",
+      "title": "3. Live application & request routing"
+    },
+    "local-preparation": {
+      "id": "local-preparation",
+      "class": "cluster",
+      "x": 140,
+      "y": 340,
+      "width": 920,
+      "height": 1180,
+      "color": "blue",
+      "title": "1. Local preparation"
+    },
+    "mariadb": {
+      "id": "mariadb",
+      "class": "box",
+      "parent": "persistent-state",
+      "x": 3610,
+      "y": 2440,
+      "width": 410,
+      "height": 220,
+      "color": "amber",
+      "title": "CIT MariaDB",
+      "body": "Structured CMS and application state"
+    },
+    "nginx": {
+      "id": "nginx",
+      "class": "box",
+      "parent": "nginx-container",
+      "x": 2070,
+      "y": 2260,
+      "width": 340,
+      "height": 190,
+      "color": "green",
+      "title": "NGINX",
+      "body": "Proxy requests; serve /media/"
+    },
+    "nginx-container": {
+      "id": "nginx-container",
+      "class": "cluster",
+      "parent": "pod",
+      "x": 1990,
+      "y": 2010,
+      "width": 500,
+      "height": 680,
+      "color": "neutral",
+      "title": "NGINX container"
+    },
+    "persistent-state": {
+      "id": "persistent-state",
+      "class": "cluster",
+      "x": 3500,
+      "y": 1640,
+      "width": 630,
+      "height": 1380,
+      "color": "amber",
+      "title": "4. Persistent state"
+    },
+    "pod": {
+      "id": "pod",
+      "class": "cluster",
+      "parent": "live-application",
+      "x": 1880,
+      "y": 1810,
+      "width": 1370,
+      "height": 1020,
+      "color": "green",
+      "title": "Pod — disposable runtime unit"
+    },
+    "publishing-kubernetes": {
+      "id": "publishing-kubernetes",
+      "class": "cluster",
+      "x": 1160,
+      "y": 340,
+      "width": 1500,
+      "height": 1180,
+      "color": "blue",
+      "title": "2. Publishing & Kubernetes preparation"
+    },
+    "rancher": {
+      "id": "rancher",
+      "class": "box",
+      "parent": "publishing-kubernetes",
+      "x": 1960,
+      "y": 540,
+      "width": 560,
+      "height": 180,
+      "color": "purple",
+      "title": "Rancher",
+      "body": "Inspect and manage Kubernetes"
+    },
+    "secrets": {
+      "id": "secrets",
+      "class": "box",
+      "parent": "kubernetes-config",
+      "x": 1390,
+      "y": 1310,
+      "width": 360,
+      "height": 125,
+      "color": "blue",
+      "title": "Secrets",
+      "body": "Credentials and sensitive configuration"
+    },
+    "service": {
+      "id": "service",
+      "class": "box",
+      "parent": "live-application",
+      "x": 1340,
+      "y": 1980,
+      "width": 430,
+      "height": 160,
+      "color": "green",
+      "title": "Service"
+    },
+    "state-note": {
+      "id": "state-note",
+      "class": "note",
+      "parent": "persistent-state",
+      "x": 3815,
+      "y": 2840,
+      "width": 440,
+      "height": 80,
+      "text": "The Pod is disposable. The data is not.",
+      "font_size": 30
+    },
+    "web-container": {
+      "id": "web-container",
+      "class": "cluster",
+      "parent": "pod",
+      "x": 2580,
+      "y": 2010,
+      "width": 560,
+      "height": 680,
+      "color": "neutral",
+      "title": "web container"
+    },
+    "whitenoise": {
+      "id": "whitenoise",
+      "class": "box",
+      "parent": "web-container",
+      "x": 2740,
+      "y": 2580,
+      "width": 240,
+      "height": 90,
+      "color": "neutral",
+      "title": "WhiteNoise",
+      "body": "serves /static/",
+      "font_size": 28
+    }
+  },
+  "routes": {
+    "27": {
+      "points": [
+        {
+          "x": 984,
+          "y": 936
+        },
+        {
+          "x": 1230,
+          "y": 978
+        },
+        {
+          "x": 1230,
+          "y": 744
+        }
+      ],
+      "label": "Flappie",
+      "type": "runtime"
+    },
+    "State-1": {
+      "points": [],
+      "type": "runtime"
+    },
+    "check": {
+      "points": [
+        {
+          "x": 2440,
+          "y": 826
+        },
+        {
+          "x": 2406,
+          "y": 1616
+        }
+      ],
+      "type": "runtime"
+    },
+    "fsdfas": {
+      "points": [
+        {
+          "x": 1036,
+          "y": 2414
+        },
+        {
+          "x": 1464,
+          "y": 2324
+        }
+      ],
+      "type": "runtime",
+      "label": "flappier"
+    }
+  }
+}

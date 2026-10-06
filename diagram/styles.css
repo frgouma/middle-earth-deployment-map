@@ -1,0 +1,437 @@
+:root {
+  --ink: #24313d;
+  --muted-ink: #526170;
+  --route-deployment: #356a9a;
+  --route-runtime: #476f50;
+  --route-default: #596674;
+  --selection: #087ea4;
+  --handle-fill: #ffffff;
+}
+
+svg {
+  background: #ffffff;
+  color: var(--ink);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+.canvas-background {
+  fill: #ffffff;
+}
+
+.diagram-element {
+  color: var(--ink);
+}
+
+.element-surface,
+.cluster-surface {
+  vector-effect: non-scaling-stroke;
+  transition: filter 100ms ease, stroke-width 100ms ease;
+}
+
+.element-box .element-surface {
+  fill: var(--palette-solid);
+  stroke: var(--palette-edge);
+  stroke-width: 3;
+  rx: 24px;
+  ry: 24px;
+}
+
+.element-cluster .cluster-surface {
+  fill: var(--palette-cluster);
+  stroke: var(--palette-edge);
+  stroke-width: 4;
+  stroke-dasharray: 16 12;
+  rx: 34px;
+  ry: 34px;
+}
+
+.palette-neutral {
+  --palette-solid: #f2f4f6;
+  --palette-cluster: rgba(112, 126, 139, 0.075);
+  --palette-edge: #6d7a86;
+}
+
+.palette-blue {
+  --palette-solid: #e5f0fa;
+  --palette-cluster: rgba(80, 145, 199, 0.105);
+  --palette-edge: #4a789e;
+}
+
+.palette-green {
+  --palette-solid: #e6f3e4;
+  --palette-cluster: rgba(78, 143, 85, 0.10);
+  --palette-edge: #4f7e55;
+}
+
+.palette-amber {
+  --palette-solid: #fff0cd;
+  --palette-cluster: rgba(194, 139, 32, 0.105);
+  --palette-edge: #a06d16;
+}
+
+.palette-purple {
+  --palette-solid: #eee7f8;
+  --palette-cluster: rgba(118, 86, 158, 0.09);
+  --palette-edge: #75569c;
+}
+
+/* Red is intentionally route-only in the editor palette. */
+.palette-red {
+  --palette-edge: #c62828;
+}
+
+.element-title,
+.element-subtitle,
+.element-note,
+.box-title,
+.box-body,
+.cluster-title {
+  fill: currentColor;
+  pointer-events: visiblePainted;
+  user-select: none;
+}
+
+.element-title {
+  font-size: var(--element-font-size, 76px);
+  font-weight: 720;
+  letter-spacing: -1px;
+}
+
+.element-subtitle {
+  fill: var(--muted-ink);
+  font-size: var(--element-font-size, 42px);
+  font-weight: 420;
+}
+
+.cluster-title {
+  fill: var(--palette-edge);
+  font-size: var(--element-font-size, 38px);
+  font-weight: 700;
+}
+
+.box-title {
+  font-size: var(--element-font-size, 36px);
+  font-weight: 700;
+}
+
+.box-body {
+  fill: var(--muted-ink);
+  font-size: calc(var(--element-font-size, 32px) * 0.88);
+  font-weight: 420;
+}
+
+.element-note {
+  fill: var(--muted-ink);
+  font-size: var(--element-font-size, 30px);
+  font-style: italic;
+}
+
+.diagram-element:hover .element-surface,
+.diagram-element:hover .cluster-surface {
+  filter: brightness(0.97) saturate(1.08);
+}
+
+.route-path {
+  fill: none;
+  stroke: var(--route-default);
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  marker-end: url(#arrow-default);
+  transition: stroke-width 90ms ease, opacity 90ms ease;
+}
+
+.route-arrowhead {
+  fill: var(--route-default);
+}
+
+.route-arrow-semantic .route-arrowhead {
+  fill: var(--palette-edge);
+}
+
+.route-arrow-deployment .route-arrowhead {
+  fill: var(--route-deployment);
+}
+
+.route-arrow-runtime .route-arrowhead {
+  fill: var(--route-runtime);
+}
+
+.route-deployment .route-path {
+  stroke: var(--route-deployment);
+  stroke-dasharray: 18 12;
+  marker-end: url(#arrow-deployment);
+}
+
+.route-runtime .route-path {
+  stroke: var(--route-runtime);
+  marker-end: url(#arrow-runtime);
+}
+
+.route-colored .route-path {
+  stroke: var(--palette-edge);
+}
+
+.route-color-neutral .route-path {
+  marker-end: url(#arrow-neutral);
+}
+
+.route-color-blue .route-path {
+  marker-end: url(#arrow-blue);
+}
+
+.route-color-amber .route-path {
+  marker-end: url(#arrow-amber);
+}
+
+.route-color-purple .route-path {
+  marker-end: url(#arrow-purple);
+}
+
+.route-color-red .route-path {
+  marker-end: url(#arrow-red);
+}
+
+.route-hit {
+  fill: none;
+  stroke: #000;
+  stroke-width: 34;
+  stroke-opacity: 0.001;
+  pointer-events: stroke;
+  cursor: pointer;
+  vector-effect: non-scaling-stroke;
+}
+
+.diagram-route:hover .route-path,
+.diagram-route.route-highlighted .route-path {
+  stroke-width: 11;
+}
+
+.route-label {
+  display: none;
+  pointer-events: none;
+}
+
+.route-label rect {
+  fill: rgba(255, 255, 255, 0.96);
+  stroke: #c8d0d7;
+  stroke-width: 2;
+  rx: 8px;
+  ry: 8px;
+  vector-effect: non-scaling-stroke;
+}
+
+.route-label text {
+  fill: var(--ink);
+  font-size: 26px;
+  font-weight: 650;
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+.diagram-route:hover .route-label,
+.diagram-route.route-highlighted .route-label {
+  display: inline;
+}
+
+.editor-state-idle .diagram-element[data-editable="true"],
+.editor-state-creating-element .diagram-element[data-editable="true"],
+.editor-state-editing-element .diagram-element[data-editable="true"],
+.editor-state-creating-route .diagram-element[data-editable="true"],
+.editor-state-editing-route .diagram-element[data-editable="true"] {
+  cursor: move;
+}
+
+.editor-state-editing-element .diagram-element.element-selected .element-surface,
+.editor-state-editing-element .diagram-element.element-selected .cluster-surface {
+  stroke: var(--selection);
+  stroke-width: 7;
+}
+
+.selection-outline {
+  fill: none;
+  stroke: var(--selection);
+  stroke-width: 5;
+  stroke-dasharray: 13 9;
+  pointer-events: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.resize-handle,
+.route-point {
+  fill: var(--handle-fill);
+  stroke: var(--selection);
+  stroke-width: 5;
+  vector-effect: non-scaling-stroke;
+}
+
+.resize-handle {
+  cursor: nwse-resize;
+}
+
+.resize-handle[data-corner="ne"],
+.resize-handle[data-corner="sw"] {
+  cursor: nesw-resize;
+}
+
+.route-point {
+  cursor: move;
+}
+
+.route-point.point-selected {
+  fill: #fbd44b;
+}
+
+.route-point-label {
+  fill: var(--ink);
+  font-size: 24px;
+  font-weight: 700;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 7;
+  stroke-linejoin: round;
+}
+
+.editor-overlay {
+  display: none;
+}
+
+.editor-state-editing-element .element-overlay,
+.editor-state-editing-route .route-overlay {
+  display: inline;
+}
+
+.editor-state-preview .selection-outline,
+.editor-state-preview .resize-handle,
+.editor-state-preview .route-point,
+.editor-state-preview .route-point-label {
+  display: none;
+}
+
+.editor-panel-shell {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 2px solid #66727d;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.975);
+  box-shadow: 0 12px 34px rgba(22, 37, 49, 0.22);
+  color: #26323d;
+  font: 24px/1.25 Inter, "Segoe UI", Arial, sans-serif;
+}
+
+.editor-drag-handle {
+  padding: 18px 22px;
+  border-bottom: 2px solid #ccd3d9;
+  background: #eef2f5;
+  cursor: move;
+  font-size: 27px;
+  font-weight: 750;
+  user-select: none;
+  touch-action: none;
+}
+
+.editor-tabs {
+  display: flex;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #d8dde2;
+}
+
+.editor-panel-shell button,
+.editor-panel-shell input,
+.editor-panel-shell select,
+.editor-panel-shell textarea {
+  box-sizing: border-box;
+  border: 1px solid #9aa5ae;
+  border-radius: 7px;
+  background: #fff;
+  color: #24313d;
+  font: inherit;
+}
+
+.editor-panel-shell button {
+  padding: 8px 13px;
+  cursor: pointer;
+}
+
+.editor-panel-shell button:hover,
+.editor-panel-shell button.active {
+  border-color: #087ea4;
+  background: #e4f4f8;
+}
+
+.editor-panel-body {
+  box-sizing: border-box;
+  height: calc(100% - 122px);
+  overflow: auto;
+  padding: 16px 20px 24px;
+}
+
+.editor-panel-shell [hidden] {
+  display: none;
+}
+
+.editor-panel-shell .editor-state {
+  display: none;
+}
+
+.editor-panel-shell[data-state="idle"] #editor-idle,
+.editor-panel-shell[data-state="creating-element"] #element-create,
+.editor-panel-shell[data-state="editing-element"] #element-edit,
+.editor-panel-shell[data-state="creating-route"] #route-create,
+.editor-panel-shell[data-state="editing-route"] #route-edit,
+.editor-panel-shell[data-state="preview"] #preview-state {
+  display: block;
+}
+
+.editor-panel-shell h3 {
+  margin: 8px 0 12px;
+  font-size: 25px;
+}
+
+.editor-grid {
+  display: grid;
+  grid-template-columns: 145px minmax(0, 1fr);
+  gap: 9px 12px;
+  align-items: center;
+}
+
+.editor-grid label {
+  color: #4c5964;
+}
+
+.editor-grid input,
+.editor-grid select,
+.editor-grid textarea {
+  min-width: 0;
+  width: 100%;
+  padding: 7px 9px;
+}
+
+.editor-grid textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 14px 0;
+}
+
+.editor-status {
+  min-height: 34px;
+  margin: 10px 0;
+  color: #526170;
+}
+
+.preview-copy {
+  color: #526170;
+}

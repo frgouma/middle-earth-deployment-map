@@ -1,0 +1,475 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="4266.6665" height="3200" viewBox="0 0 4266.6665 3200" version="1.1" preserveAspectRatio="xMidYMid meet" class="clean-render" data-editor="false"><defs><style type="text/css" data-source="styles.css">:root {
+  --ink: #24313d;
+  --muted-ink: #526170;
+  --route-deployment: #356a9a;
+  --route-runtime: #476f50;
+  --route-default: #596674;
+  --selection: #087ea4;
+  --handle-fill: #ffffff;
+}
+
+svg {
+  background: #ffffff;
+  color: var(--ink);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+.canvas-background {
+  fill: #ffffff;
+}
+
+.diagram-element {
+  color: var(--ink);
+}
+
+.element-surface,
+.cluster-surface {
+  vector-effect: non-scaling-stroke;
+  transition: filter 100ms ease, stroke-width 100ms ease;
+}
+
+.element-box .element-surface {
+  fill: var(--palette-solid);
+  stroke: var(--palette-edge);
+  stroke-width: 3;
+  rx: 24px;
+  ry: 24px;
+}
+
+.element-cluster .cluster-surface {
+  fill: var(--palette-cluster);
+  stroke: var(--palette-edge);
+  stroke-width: 4;
+  stroke-dasharray: 16 12;
+  rx: 34px;
+  ry: 34px;
+}
+
+.palette-neutral {
+  --palette-solid: #f2f4f6;
+  --palette-cluster: rgba(112, 126, 139, 0.075);
+  --palette-edge: #6d7a86;
+}
+
+.palette-blue {
+  --palette-solid: #e5f0fa;
+  --palette-cluster: rgba(80, 145, 199, 0.105);
+  --palette-edge: #4a789e;
+}
+
+.palette-green {
+  --palette-solid: #e6f3e4;
+  --palette-cluster: rgba(78, 143, 85, 0.10);
+  --palette-edge: #4f7e55;
+}
+
+.palette-amber {
+  --palette-solid: #fff0cd;
+  --palette-cluster: rgba(194, 139, 32, 0.105);
+  --palette-edge: #a06d16;
+}
+
+.palette-purple {
+  --palette-solid: #eee7f8;
+  --palette-cluster: rgba(118, 86, 158, 0.09);
+  --palette-edge: #75569c;
+}
+
+/* Red is intentionally route-only in the editor palette. */
+.palette-red {
+  --palette-edge: #c62828;
+}
+
+.element-title,
+.element-subtitle,
+.element-note,
+.box-title,
+.box-body,
+.cluster-title {
+  fill: currentColor;
+  pointer-events: visiblePainted;
+  user-select: none;
+}
+
+.element-title {
+  font-size: var(--element-font-size, 76px);
+  font-weight: 720;
+  letter-spacing: -1px;
+}
+
+.element-subtitle {
+  fill: var(--muted-ink);
+  font-size: var(--element-font-size, 42px);
+  font-weight: 420;
+}
+
+.cluster-title {
+  fill: var(--palette-edge);
+  font-size: var(--element-font-size, 38px);
+  font-weight: 700;
+}
+
+.box-title {
+  font-size: var(--element-font-size, 36px);
+  font-weight: 700;
+}
+
+.box-body {
+  fill: var(--muted-ink);
+  font-size: calc(var(--element-font-size, 32px) * 0.88);
+  font-weight: 420;
+}
+
+.element-note {
+  fill: var(--muted-ink);
+  font-size: var(--element-font-size, 30px);
+  font-style: italic;
+}
+
+.diagram-element:hover .element-surface,
+.diagram-element:hover .cluster-surface {
+  filter: brightness(0.97) saturate(1.08);
+}
+
+.route-path {
+  fill: none;
+  stroke: var(--route-default);
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  marker-end: url(#arrow-default);
+  transition: stroke-width 90ms ease, opacity 90ms ease;
+}
+
+.route-arrowhead {
+  fill: var(--route-default);
+}
+
+.route-arrow-semantic .route-arrowhead {
+  fill: var(--palette-edge);
+}
+
+.route-arrow-deployment .route-arrowhead {
+  fill: var(--route-deployment);
+}
+
+.route-arrow-runtime .route-arrowhead {
+  fill: var(--route-runtime);
+}
+
+.route-deployment .route-path {
+  stroke: var(--route-deployment);
+  stroke-dasharray: 18 12;
+  marker-end: url(#arrow-deployment);
+}
+
+.route-runtime .route-path {
+  stroke: var(--route-runtime);
+  marker-end: url(#arrow-runtime);
+}
+
+.route-colored .route-path {
+  stroke: var(--palette-edge);
+}
+
+.route-color-neutral .route-path {
+  marker-end: url(#arrow-neutral);
+}
+
+.route-color-blue .route-path {
+  marker-end: url(#arrow-blue);
+}
+
+.route-color-amber .route-path {
+  marker-end: url(#arrow-amber);
+}
+
+.route-color-purple .route-path {
+  marker-end: url(#arrow-purple);
+}
+
+.route-color-red .route-path {
+  marker-end: url(#arrow-red);
+}
+
+.route-hit {
+  fill: none;
+  stroke: #000;
+  stroke-width: 34;
+  stroke-opacity: 0.001;
+  pointer-events: stroke;
+  cursor: pointer;
+  vector-effect: non-scaling-stroke;
+}
+
+.diagram-route:hover .route-path,
+.diagram-route.route-highlighted .route-path {
+  stroke-width: 11;
+}
+
+.route-label {
+  display: none;
+  pointer-events: none;
+}
+
+.route-label rect {
+  fill: rgba(255, 255, 255, 0.96);
+  stroke: #c8d0d7;
+  stroke-width: 2;
+  rx: 8px;
+  ry: 8px;
+  vector-effect: non-scaling-stroke;
+}
+
+.route-label text {
+  fill: var(--ink);
+  font-size: 26px;
+  font-weight: 650;
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+.diagram-route:hover .route-label,
+.diagram-route.route-highlighted .route-label {
+  display: inline;
+}
+
+.editor-state-idle .diagram-element[data-editable="true"],
+.editor-state-creating-element .diagram-element[data-editable="true"],
+.editor-state-editing-element .diagram-element[data-editable="true"],
+.editor-state-creating-route .diagram-element[data-editable="true"],
+.editor-state-editing-route .diagram-element[data-editable="true"] {
+  cursor: move;
+}
+
+.editor-state-editing-element .diagram-element.element-selected .element-surface,
+.editor-state-editing-element .diagram-element.element-selected .cluster-surface {
+  stroke: var(--selection);
+  stroke-width: 7;
+}
+
+.selection-outline {
+  fill: none;
+  stroke: var(--selection);
+  stroke-width: 5;
+  stroke-dasharray: 13 9;
+  pointer-events: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.resize-handle,
+.route-point {
+  fill: var(--handle-fill);
+  stroke: var(--selection);
+  stroke-width: 5;
+  vector-effect: non-scaling-stroke;
+}
+
+.resize-handle {
+  cursor: nwse-resize;
+}
+
+.resize-handle[data-corner="ne"],
+.resize-handle[data-corner="sw"] {
+  cursor: nesw-resize;
+}
+
+.route-point {
+  cursor: move;
+}
+
+.route-point.point-selected {
+  fill: #fbd44b;
+}
+
+.route-point-label {
+  fill: var(--ink);
+  font-size: 24px;
+  font-weight: 700;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 7;
+  stroke-linejoin: round;
+}
+
+.editor-overlay {
+  display: none;
+}
+
+.editor-state-editing-element .element-overlay,
+.editor-state-editing-route .route-overlay {
+  display: inline;
+}
+
+.editor-state-preview .selection-outline,
+.editor-state-preview .resize-handle,
+.editor-state-preview .route-point,
+.editor-state-preview .route-point-label {
+  display: none;
+}
+
+.editor-panel-shell {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 2px solid #66727d;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.975);
+  box-shadow: 0 12px 34px rgba(22, 37, 49, 0.22);
+  color: #26323d;
+  font: 24px/1.25 Inter, "Segoe UI", Arial, sans-serif;
+}
+
+.editor-drag-handle {
+  padding: 18px 22px;
+  border-bottom: 2px solid #ccd3d9;
+  background: #eef2f5;
+  cursor: move;
+  font-size: 27px;
+  font-weight: 750;
+  user-select: none;
+  touch-action: none;
+}
+
+.editor-tabs {
+  display: flex;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #d8dde2;
+}
+
+.editor-panel-shell button,
+.editor-panel-shell input,
+.editor-panel-shell select,
+.editor-panel-shell textarea {
+  box-sizing: border-box;
+  border: 1px solid #9aa5ae;
+  border-radius: 7px;
+  background: #fff;
+  color: #24313d;
+  font: inherit;
+}
+
+.editor-panel-shell button {
+  padding: 8px 13px;
+  cursor: pointer;
+}
+
+.editor-panel-shell button:hover,
+.editor-panel-shell button.active {
+  border-color: #087ea4;
+  background: #e4f4f8;
+}
+
+.editor-panel-body {
+  box-sizing: border-box;
+  height: calc(100% - 122px);
+  overflow: auto;
+  padding: 16px 20px 24px;
+}
+
+.editor-panel-shell [hidden] {
+  display: none;
+}
+
+.editor-panel-shell .editor-state {
+  display: none;
+}
+
+.editor-panel-shell[data-state="idle"] #editor-idle,
+.editor-panel-shell[data-state="creating-element"] #element-create,
+.editor-panel-shell[data-state="editing-element"] #element-edit,
+.editor-panel-shell[data-state="creating-route"] #route-create,
+.editor-panel-shell[data-state="editing-route"] #route-edit,
+.editor-panel-shell[data-state="preview"] #preview-state {
+  display: block;
+}
+
+.editor-panel-shell h3 {
+  margin: 8px 0 12px;
+  font-size: 25px;
+}
+
+.editor-grid {
+  display: grid;
+  grid-template-columns: 145px minmax(0, 1fr);
+  gap: 9px 12px;
+  align-items: center;
+}
+
+.editor-grid label {
+  color: #4c5964;
+}
+
+.editor-grid input,
+.editor-grid select,
+.editor-grid textarea {
+  min-width: 0;
+  width: 100%;
+  padding: 7px 9px;
+}
+
+.editor-grid textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 14px 0;
+}
+
+.editor-status {
+  min-height: 34px;
+  margin: 10px 0;
+  color: #526170;
+}
+
+.preview-copy {
+  color: #526170;
+}
+</style><marker id="arrow-default" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-default"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-deployment" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-deployment"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-runtime" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-runtime"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-amber" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-amber"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-blue" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-blue"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-neutral" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-neutral"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-purple" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-purple"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-red" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-red"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker></defs><rect class="canvas-background" x="0" y="0" width="4266.6665" height="3200" /><g id="diagram-content"><g id="cluster-fills"><g class="diagram-element element-cluster palette-green cluster-fill" data-element-id="live-application" data-editable="true"><rect class="cluster-surface" x="140" y="1640" width="3260" height="1380" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="local-preparation" data-editable="true"><rect class="cluster-surface" x="140" y="340" width="920" height="1180" /></g><g class="diagram-element element-cluster palette-amber cluster-fill" data-element-id="persistent-state" data-editable="true"><rect class="cluster-surface" x="3500" y="1640" width="630" height="1380" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="publishing-kubernetes" data-editable="true"><rect class="cluster-surface" x="1160" y="340" width="1500" height="1180" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="kubernetes-config" data-editable="true"><rect class="cluster-surface" x="1290" y="800" width="560" height="650" /></g><g class="diagram-element element-cluster palette-green cluster-fill" data-element-id="pod" data-editable="true"><rect class="cluster-surface" x="1880" y="1810" width="1370" height="1020" /></g><g class="diagram-element element-cluster palette-neutral cluster-fill" data-element-id="nginx-container" data-editable="true"><rect class="cluster-surface" x="1990" y="2010" width="500" height="680" /></g><g class="diagram-element element-cluster palette-neutral cluster-fill" data-element-id="web-container" data-editable="true"><rect class="cluster-surface" x="2580" y="2010" width="560" height="680" /></g></g><g id="routes-layer"><g class="diagram-route route-runtime" data-route-id="27"><title>Flappie</title><path class="route-path" d="M 984 936 L 1230 978 L 1230 744" /><path class="route-hit" d="M 984 936 L 1230 978 L 1230 744" /><g class="route-label" aria-hidden="true"><rect x="1044" y="905" width="126" height="44" /><text x="1107" y="937" text-anchor="middle">Flappie</text></g></g><g class="diagram-route route-runtime" data-route-id="check"><title>Route check</title><path class="route-path" d="M 2440 826 L 2406 1616" /><path class="route-hit" d="M 2440 826 L 2406 1616" /><g class="route-label" aria-hidden="true"><rect x="2332" y="1169" width="182" height="44" /><text x="2423" y="1201" text-anchor="middle">Route check</text></g></g><g class="diagram-route route-runtime" data-route-id="fsdfas"><title>flappier</title><path class="route-path" d="M 1036 2414 L 1464 2324" /><path class="route-hit" d="M 1036 2414 L 1464 2324" /><g class="route-label" aria-hidden="true"><rect x="1180" y="2317" width="140" height="44" /><text x="1250" y="2349" text-anchor="middle">flappier</text></g></g></g><g id="boxes-layer"><g class="diagram-element element-box palette-blue box-content" data-element-id="browser" data-editable="true"><rect class="element-surface" x="260" y="1860" width="430" height="150" /><text x="475.0" y="1935.0" class="box-title" text-anchor="middle"><tspan x="475.0" y="1935.0">Browser</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="dns" data-editable="true"><rect class="element-surface" x="260" y="2110" width="430" height="160" /><text x="475.0" y="2163.3088" class="box-title" text-anchor="middle"><tspan x="475.0" y="2163.3088">DNS</tspan></text><text x="475.0" y="2218.7000000000003" class="box-body" text-anchor="middle"><tspan x="475.0" y="2218.7000000000003">worldklems.net</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="docker-build" data-editable="true"><rect class="element-surface" x="260" y="1050" width="680" height="180" /><text x="600.0" y="1094.6176" class="box-title" text-anchor="middle"><tspan x="600.0" y="1094.6176">Docker build</tspan></text><text x="600.0" y="1168.7" class="box-body" text-anchor="middle"><tspan x="600.0" y="1150.0088">Packages application and</tspan><tspan x="600.0" y="1187.3912">dependencies</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="docker-image" data-editable="true"><rect class="element-surface" x="260" y="1310" width="680" height="170" /><text x="600.0" y="1368.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="1368.3088">Docker image</tspan></text><text x="600.0" y="1423.7" class="box-body" text-anchor="middle"><tspan x="600.0" y="1423.7">Deployable artifact</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="dockerfile" data-editable="true"><rect class="element-surface" x="260" y="800" width="680" height="170" /><text x="600.0" y="858.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="858.3088">Dockerfile</tspan></text><text x="600.0" y="913.6999999999999" class="box-body" text-anchor="middle"><tspan x="600.0" y="913.6999999999999">Image recipe</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="git-repository" data-editable="true"><rect class="element-surface" x="260" y="540" width="680" height="180" /><text x="600.0" y="603.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="603.3088">WorldKLEMS Git repository</tspan></text><text x="600.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="600.0" y="658.6999999999999">Django / Wagtail application source</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="harbor-registry" data-editable="true"><rect class="element-surface" x="1290" y="540" width="560" height="180" /><text x="1570.0" y="584.6176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="584.6176">Harbor registry</tspan></text><text x="1570.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="1570.0" y="640.0088">Stores the published Docker</tspan><tspan x="1570.0" y="677.3911999999999">image</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="ingress" data-editable="true"><rect class="element-surface" x="800" y="1980" width="430" height="160" /><text x="1015.0" y="2060.0" class="box-title" text-anchor="middle"><tspan x="1015.0" y="2060.0">Ingress</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="juicefs-media" data-editable="true"><rect class="element-surface" x="3610" y="1990" width="410" height="240" /><text x="3815.0" y="2045.9264" class="box-title" text-anchor="middle"><tspan x="3815.0" y="2024.6864">JuiceFS /</tspan><tspan x="3815.0" y="2067.1664">worldklems-media</tspan></text><text x="3815.0" y="2159.4" class="box-body" text-anchor="middle"><tspan x="3815.0" y="2122.0176">Persistent CMS</tspan><tspan x="3815.0" y="2159.4">files, images and</tspan><tspan x="3815.0" y="2196.7824">documents</tspan></text></g><g class="diagram-element element-box palette-purple box-content" data-element-id="kubectl" data-editable="true"><rect class="element-surface" x="1960" y="800" width="560" height="180" /><text x="2240.0" y="844.6176" class="box-title" text-anchor="middle"><tspan x="2240.0" y="844.6176">kubectl</tspan></text><text x="2240.0" y="918.6999999999999" class="box-body" text-anchor="middle"><tspan x="2240.0" y="900.0088">Apply and inspect Kubernetes</tspan><tspan x="2240.0" y="937.3911999999999">configuration</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="mariadb" data-editable="true"><rect class="element-surface" x="3610" y="2440" width="410" height="220" /><text x="3815.0" y="2504.6176" class="box-title" text-anchor="middle"><tspan x="3815.0" y="2504.6176">CIT MariaDB</tspan></text><text x="3815.0" y="2578.7000000000003" class="box-body" text-anchor="middle"><tspan x="3815.0" y="2560.0088">Structured CMS and</tspan><tspan x="3815.0" y="2597.3912">application state</tspan></text></g><g class="diagram-element element-box palette-purple box-content" data-element-id="rancher" data-editable="true"><rect class="element-surface" x="1960" y="540" width="560" height="180" /><text x="2240.0" y="603.3088" class="box-title" text-anchor="middle"><tspan x="2240.0" y="603.3088">Rancher</tspan></text><text x="2240.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="2240.0" y="658.6999999999999">Inspect and manage Kubernetes</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="service" data-editable="true"><rect class="element-surface" x="1340" y="1980" width="430" height="160" /><text x="1555.0" y="2060.0" class="box-title" text-anchor="middle"><tspan x="1555.0" y="2060.0">Service</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="configmap" data-editable="true"><rect class="element-surface" x="1390" y="1160" width="360" height="125" /><text x="1570.0" y="1177.1176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="1177.1176">ConfigMap</tspan></text><text x="1570.0" y="1251.2" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1232.5088">Ordinary</tspan><tspan x="1570.0" y="1269.8912">configuration</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="deployment" data-editable="true"><rect class="element-surface" x="1390" y="960" width="360" height="155" /><text x="1570.0" y="992.1176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="992.1176">Deployment</tspan></text><text x="1570.0" y="1066.1999999999998" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1047.5087999999998">Desired</tspan><tspan x="1570.0" y="1084.8911999999998">application state</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="secrets" data-editable="true"><rect class="element-surface" x="1390" y="1310" width="360" height="125" /><text x="1570.0" y="1308.4264" class="box-title" text-anchor="middle"><tspan x="1570.0" y="1308.4264">Secrets</tspan></text><text x="1570.0" y="1401.2" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1363.8176">Credentials and</tspan><tspan x="1570.0" y="1401.2">sensitive</tspan><tspan x="1570.0" y="1438.5824">configuration</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="django-wagtail" data-editable="true"><rect class="element-surface" x="2680" y="2370" width="360" height="165" /><text x="2860.0" y="2407.1176" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2385.8776000000003">Django /</tspan><tspan x="2860.0" y="2428.3576000000003">Wagtail</tspan></text><text x="2860.0" y="2501.9" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2483.2088">Application and</tspan><tspan x="2860.0" y="2520.5912">CMS</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="gunicorn" data-editable="true"><rect class="element-surface" x="2680" y="2170" width="360" height="150" /><text x="2860.0" y="2199.6176" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2199.6176">Gunicorn</tspan></text><text x="2860.0" y="2273.7000000000003" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2255.0088">Application</tspan><tspan x="2860.0" y="2292.3912">server</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="nginx" data-editable="true"><rect class="element-surface" x="2070" y="2260" width="340" height="190" /><text x="2240.0" y="2309.6176" class="box-title" text-anchor="middle"><tspan x="2240.0" y="2309.6176">NGINX</tspan></text><text x="2240.0" y="2383.7000000000003" class="box-body" text-anchor="middle"><tspan x="2240.0" y="2365.0088">Proxy requests;</tspan><tspan x="2240.0" y="2402.3912">serve /media/</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="whitenoise" data-editable="true" style="--element-font-size:28px"><rect class="element-surface" x="2740" y="2580" width="240" height="90" /><text x="2860.0" y="2587.9248" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2587.9248">WhiteNoise</tspan></text><text x="2860.0" y="2649.1" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2634.5624">serves</tspan><tspan x="2860.0" y="2663.6376">/static/</tspan></text></g></g><g id="cluster-labels"><g class="diagram-element element-cluster palette-green cluster-label-content" data-element-id="live-application" data-editable="true"><text x="170" y="1692.0" class="cluster-title" text-anchor="start"><tspan x="170" y="1692.0">3. Live application &amp; request routing</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="local-preparation" data-editable="true"><text x="170" y="392.0" class="cluster-title" text-anchor="start"><tspan x="170" y="392.0">1. Local preparation</tspan></text></g><g class="diagram-element element-cluster palette-amber cluster-label-content" data-element-id="persistent-state" data-editable="true"><text x="3530" y="1692.0" class="cluster-title" text-anchor="start"><tspan x="3530" y="1692.0">4. Persistent state</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="publishing-kubernetes" data-editable="true"><text x="1190" y="392.0" class="cluster-title" text-anchor="start"><tspan x="1190" y="392.0">2. Publishing &amp; Kubernetes preparation</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="kubernetes-config" data-editable="true"><text x="1320" y="872.9" class="cluster-title" text-anchor="start"><tspan x="1320" y="850.48">Kubernetes</tspan><tspan x="1320" y="895.32">configuration</tspan></text></g><g class="diagram-element element-cluster palette-green cluster-label-content" data-element-id="pod" data-editable="true"><text x="1910" y="1862.0" class="cluster-title" text-anchor="start"><tspan x="1910" y="1862.0">Pod — disposable runtime unit</tspan></text></g><g class="diagram-element element-cluster palette-neutral cluster-label-content" data-element-id="nginx-container" data-editable="true"><text x="2020" y="2062.0" class="cluster-title" text-anchor="start"><tspan x="2020" y="2062.0">NGINX container</tspan></text></g><g class="diagram-element element-cluster palette-neutral cluster-label-content" data-element-id="web-container" data-editable="true"><text x="2610" y="2062.0" class="cluster-title" text-anchor="start"><tspan x="2610" y="2062.0">web container</tspan></text></g></g><g id="text-layer"><g class="diagram-element element-subtitle palette-neutral text-content" data-element-id="diagram-subtitle" data-editable="true"><text x="140" y="225" class="element-subtitle" text-anchor="start"><tspan x="140" y="225.0">The Council's Map</tspan></text></g><g class="diagram-element element-title palette-neutral text-content" data-element-id="diagram-title" data-editable="true"><text x="140" y="130" class="element-title" text-anchor="start"><tspan x="140" y="130.0">WorldKLEMS deployment architecture</tspan></text></g><g class="diagram-element element-note palette-neutral text-content" data-element-id="state-note" data-editable="true" style="--element-font-size:30px"><text x="3815" y="2840" class="element-note" text-anchor="middle"><tspan x="3815" y="2822.3">The Pod is disposable. The</tspan><tspan x="3815" y="2857.7000000000003">data is not.</tspan></text></g></g></g><script type="application/ecmascript">
+(function () {
+  'use strict';
+  const svg = document.documentElement;
+  const inspectedRouteIds = new Set();
+
+  function routeTarget(target) {
+    return target &amp;&amp; target.closest ? target.closest('[data-route-id]') : null;
+  }
+  function setRouteHighlight(routeId, highlighted) {
+    svg.querySelectorAll('[data-route-id]').forEach(function (group) {
+      if (group.getAttribute('data-route-id') === routeId) {
+        group.classList.toggle('route-highlighted', highlighted);
+      }
+    });
+  }
+  function clearInspectedRoutes() {
+    inspectedRouteIds.forEach(function (routeId) { setRouteHighlight(routeId, false); });
+    inspectedRouteIds.clear();
+  }
+  function toggleInspectedRoute(routeId) {
+    if (!routeId) return;
+    if (inspectedRouteIds.has(routeId)) {
+      inspectedRouteIds.delete(routeId); setRouteHighlight(routeId, false);
+    } else {
+      inspectedRouteIds.add(routeId); setRouteHighlight(routeId, true);
+    }
+  }
+  svg.addEventListener('click', function (evt) {
+    const group = routeTarget(evt.target);
+    toggleInspectedRoute(group &amp;&amp; group.getAttribute('data-route-id'));
+  });
+  document.addEventListener('keydown', function (evt) {
+    if (evt.key === 'Escape') { clearInspectedRoutes(); evt.preventDefault(); }
+  });
+})();
+</script></svg>

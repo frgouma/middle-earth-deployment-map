@@ -1,0 +1,1225 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml" width="4266.6665" height="3200" viewBox="0 0 4266.6665 3200" version="1.1" preserveAspectRatio="xMidYMid meet" class="editor-state-idle" data-editor="true"><defs><style type="text/css" data-source="styles.css">:root {
+  --ink: #24313d;
+  --muted-ink: #526170;
+  --route-deployment: #356a9a;
+  --route-runtime: #476f50;
+  --route-default: #596674;
+  --selection: #087ea4;
+  --handle-fill: #ffffff;
+}
+
+svg {
+  background: #ffffff;
+  color: var(--ink);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+.canvas-background {
+  fill: #ffffff;
+}
+
+.diagram-element {
+  color: var(--ink);
+}
+
+.element-surface,
+.cluster-surface {
+  vector-effect: non-scaling-stroke;
+  transition: filter 100ms ease, stroke-width 100ms ease;
+}
+
+.element-box .element-surface {
+  fill: var(--palette-solid);
+  stroke: var(--palette-edge);
+  stroke-width: 3;
+  rx: 24px;
+  ry: 24px;
+}
+
+.element-cluster .cluster-surface {
+  fill: var(--palette-cluster);
+  stroke: var(--palette-edge);
+  stroke-width: 4;
+  stroke-dasharray: 16 12;
+  rx: 34px;
+  ry: 34px;
+}
+
+.palette-neutral {
+  --palette-solid: #f2f4f6;
+  --palette-cluster: rgba(112, 126, 139, 0.075);
+  --palette-edge: #6d7a86;
+}
+
+.palette-blue {
+  --palette-solid: #e5f0fa;
+  --palette-cluster: rgba(80, 145, 199, 0.105);
+  --palette-edge: #4a789e;
+}
+
+.palette-green {
+  --palette-solid: #e6f3e4;
+  --palette-cluster: rgba(78, 143, 85, 0.10);
+  --palette-edge: #4f7e55;
+}
+
+.palette-amber {
+  --palette-solid: #fff0cd;
+  --palette-cluster: rgba(194, 139, 32, 0.105);
+  --palette-edge: #a06d16;
+}
+
+.palette-purple {
+  --palette-solid: #eee7f8;
+  --palette-cluster: rgba(118, 86, 158, 0.09);
+  --palette-edge: #75569c;
+}
+
+/* Red is intentionally route-only in the editor palette. */
+.palette-red {
+  --palette-edge: #c62828;
+}
+
+.element-title,
+.element-subtitle,
+.element-note,
+.box-title,
+.box-body,
+.cluster-title {
+  fill: currentColor;
+  pointer-events: visiblePainted;
+  user-select: none;
+}
+
+.element-title {
+  font-size: var(--element-font-size, 76px);
+  font-weight: 720;
+  letter-spacing: -1px;
+}
+
+.element-subtitle {
+  fill: var(--muted-ink);
+  font-size: var(--element-font-size, 42px);
+  font-weight: 420;
+}
+
+.cluster-title {
+  fill: var(--palette-edge);
+  font-size: var(--element-font-size, 38px);
+  font-weight: 700;
+}
+
+.box-title {
+  font-size: var(--element-font-size, 36px);
+  font-weight: 700;
+}
+
+.box-body {
+  fill: var(--muted-ink);
+  font-size: calc(var(--element-font-size, 32px) * 0.88);
+  font-weight: 420;
+}
+
+.element-note {
+  fill: var(--muted-ink);
+  font-size: var(--element-font-size, 30px);
+  font-style: italic;
+}
+
+.diagram-element:hover .element-surface,
+.diagram-element:hover .cluster-surface {
+  filter: brightness(0.97) saturate(1.08);
+}
+
+.route-path {
+  fill: none;
+  stroke: var(--route-default);
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  marker-end: url(#arrow-default);
+  transition: stroke-width 90ms ease, opacity 90ms ease;
+}
+
+.route-arrowhead {
+  fill: var(--route-default);
+}
+
+.route-arrow-semantic .route-arrowhead {
+  fill: var(--palette-edge);
+}
+
+.route-arrow-deployment .route-arrowhead {
+  fill: var(--route-deployment);
+}
+
+.route-arrow-runtime .route-arrowhead {
+  fill: var(--route-runtime);
+}
+
+.route-deployment .route-path {
+  stroke: var(--route-deployment);
+  stroke-dasharray: 18 12;
+  marker-end: url(#arrow-deployment);
+}
+
+.route-runtime .route-path {
+  stroke: var(--route-runtime);
+  marker-end: url(#arrow-runtime);
+}
+
+.route-colored .route-path {
+  stroke: var(--palette-edge);
+}
+
+.route-color-neutral .route-path {
+  marker-end: url(#arrow-neutral);
+}
+
+.route-color-blue .route-path {
+  marker-end: url(#arrow-blue);
+}
+
+.route-color-amber .route-path {
+  marker-end: url(#arrow-amber);
+}
+
+.route-color-purple .route-path {
+  marker-end: url(#arrow-purple);
+}
+
+.route-color-red .route-path {
+  marker-end: url(#arrow-red);
+}
+
+.route-hit {
+  fill: none;
+  stroke: #000;
+  stroke-width: 34;
+  stroke-opacity: 0.001;
+  pointer-events: stroke;
+  cursor: pointer;
+  vector-effect: non-scaling-stroke;
+}
+
+.diagram-route:hover .route-path,
+.diagram-route.route-highlighted .route-path {
+  stroke-width: 11;
+}
+
+.route-label {
+  display: none;
+  pointer-events: none;
+}
+
+.route-label rect {
+  fill: rgba(255, 255, 255, 0.96);
+  stroke: #c8d0d7;
+  stroke-width: 2;
+  rx: 8px;
+  ry: 8px;
+  vector-effect: non-scaling-stroke;
+}
+
+.route-label text {
+  fill: var(--ink);
+  font-size: 26px;
+  font-weight: 650;
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+.diagram-route:hover .route-label,
+.diagram-route.route-highlighted .route-label {
+  display: inline;
+}
+
+.editor-state-idle .diagram-element[data-editable="true"],
+.editor-state-creating-element .diagram-element[data-editable="true"],
+.editor-state-editing-element .diagram-element[data-editable="true"],
+.editor-state-creating-route .diagram-element[data-editable="true"],
+.editor-state-editing-route .diagram-element[data-editable="true"] {
+  cursor: move;
+}
+
+.editor-state-editing-element .diagram-element.element-selected .element-surface,
+.editor-state-editing-element .diagram-element.element-selected .cluster-surface {
+  stroke: var(--selection);
+  stroke-width: 7;
+}
+
+.selection-outline {
+  fill: none;
+  stroke: var(--selection);
+  stroke-width: 5;
+  stroke-dasharray: 13 9;
+  pointer-events: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.resize-handle,
+.route-point {
+  fill: var(--handle-fill);
+  stroke: var(--selection);
+  stroke-width: 5;
+  vector-effect: non-scaling-stroke;
+}
+
+.resize-handle {
+  cursor: nwse-resize;
+}
+
+.resize-handle[data-corner="ne"],
+.resize-handle[data-corner="sw"] {
+  cursor: nesw-resize;
+}
+
+.route-point {
+  cursor: move;
+}
+
+.route-point.point-selected {
+  fill: #fbd44b;
+}
+
+.route-point-label {
+  fill: var(--ink);
+  font-size: 24px;
+  font-weight: 700;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 7;
+  stroke-linejoin: round;
+}
+
+.editor-overlay {
+  display: none;
+}
+
+.editor-state-editing-element .element-overlay,
+.editor-state-editing-route .route-overlay {
+  display: inline;
+}
+
+.editor-state-preview .selection-outline,
+.editor-state-preview .resize-handle,
+.editor-state-preview .route-point,
+.editor-state-preview .route-point-label {
+  display: none;
+}
+
+.editor-panel-shell {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 2px solid #66727d;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.975);
+  box-shadow: 0 12px 34px rgba(22, 37, 49, 0.22);
+  color: #26323d;
+  font: 24px/1.25 Inter, "Segoe UI", Arial, sans-serif;
+}
+
+.editor-drag-handle {
+  padding: 18px 22px;
+  border-bottom: 2px solid #ccd3d9;
+  background: #eef2f5;
+  cursor: move;
+  font-size: 27px;
+  font-weight: 750;
+  user-select: none;
+  touch-action: none;
+}
+
+.editor-tabs {
+  display: flex;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #d8dde2;
+}
+
+.editor-panel-shell button,
+.editor-panel-shell input,
+.editor-panel-shell select,
+.editor-panel-shell textarea {
+  box-sizing: border-box;
+  border: 1px solid #9aa5ae;
+  border-radius: 7px;
+  background: #fff;
+  color: #24313d;
+  font: inherit;
+}
+
+.editor-panel-shell button {
+  padding: 8px 13px;
+  cursor: pointer;
+}
+
+.editor-panel-shell button:hover,
+.editor-panel-shell button.active {
+  border-color: #087ea4;
+  background: #e4f4f8;
+}
+
+.editor-panel-body {
+  box-sizing: border-box;
+  height: calc(100% - 122px);
+  overflow: auto;
+  padding: 16px 20px 24px;
+}
+
+.editor-panel-shell [hidden] {
+  display: none;
+}
+
+.editor-panel-shell .editor-state {
+  display: none;
+}
+
+.editor-panel-shell[data-state="idle"] #editor-idle,
+.editor-panel-shell[data-state="creating-element"] #element-create,
+.editor-panel-shell[data-state="editing-element"] #element-edit,
+.editor-panel-shell[data-state="creating-route"] #route-create,
+.editor-panel-shell[data-state="editing-route"] #route-edit,
+.editor-panel-shell[data-state="preview"] #preview-state {
+  display: block;
+}
+
+.editor-panel-shell h3 {
+  margin: 8px 0 12px;
+  font-size: 25px;
+}
+
+.editor-grid {
+  display: grid;
+  grid-template-columns: 145px minmax(0, 1fr);
+  gap: 9px 12px;
+  align-items: center;
+}
+
+.editor-grid label {
+  color: #4c5964;
+}
+
+.editor-grid input,
+.editor-grid select,
+.editor-grid textarea {
+  min-width: 0;
+  width: 100%;
+  padding: 7px 9px;
+}
+
+.editor-grid textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 14px 0;
+}
+
+.editor-status {
+  min-height: 34px;
+  margin: 10px 0;
+  color: #526170;
+}
+
+.preview-copy {
+  color: #526170;
+}
+</style><marker id="arrow-default" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-default"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-deployment" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-deployment"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-runtime" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-runtime"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-amber" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-amber"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-blue" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-blue"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-neutral" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-neutral"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-purple" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-purple"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-red" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-red"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker></defs><rect class="canvas-background" x="0" y="0" width="4266.6665" height="3200" /><g id="diagram-content"><g id="cluster-fills"><g class="diagram-element element-cluster palette-green cluster-fill" data-element-id="live-application" data-editable="true"><rect class="cluster-surface" x="140" y="1640" width="3260" height="1380" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="local-preparation" data-editable="true"><rect class="cluster-surface" x="140" y="340" width="920" height="1180" /></g><g class="diagram-element element-cluster palette-amber cluster-fill" data-element-id="persistent-state" data-editable="true"><rect class="cluster-surface" x="3500" y="1640" width="630" height="1380" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="publishing-kubernetes" data-editable="true"><rect class="cluster-surface" x="1160" y="340" width="1500" height="1180" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="kubernetes-config" data-editable="true"><rect class="cluster-surface" x="1290" y="800" width="560" height="650" /></g><g class="diagram-element element-cluster palette-green cluster-fill" data-element-id="pod" data-editable="true"><rect class="cluster-surface" x="1880" y="1810" width="1370" height="1020" /></g><g class="diagram-element element-cluster palette-neutral cluster-fill" data-element-id="nginx-container" data-editable="true"><rect class="cluster-surface" x="1990" y="2010" width="500" height="680" /></g><g class="diagram-element element-cluster palette-neutral cluster-fill" data-element-id="web-container" data-editable="true"><rect class="cluster-surface" x="2580" y="2010" width="560" height="680" /></g></g><g id="routes-layer"><g class="diagram-route route-runtime" data-route-id="27"><title>Flappie</title><path class="route-path" d="M 984 936 L 1230 978 L 1230 744" /><path class="route-hit" d="M 984 936 L 1230 978 L 1230 744" /><g class="route-label" aria-hidden="true"><rect x="1044" y="905" width="126" height="44" /><text x="1107" y="937" text-anchor="middle">Flappie</text></g></g><g class="diagram-route route-runtime" data-route-id="check"><title>Route check</title><path class="route-path" d="M 2440 826 L 2406 1616" /><path class="route-hit" d="M 2440 826 L 2406 1616" /><g class="route-label" aria-hidden="true"><rect x="2332" y="1169" width="182" height="44" /><text x="2423" y="1201" text-anchor="middle">Route check</text></g></g><g class="diagram-route route-runtime" data-route-id="fsdfas"><title>flappier</title><path class="route-path" d="M 1036 2414 L 1464 2324" /><path class="route-hit" d="M 1036 2414 L 1464 2324" /><g class="route-label" aria-hidden="true"><rect x="1180" y="2317" width="140" height="44" /><text x="1250" y="2349" text-anchor="middle">flappier</text></g></g></g><g id="boxes-layer"><g class="diagram-element element-box palette-blue box-content" data-element-id="browser" data-editable="true"><rect class="element-surface" x="260" y="1860" width="430" height="150" /><text x="475.0" y="1935.0" class="box-title" text-anchor="middle"><tspan x="475.0" y="1935.0">Browser</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="dns" data-editable="true"><rect class="element-surface" x="260" y="2110" width="430" height="160" /><text x="475.0" y="2163.3088" class="box-title" text-anchor="middle"><tspan x="475.0" y="2163.3088">DNS</tspan></text><text x="475.0" y="2218.7000000000003" class="box-body" text-anchor="middle"><tspan x="475.0" y="2218.7000000000003">worldklems.net</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="docker-build" data-editable="true"><rect class="element-surface" x="260" y="1050" width="680" height="180" /><text x="600.0" y="1094.6176" class="box-title" text-anchor="middle"><tspan x="600.0" y="1094.6176">Docker build</tspan></text><text x="600.0" y="1168.7" class="box-body" text-anchor="middle"><tspan x="600.0" y="1150.0088">Packages application and</tspan><tspan x="600.0" y="1187.3912">dependencies</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="docker-image" data-editable="true"><rect class="element-surface" x="260" y="1310" width="680" height="170" /><text x="600.0" y="1368.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="1368.3088">Docker image</tspan></text><text x="600.0" y="1423.7" class="box-body" text-anchor="middle"><tspan x="600.0" y="1423.7">Deployable artifact</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="dockerfile" data-editable="true"><rect class="element-surface" x="260" y="800" width="680" height="170" /><text x="600.0" y="858.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="858.3088">Dockerfile</tspan></text><text x="600.0" y="913.6999999999999" class="box-body" text-anchor="middle"><tspan x="600.0" y="913.6999999999999">Image recipe</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="git-repository" data-editable="true"><rect class="element-surface" x="260" y="540" width="680" height="180" /><text x="600.0" y="603.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="603.3088">WorldKLEMS Git repository</tspan></text><text x="600.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="600.0" y="658.6999999999999">Django / Wagtail application source</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="harbor-registry" data-editable="true"><rect class="element-surface" x="1290" y="540" width="560" height="180" /><text x="1570.0" y="584.6176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="584.6176">Harbor registry</tspan></text><text x="1570.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="1570.0" y="640.0088">Stores the published Docker</tspan><tspan x="1570.0" y="677.3911999999999">image</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="ingress" data-editable="true"><rect class="element-surface" x="800" y="1980" width="430" height="160" /><text x="1015.0" y="2060.0" class="box-title" text-anchor="middle"><tspan x="1015.0" y="2060.0">Ingress</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="juicefs-media" data-editable="true"><rect class="element-surface" x="3610" y="1990" width="410" height="240" /><text x="3815.0" y="2045.9264" class="box-title" text-anchor="middle"><tspan x="3815.0" y="2024.6864">JuiceFS /</tspan><tspan x="3815.0" y="2067.1664">worldklems-media</tspan></text><text x="3815.0" y="2159.4" class="box-body" text-anchor="middle"><tspan x="3815.0" y="2122.0176">Persistent CMS</tspan><tspan x="3815.0" y="2159.4">files, images and</tspan><tspan x="3815.0" y="2196.7824">documents</tspan></text></g><g class="diagram-element element-box palette-purple box-content" data-element-id="kubectl" data-editable="true"><rect class="element-surface" x="1960" y="800" width="560" height="180" /><text x="2240.0" y="844.6176" class="box-title" text-anchor="middle"><tspan x="2240.0" y="844.6176">kubectl</tspan></text><text x="2240.0" y="918.6999999999999" class="box-body" text-anchor="middle"><tspan x="2240.0" y="900.0088">Apply and inspect Kubernetes</tspan><tspan x="2240.0" y="937.3911999999999">configuration</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="mariadb" data-editable="true"><rect class="element-surface" x="3610" y="2440" width="410" height="220" /><text x="3815.0" y="2504.6176" class="box-title" text-anchor="middle"><tspan x="3815.0" y="2504.6176">CIT MariaDB</tspan></text><text x="3815.0" y="2578.7000000000003" class="box-body" text-anchor="middle"><tspan x="3815.0" y="2560.0088">Structured CMS and</tspan><tspan x="3815.0" y="2597.3912">application state</tspan></text></g><g class="diagram-element element-box palette-purple box-content" data-element-id="rancher" data-editable="true"><rect class="element-surface" x="1960" y="540" width="560" height="180" /><text x="2240.0" y="603.3088" class="box-title" text-anchor="middle"><tspan x="2240.0" y="603.3088">Rancher</tspan></text><text x="2240.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="2240.0" y="658.6999999999999">Inspect and manage Kubernetes</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="service" data-editable="true"><rect class="element-surface" x="1340" y="1980" width="430" height="160" /><text x="1555.0" y="2060.0" class="box-title" text-anchor="middle"><tspan x="1555.0" y="2060.0">Service</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="configmap" data-editable="true"><rect class="element-surface" x="1390" y="1160" width="360" height="125" /><text x="1570.0" y="1177.1176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="1177.1176">ConfigMap</tspan></text><text x="1570.0" y="1251.2" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1232.5088">Ordinary</tspan><tspan x="1570.0" y="1269.8912">configuration</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="deployment" data-editable="true"><rect class="element-surface" x="1390" y="960" width="360" height="155" /><text x="1570.0" y="992.1176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="992.1176">Deployment</tspan></text><text x="1570.0" y="1066.1999999999998" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1047.5087999999998">Desired</tspan><tspan x="1570.0" y="1084.8911999999998">application state</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="secrets" data-editable="true"><rect class="element-surface" x="1390" y="1310" width="360" height="125" /><text x="1570.0" y="1308.4264" class="box-title" text-anchor="middle"><tspan x="1570.0" y="1308.4264">Secrets</tspan></text><text x="1570.0" y="1401.2" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1363.8176">Credentials and</tspan><tspan x="1570.0" y="1401.2">sensitive</tspan><tspan x="1570.0" y="1438.5824">configuration</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="django-wagtail" data-editable="true"><rect class="element-surface" x="2680" y="2370" width="360" height="165" /><text x="2860.0" y="2407.1176" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2385.8776000000003">Django /</tspan><tspan x="2860.0" y="2428.3576000000003">Wagtail</tspan></text><text x="2860.0" y="2501.9" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2483.2088">Application and</tspan><tspan x="2860.0" y="2520.5912">CMS</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="gunicorn" data-editable="true"><rect class="element-surface" x="2680" y="2170" width="360" height="150" /><text x="2860.0" y="2199.6176" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2199.6176">Gunicorn</tspan></text><text x="2860.0" y="2273.7000000000003" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2255.0088">Application</tspan><tspan x="2860.0" y="2292.3912">server</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="nginx" data-editable="true"><rect class="element-surface" x="2070" y="2260" width="340" height="190" /><text x="2240.0" y="2309.6176" class="box-title" text-anchor="middle"><tspan x="2240.0" y="2309.6176">NGINX</tspan></text><text x="2240.0" y="2383.7000000000003" class="box-body" text-anchor="middle"><tspan x="2240.0" y="2365.0088">Proxy requests;</tspan><tspan x="2240.0" y="2402.3912">serve /media/</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="whitenoise" data-editable="true" style="--element-font-size:28px"><rect class="element-surface" x="2740" y="2580" width="240" height="90" /><text x="2860.0" y="2587.9248" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2587.9248">WhiteNoise</tspan></text><text x="2860.0" y="2649.1" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2634.5624">serves</tspan><tspan x="2860.0" y="2663.6376">/static/</tspan></text></g></g><g id="cluster-labels"><g class="diagram-element element-cluster palette-green cluster-label-content" data-element-id="live-application" data-editable="true"><text x="170" y="1692.0" class="cluster-title" text-anchor="start"><tspan x="170" y="1692.0">3. Live application &amp; request routing</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="local-preparation" data-editable="true"><text x="170" y="392.0" class="cluster-title" text-anchor="start"><tspan x="170" y="392.0">1. Local preparation</tspan></text></g><g class="diagram-element element-cluster palette-amber cluster-label-content" data-element-id="persistent-state" data-editable="true"><text x="3530" y="1692.0" class="cluster-title" text-anchor="start"><tspan x="3530" y="1692.0">4. Persistent state</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="publishing-kubernetes" data-editable="true"><text x="1190" y="392.0" class="cluster-title" text-anchor="start"><tspan x="1190" y="392.0">2. Publishing &amp; Kubernetes preparation</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="kubernetes-config" data-editable="true"><text x="1320" y="872.9" class="cluster-title" text-anchor="start"><tspan x="1320" y="850.48">Kubernetes</tspan><tspan x="1320" y="895.32">configuration</tspan></text></g><g class="diagram-element element-cluster palette-green cluster-label-content" data-element-id="pod" data-editable="true"><text x="1910" y="1862.0" class="cluster-title" text-anchor="start"><tspan x="1910" y="1862.0">Pod — disposable runtime unit</tspan></text></g><g class="diagram-element element-cluster palette-neutral cluster-label-content" data-element-id="nginx-container" data-editable="true"><text x="2020" y="2062.0" class="cluster-title" text-anchor="start"><tspan x="2020" y="2062.0">NGINX container</tspan></text></g><g class="diagram-element element-cluster palette-neutral cluster-label-content" data-element-id="web-container" data-editable="true"><text x="2610" y="2062.0" class="cluster-title" text-anchor="start"><tspan x="2610" y="2062.0">web container</tspan></text></g></g><g id="text-layer"><g class="diagram-element element-subtitle palette-neutral text-content" data-element-id="diagram-subtitle" data-editable="true"><text x="140" y="225" class="element-subtitle" text-anchor="start"><tspan x="140" y="225.0">The Council's Map</tspan></text></g><g class="diagram-element element-title palette-neutral text-content" data-element-id="diagram-title" data-editable="true"><text x="140" y="130" class="element-title" text-anchor="start"><tspan x="140" y="130.0">WorldKLEMS deployment architecture</tspan></text></g><g class="diagram-element element-note palette-neutral text-content" data-element-id="state-note" data-editable="true" style="--element-font-size:30px"><text x="3815" y="2840" class="element-note" text-anchor="middle"><tspan x="3815" y="2822.3">The Pod is disposable. The</tspan><tspan x="3815" y="2857.7000000000003">data is not.</tspan></text></g></g></g><foreignObject id="diagram-editor-panel" x="3256.6665000000003" y="30" width="980.0" height="1760.0"><html:div id="editor-panel-shell" class="editor-panel-shell" data-state="idle">
+ <html:div id="editor-drag-handle" class="editor-drag-handle">Diagram editor — drag here</html:div>
+ <html:div class="editor-tabs" id="editor-toolbar"><html:button id="begin-create-element" type="button">Create element</html:button><html:button id="begin-create-route" type="button">Create route</html:button><html:button id="begin-preview" type="button">Preview</html:button><html:button id="export-json" type="button">Export JSON</html:button></html:div>
+ <html:div class="editor-tabs" id="preview-toolbar" hidden="hidden"><html:button id="exit-preview" type="button">Return to editor</html:button></html:div>
+ <html:div class="editor-panel-body">
+   <html:div id="editor-idle" class="editor-state"><html:p class="editor-status">Select an element or route in the diagram to edit it.</html:p><html:p class="preview-copy">Export downloads the current diagram as a JSON file.</html:p></html:div>
+   <html:div id="element-edit" class="editor-state"><html:h3>Selected element</html:h3><html:div id="element-empty" class="editor-status">Editing element.</html:div>
+    <html:div class="editor-grid">
+     <html:label for="el-id" data-field="id">ID</html:label><html:input id="el-id" data-field="id" type="text" /><html:label for="el-class" data-field="class">Class</html:label><html:select id="el-class" data-field="class"><html:option>title</html:option><html:option>subtitle</html:option><html:option>cluster</html:option><html:option>box</html:option><html:option>note</html:option></html:select>
+     <html:label for="el-parent" data-field="parent">Parent</html:label><html:select id="el-parent" data-field="parent" /><html:label for="el-color" data-field="color">Color</html:label><html:select id="el-color" data-field="color"><html:option value="neutral">neutral</html:option><html:option value="blue">blue</html:option><html:option value="amber">amber</html:option><html:option value="purple">purple</html:option></html:select>
+     <html:label for="el-title" data-field="text">Title / text</html:label><html:textarea id="el-title" data-field="text" /><html:label for="el-body" data-field="body">Body</html:label><html:textarea id="el-body" data-field="body" /><html:label for="el-hover" data-field="hover">Hover</html:label><html:textarea id="el-hover" data-field="hover" />
+     <html:label for="el-x" data-field="x">x</html:label><html:input id="el-x" data-field="x" type="number" step="any" /><html:label for="el-y" data-field="y">y</html:label><html:input id="el-y" data-field="y" type="number" step="any" /><html:label for="el-width" data-field="width">width</html:label><html:input id="el-width" data-field="width" type="number" step="any" min="1" /><html:label for="el-height" data-field="height">height</html:label><html:input id="el-height" data-field="height" type="number" step="any" min="1" /><html:label for="el-font-size" data-field="fontSize">font size</html:label><html:input id="el-font-size" data-field="fontSize" type="number" step="any" min="1" placeholder="CSS default" />
+    </html:div><html:div class="editor-actions"><html:button id="duplicate-element" type="button">Duplicate</html:button><html:button id="delete-element" type="button">Delete</html:button></html:div><html:div id="element-status" class="editor-status" /></html:div>
+   <html:div id="element-create" class="editor-state"><html:h3>Create element</html:h3>
+    <html:div class="editor-grid">
+     <html:label for="new-id" data-field="id">Unique ID</html:label><html:input id="new-id" data-field="id" type="text" /><html:label for="new-class" data-field="class">Class</html:label><html:select id="new-class" data-field="class"><html:option>box</html:option><html:option>cluster</html:option><html:option>title</html:option><html:option>subtitle</html:option><html:option>note</html:option></html:select>
+     <html:label for="new-parent" data-field="parent">Parent</html:label><html:select id="new-parent" data-field="parent" /><html:label for="new-color" data-field="color">Color</html:label><html:select id="new-color" data-field="color"><html:option value="neutral">neutral</html:option><html:option value="blue">blue</html:option><html:option value="amber">amber</html:option><html:option value="purple">purple</html:option></html:select>
+     <html:label for="new-title" data-field="text">Title / text</html:label><html:textarea id="new-title" data-field="text" /><html:label for="new-body" data-field="body">Body</html:label><html:textarea id="new-body" data-field="body" /><html:label for="new-x" data-field="x">x</html:label><html:input id="new-x" data-field="x" type="number" step="any" value="200" /><html:label for="new-y" data-field="y">y</html:label><html:input id="new-y" data-field="y" type="number" step="any" value="200" /><html:label for="new-width" data-field="width">width</html:label><html:input id="new-width" data-field="width" type="number" step="any" value="420" min="1" /><html:label for="new-height" data-field="height">height</html:label><html:input id="new-height" data-field="height" type="number" step="any" value="160" min="1" />
+    </html:div><html:div class="editor-actions"><html:button id="create-element" type="button">Create element</html:button><html:button id="cancel-create-element" type="button">Cancel</html:button></html:div><html:div id="element-create-status" class="editor-status" /></html:div>
+   <html:div id="route-create" class="editor-state"><html:h3>Create route</html:h3><html:div class="editor-grid"><html:label for="route-new-id">New route ID</html:label><html:input id="route-new-id" type="text" placeholder="route-id" /><html:label for="route-new-type">Type</html:label><html:select id="route-new-type"><html:option value="">Unspecified</html:option><html:option value="deployment">deployment</html:option><html:option value="runtime">runtime</html:option></html:select><html:label for="route-new-color">Color</html:label><html:select id="route-new-color"><html:option value="">Default (legacy)</html:option><html:option value="neutral">Neutral</html:option><html:option value="blue">Blue</html:option><html:option value="amber">Amber</html:option><html:option value="purple">Purple</html:option><html:option value="red">Red</html:option></html:select><html:label for="route-new-label">Label</html:label><html:input id="route-new-label" type="text" /></html:div><html:div class="editor-actions"><html:button id="create-route" type="button">Create route</html:button><html:button id="cancel-create-route" type="button">Cancel</html:button></html:div><html:div id="route-create-status" class="editor-status" /></html:div>
+   <html:div id="route-edit" class="editor-state"><html:h3>Editing route</html:h3><html:div class="editor-grid"><html:label for="route-select">Active editing route</html:label><html:select id="route-select" /><html:label for="route-type">Type</html:label><html:select id="route-type"><html:option value="">Unspecified</html:option><html:option value="deployment">deployment</html:option><html:option value="runtime">runtime</html:option></html:select><html:label for="route-color">Color</html:label><html:select id="route-color"><html:option value="">Default (legacy)</html:option><html:option value="neutral">Neutral</html:option><html:option value="blue">Blue</html:option><html:option value="amber">Amber</html:option><html:option value="purple">Purple</html:option><html:option value="red">Red</html:option></html:select><html:label for="route-label">Label</html:label><html:input id="route-label" type="text" /><html:label for="point-x">Point x</html:label><html:input id="point-x" type="number" step="any" /><html:label for="point-y">Point y</html:label><html:input id="point-y" type="number" step="any" /></html:div>
+    <html:div class="editor-actions"><html:button id="toggle-place-points" type="button">Place route points</html:button><html:button id="undo-point" type="button">Undo point</html:button><html:button id="insert-point" type="button">Insert bend</html:button><html:button id="delete-point" type="button">Delete point</html:button><html:button id="clear-route" type="button">Clear route</html:button><html:button id="delete-route" type="button">Delete route</html:button></html:div><html:div id="route-status" class="editor-status" /></html:div>
+  <html:section id="preview-state" class="editor-state"><html:h3>Preview</html:h3><html:p class="preview-copy">Hover a route to reveal its label. Click routes to toggle persistent highlights; press Escape to clear them all. Empty canvas clicks do not change the selected routes.</html:p></html:section>
+ </html:div>
+</html:div></foreignObject><script id="diagram-data" type="application/json">{"canvas": {"width": 4266.6665, "height": 3200}, "elements": {"browser": {"id": "browser", "class": "box", "parent": "live-application", "x": 260, "y": 1860, "width": 430, "height": 150, "color": "blue", "title": "Browser"}, "configmap": {"id": "configmap", "class": "box", "parent": "kubernetes-config", "x": 1390, "y": 1160, "width": 360, "height": 125, "color": "blue", "title": "ConfigMap", "body": "Ordinary configuration"}, "deployment": {"id": "deployment", "class": "box", "parent": "kubernetes-config", "x": 1390, "y": 960, "width": 360, "height": 155, "color": "green", "title": "Deployment", "body": "Desired application state"}, "diagram-subtitle": {"id": "diagram-subtitle", "class": "subtitle", "x": 140, "y": 225, "text": "The Council's Map"}, "diagram-title": {"id": "diagram-title", "class": "title", "x": 140, "y": 130, "text": "WorldKLEMS deployment architecture"}, "django-wagtail": {"id": "django-wagtail", "class": "box", "parent": "web-container", "x": 2680, "y": 2370, "width": 360, "height": 165, "color": "green", "title": "Django / Wagtail", "body": "Application and CMS"}, "dns": {"id": "dns", "class": "box", "parent": "live-application", "x": 260, "y": 2110, "width": 430, "height": 160, "color": "blue", "title": "DNS", "body": "worldklems.net"}, "docker-build": {"id": "docker-build", "class": "box", "parent": "local-preparation", "x": 260, "y": 1050, "width": 680, "height": 180, "color": "neutral", "title": "Docker build", "body": "Packages application and dependencies"}, "docker-image": {"id": "docker-image", "class": "box", "parent": "local-preparation", "x": 260, "y": 1310, "width": 680, "height": 170, "color": "amber", "title": "Docker image", "body": "Deployable artifact"}, "dockerfile": {"id": "dockerfile", "class": "box", "parent": "local-preparation", "x": 260, "y": 800, "width": 680, "height": 170, "color": "neutral", "title": "Dockerfile", "body": "Image recipe"}, "git-repository": {"id": "git-repository", "class": "box", "parent": "local-preparation", "x": 260, "y": 540, "width": 680, "height": 180, "color": "blue", "title": "WorldKLEMS Git repository", "body": "Django / Wagtail application source"}, "gunicorn": {"id": "gunicorn", "class": "box", "parent": "web-container", "x": 2680, "y": 2170, "width": 360, "height": 150, "color": "green", "title": "Gunicorn", "body": "Application server"}, "harbor-registry": {"id": "harbor-registry", "class": "box", "parent": "publishing-kubernetes", "x": 1290, "y": 540, "width": 560, "height": 180, "color": "amber", "title": "Harbor registry", "body": "Stores the published Docker image"}, "ingress": {"id": "ingress", "class": "box", "parent": "live-application", "x": 800, "y": 1980, "width": 430, "height": 160, "color": "green", "title": "Ingress"}, "juicefs-media": {"id": "juicefs-media", "class": "box", "parent": "persistent-state", "x": 3610, "y": 1990, "width": 410, "height": 240, "color": "amber", "title": "JuiceFS / worldklems-media", "body": "Persistent CMS files, images and documents"}, "kubectl": {"id": "kubectl", "class": "box", "parent": "publishing-kubernetes", "x": 1960, "y": 800, "width": 560, "height": 180, "color": "purple", "title": "kubectl", "body": "Apply and inspect Kubernetes configuration"}, "kubernetes-config": {"id": "kubernetes-config", "class": "cluster", "parent": "publishing-kubernetes", "x": 1290, "y": 800, "width": 560, "height": 650, "color": "blue", "title": "Kubernetes configuration"}, "live-application": {"id": "live-application", "class": "cluster", "x": 140, "y": 1640, "width": 3260, "height": 1380, "color": "green", "title": "3. Live application &amp; request routing"}, "local-preparation": {"id": "local-preparation", "class": "cluster", "x": 140, "y": 340, "width": 920, "height": 1180, "color": "blue", "title": "1. Local preparation"}, "mariadb": {"id": "mariadb", "class": "box", "parent": "persistent-state", "x": 3610, "y": 2440, "width": 410, "height": 220, "color": "amber", "title": "CIT MariaDB", "body": "Structured CMS and application state"}, "nginx": {"id": "nginx", "class": "box", "parent": "nginx-container", "x": 2070, "y": 2260, "width": 340, "height": 190, "color": "green", "title": "NGINX", "body": "Proxy requests; serve /media/"}, "nginx-container": {"id": "nginx-container", "class": "cluster", "parent": "pod", "x": 1990, "y": 2010, "width": 500, "height": 680, "color": "neutral", "title": "NGINX container"}, "persistent-state": {"id": "persistent-state", "class": "cluster", "x": 3500, "y": 1640, "width": 630, "height": 1380, "color": "amber", "title": "4. Persistent state"}, "pod": {"id": "pod", "class": "cluster", "parent": "live-application", "x": 1880, "y": 1810, "width": 1370, "height": 1020, "color": "green", "title": "Pod — disposable runtime unit"}, "publishing-kubernetes": {"id": "publishing-kubernetes", "class": "cluster", "x": 1160, "y": 340, "width": 1500, "height": 1180, "color": "blue", "title": "2. Publishing &amp; Kubernetes preparation"}, "rancher": {"id": "rancher", "class": "box", "parent": "publishing-kubernetes", "x": 1960, "y": 540, "width": 560, "height": 180, "color": "purple", "title": "Rancher", "body": "Inspect and manage Kubernetes"}, "secrets": {"id": "secrets", "class": "box", "parent": "kubernetes-config", "x": 1390, "y": 1310, "width": 360, "height": 125, "color": "blue", "title": "Secrets", "body": "Credentials and sensitive configuration"}, "service": {"id": "service", "class": "box", "parent": "live-application", "x": 1340, "y": 1980, "width": 430, "height": 160, "color": "green", "title": "Service"}, "state-note": {"id": "state-note", "class": "note", "parent": "persistent-state", "x": 3815, "y": 2840, "width": 440, "height": 80, "text": "The Pod is disposable. The data is not.", "font_size": 30}, "web-container": {"id": "web-container", "class": "cluster", "parent": "pod", "x": 2580, "y": 2010, "width": 560, "height": 680, "color": "neutral", "title": "web container"}, "whitenoise": {"id": "whitenoise", "class": "box", "parent": "web-container", "x": 2740, "y": 2580, "width": 240, "height": 90, "color": "neutral", "title": "WhiteNoise", "body": "serves /static/", "font_size": 28}}, "routes": {"27": {"points": [{"x": 984, "y": 936}, {"x": 1230, "y": 978}, {"x": 1230, "y": 744}], "label": "Flappie", "type": "runtime"}, "State-1": {"points": [], "type": "runtime"}, "check": {"points": [{"x": 2440, "y": 826}, {"x": 2406, "y": 1616}], "type": "runtime"}, "fsdfas": {"points": [{"x": 1036, "y": 2414}, {"x": 1464, "y": 2324}], "type": "runtime", "label": "flappier"}}}</script><script type="application/ecmascript">
+(function () {
+  'use strict';
+  const NS = 'http://www.w3.org/2000/svg';
+  const HTML_NS = 'http://www.w3.org/1999/xhtml';
+  const svg = document.documentElement;
+  const panelObject = document.getElementById('diagram-editor-panel');
+  const panel = document.getElementById('editor-panel-shell');
+  const state = JSON.parse(document.getElementById('diagram-data').textContent);
+  const palette = {"layoutAccepted": ["amber", "blue", "green", "neutral", "purple"], "layoutCompatibility": ["green"], "routeAccepted": ["neutral", "blue", "amber", "purple", "red"]};
+  let editorState = 'idle', selectedElement = null, editingRouteId = null;
+  const inspectedRouteIds = new Set();
+  let selectedPoint = null, placingRoutePoints = false, gesture = null, panelDrag = null;
+  let suppressClick = false;
+
+  // These are editor capabilities, not schema restrictions.  Existing fields
+  // remain in state when a class does not render them.
+  const ELEMENT_CAPABILITIES = {
+    box: ['id', 'class', 'parent', 'color', 'text', 'body', 'hover', 'x', 'y', 'width', 'height', 'fontSize'],
+    cluster: ['id', 'class', 'parent', 'color', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize'],
+    title: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize'],
+    subtitle: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize'],
+    note: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize']
+  };
+
+  function byId(id) { return document.getElementById(id); }
+  function finite(value) { const n = Number(value); return Number.isFinite(n) ? n : null; }
+  function rounded(value) { return Number(Number(value).toFixed(2)); }
+  function node(name, attrs) {
+    const result = document.createElementNS(NS, name);
+    Object.keys(attrs || {}).forEach(function (key) { result.setAttribute(key, attrs[key]); });
+    return result;
+  }
+  function htmlNode(name) { return document.createElementNS(HTML_NS, name); }
+  function colorLabel(color) { return color.charAt(0).toUpperCase() + color.slice(1); }
+  function setLayoutColor(select, color) {
+    Array.from(select.options).filter(function (option) { return option.dataset.compatibility === 'true'; })
+      .forEach(function (option) { option.remove(); });
+    if (palette.layoutCompatibility.indexOf(color) !== -1) {
+      const option = htmlNode('option'); option.value = color;
+      option.textContent = colorLabel(color) + ' (legacy)'; option.dataset.compatibility = 'true';
+      select.appendChild(option);
+    }
+    select.value = color;
+  }
+  function point(evt) {
+    const p = svg.createSVGPoint(); p.x = evt.clientX; p.y = evt.clientY;
+    const matrix = svg.getScreenCTM(); return matrix ? p.matrixTransform(matrix.inverse()) : null;
+  }
+  function orthogonalPoint(previous, candidate) {
+    return Math.abs(candidate.x - previous.x) &gt;= Math.abs(candidate.y - previous.y)
+      ? {x: candidate.x, y: previous.y}
+      : {x: previous.x, y: candidate.y};
+  }
+  function inPanel(evt) {
+    const path = evt.composedPath ? evt.composedPath() : [];
+    return path.indexOf(panel) !== -1 || path.indexOf(panelObject) !== -1;
+  }
+  function status(id, message) { byId(id).textContent = message || ''; }
+  function pathData(points) {
+    return (points || []).map(function (p, i) { return (i ? 'L ' : 'M ') + p.x + ' ' + p.y; }).join(' ');
+  }
+  function isRouteHighlighted(id) {
+    return (editorState === 'editing-route' &amp;&amp; editingRouteId === id) ||
+      (editorState === 'preview' &amp;&amp; inspectedRouteIds.has(id));
+  }
+  function clearInspectedRoutes() { inspectedRouteIds.clear(); }
+  function toggleInspectedRoute(routeId) {
+    if (inspectedRouteIds.has(routeId)) inspectedRouteIds.delete(routeId);
+    else inspectedRouteIds.add(routeId);
+  }
+  function routeClasses(id, route) {
+    const color = route.color;
+    const colored = color ? ' palette-' + color + ' route-colored route-color-' + color : '';
+    return 'diagram-route route-' + (route.type || 'untyped') + colored +
+      (isRouteHighlighted(id) ? ' route-highlighted' : '');
+  }
+  function routeLabelPosition(points) {
+    let best = null, bestLength = -1;
+    for (let index = 0; index &lt; points.length - 1; index += 1) {
+      const start = points[index], end = points[index + 1];
+      const length = Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2);
+      if (length &gt; bestLength) { bestLength = length; best = [start, end]; }
+    }
+    return {x: (best[0].x + best[1].x) / 2, y: (best[0].y + best[1].y) / 2 - 28};
+  }
+  function addRouteLabel(group, id, route) {
+    const value = route.label || 'Route ' + id, position = routeLabelPosition(route.points);
+    const width = Math.max(100, value.length * 14 + 28);
+    const label = node('g', {class: 'route-label', 'aria-hidden': 'true'});
+    label.appendChild(node('rect', {x: position.x - width / 2, y: position.y - 24, width: width, height: 44}));
+    const text = node('text', {x: position.x, y: position.y + 8, 'text-anchor': 'middle'});
+    text.textContent = value; label.appendChild(text); group.appendChild(label);
+  }
+  function depth(id) {
+    let n = 0, parent = state.elements[id] &amp;&amp; state.elements[id].parent;
+    const seen = new Set();
+    while (parent &amp;&amp; state.elements[parent] &amp;&amp; !seen.has(parent)) {
+      seen.add(parent); n += 1; parent = state.elements[parent].parent;
+    }
+    return n;
+  }
+  function wrap(value, width, fontSize) {
+    const result = [];
+    String(value || '').split('\n').forEach(function (paragraph) {
+      const words = paragraph.split(/\s+/).filter(Boolean);
+      const limit = width ? Math.max(7, Math.floor(width / (fontSize * .55))) : 100000;
+      if (!words.length) { result.push(''); return; }
+      let line = '';
+      words.forEach(function (word) {
+        if (line &amp;&amp; (line + ' ' + word).length &gt; limit) { result.push(line); line = word; }
+        else line = line ? line + ' ' + word : word;
+      });
+      result.push(line);
+    });
+    return result;
+  }
+  function addText(parent, value, x, y, cssClass, width, fontSize, anchor) {
+    const text = node('text', {x: x, y: y, 'class': cssClass, 'text-anchor': anchor || 'middle'});
+    const lines = wrap(value, width, fontSize), lineHeight = fontSize * 1.18;
+    const firstY = y - (lines.length - 1) * lineHeight / 2;
+    lines.forEach(function (line, index) {
+      const span = node('tspan', {x: x, y: firstY + index * lineHeight});
+      span.textContent = line; text.appendChild(span);
+    });
+    parent.appendChild(text); return lines;
+  }
+  function addLayer(parent, id) { const layer = node('g', {id: id}); parent.appendChild(layer); return layer; }
+  function elementGroup(parent, id, extra) {
+    const el = state.elements[id];
+    const group = node('g', {
+      'class': 'diagram-element element-' + el.class + ' palette-' + (el.color || 'neutral') + ' ' + extra,
+      'data-element-id': id, 'data-editable': 'true'
+    });
+    if (el.font_size) group.setAttribute('style', '--element-font-size:' + el.font_size + 'px');
+    if (el.hover) { const title = node('title'); title.textContent = el.hover; group.appendChild(title); }
+    if (selectedElement === id) group.classList.add('element-selected');
+    parent.appendChild(group); return group;
+  }
+
+  function render() {
+    const content = byId('diagram-content');
+    while (content.firstChild) content.removeChild(content.firstChild);
+    const clusterFills = addLayer(content, 'cluster-fills');
+    const routeLayer = addLayer(content, 'routes-layer');
+    const boxLayer = addLayer(content, 'boxes-layer');
+    const clusterLabels = addLayer(content, 'cluster-labels');
+    const textLayer = addLayer(content, 'text-layer');
+    const overlay = addLayer(content, 'editor-overlay-layer');
+    overlay.setAttribute('class', 'editor-overlay ' +
+      (editorState === 'editing-route' ? 'route-overlay' : 'element-overlay'));
+    const ids = Object.keys(state.elements);
+    const clusters = ids.filter(function (id) { return state.elements[id].class === 'cluster'; })
+      .sort(function (a, b) { return depth(a) - depth(b) || a.localeCompare(b); });
+
+    clusters.forEach(function (id) {
+      const el = state.elements[id], group = elementGroup(clusterFills, id, 'cluster-fill');
+      group.appendChild(node('rect', {class: 'cluster-surface', x: el.x, y: el.y, width: el.width, height: el.height}));
+    });
+    Object.keys(state.routes).forEach(function (id) {
+      const route = state.routes[id]; if (!route.points || route.points.length &lt; 2) return;
+      const group = node('g', {'class': routeClasses(id, route), 'data-route-id': id});
+      const title = node('title'); title.textContent = route.label || 'Route ' + id; group.appendChild(title);
+      const d = pathData(route.points);
+      group.appendChild(node('path', {class: 'route-path', d: d}));
+      group.appendChild(node('path', {class: 'route-hit', d: d}));
+      addRouteLabel(group, id, route); routeLayer.appendChild(group);
+    });
+    ids.filter(function (id) { return state.elements[id].class === 'box'; })
+      .sort(function (a, b) { return depth(a) - depth(b) || a.localeCompare(b); })
+      .forEach(function (id) {
+        const el = state.elements[id], group = elementGroup(boxLayer, id, 'box-content');
+        group.appendChild(node('rect', {class: 'element-surface', x: el.x, y: el.y, width: el.width, height: el.height}));
+        const fs = Number(el.font_size || 36), titleLines = wrap(el.title || '', el.width - 50, fs);
+        const bodyFs = fs * .88, bodyLines = wrap(el.body || '', el.width - 50, bodyFs);
+        const titleHeight = (el.title ? titleLines.length : 0) * fs * 1.15;
+        const bodyHeight = (el.body ? bodyLines.length : 0) * bodyFs * 1.18;
+        const gap = el.title &amp;&amp; el.body ? 16 : 0;
+        const top = el.y + (el.height - titleHeight - bodyHeight - gap) / 2, cx = el.x + el.width / 2;
+        if (el.title) addText(group, el.title, cx, top + titleHeight / 2, 'box-title', el.width - 50, fs);
+        if (el.body) addText(group, el.body, cx, top + titleHeight + gap + bodyHeight / 2, 'box-body', el.width - 50, bodyFs);
+      });
+    clusters.forEach(function (id) {
+      const el = state.elements[id]; if (!el.title) return;
+      const group = elementGroup(clusterLabels, id, 'cluster-label-content'), fs = Number(el.font_size || 38);
+      const lines = wrap(el.title, el.width - 60, fs);
+      addText(group, el.title, el.x + 30, el.y + 52 + (lines.length - 1) * fs * .55,
+        'cluster-title', el.width - 60, fs, 'start');
+    });
+    ids.filter(function (id) { return ['title', 'subtitle', 'note'].indexOf(state.elements[id].class) !== -1; })
+      .forEach(function (id) {
+        const el = state.elements[id], group = elementGroup(textLayer, id, 'text-content');
+        const fs = Number(el.font_size || {title: 76, subtitle: 42, note: 30}[el.class]);
+        addText(group, el.text || el.title || '', el.x, el.y, 'element-' + el.class,
+          el.width, fs, el.class === 'note' ? 'middle' : 'start');
+      });
+    if (editorState === 'editing-element' &amp;&amp; selectedElement &amp;&amp; state.elements[selectedElement]) renderElementOverlay(overlay);
+    if (editorState === 'editing-route' &amp;&amp; editingRouteId &amp;&amp; state.routes[editingRouteId]) renderRouteOverlay(overlay);
+  }
+
+  function textBounds(el) {
+    const fs = Number(el.font_size || {title: 76, subtitle: 42, note: 30}[el.class] || 32);
+    const width = Number(el.width || Math.max(260, String(el.text || el.title || '').length * fs * .55));
+    const height = Number(el.height || fs * 1.35);
+    return el.class === 'note' ? {x: el.x - width / 2, y: el.y - height / 2, width: width, height: height}
+      : {x: el.x, y: el.y - height, width: width, height: height};
+  }
+  function renderElementOverlay(overlay) {
+    const el = state.elements[selectedElement];
+    const box = ['box', 'cluster'].indexOf(el.class) !== -1 ? el : textBounds(el);
+    overlay.appendChild(node('rect', {class: 'selection-outline', x: box.x, y: box.y,
+      width: box.width, height: box.height}));
+    if (['box', 'cluster'].indexOf(el.class) === -1) return;
+    [['nw', el.x, el.y], ['ne', el.x + el.width, el.y], ['se', el.x + el.width, el.y + el.height],
+     ['sw', el.x, el.y + el.height]].forEach(function (item) {
+      overlay.appendChild(node('rect', {class: 'resize-handle', 'data-corner': item[0],
+        x: item[1] - 13, y: item[2] - 13, width: 26, height: 26}));
+    });
+  }
+  function renderRouteOverlay(overlay) {
+    state.routes[editingRouteId].points.forEach(function (p, index) {
+      overlay.appendChild(node('circle', {class: 'route-point' + (selectedPoint === index ? ' point-selected' : ''),
+        'data-point-index': index, cx: p.x, cy: p.y, r: 15}));
+      const label = node('text', {class: 'route-point-label', x: p.x + 22, y: p.y - 20});
+      label.textContent = String(index + 1); overlay.appendChild(label);
+    });
+  }
+  function descendants(id) {
+    const result = [];
+    function visit(parent) {
+      Object.keys(state.elements).forEach(function (candidate) {
+        if (state.elements[candidate].parent === parent) { result.push(candidate); visit(candidate); }
+      });
+    }
+    visit(id); return result;
+  }
+  function elementTarget(target) {
+    const group = target &amp;&amp; target.closest ? target.closest('[data-element-id]') : null;
+    return group ? group.getAttribute('data-element-id') : null;
+  }
+  function routeTarget(target) {
+    const group = target &amp;&amp; target.closest ? target.closest('[data-route-id]') : null;
+    return group ? group.getAttribute('data-route-id') : null;
+  }
+
+  svg.addEventListener('pointerdown', function (evt) {
+    if (inPanel(evt)) return;
+    const p = point(evt); if (!p) return;
+    if (editorState === 'preview') return;
+    if (editorState === 'editing-route' &amp;&amp; placingRoutePoints &amp;&amp; editingRouteId) {
+      evt.stopPropagation(); return;
+    }
+    const marker = evt.target.closest &amp;&amp; evt.target.closest('.route-point');
+    if (marker &amp;&amp; editingRouteId &amp;&amp; editorState === 'editing-route') {
+      selectedPoint = Number(marker.dataset.pointIndex);
+      const current = state.routes[editingRouteId].points[selectedPoint];
+      gesture = {kind: 'point', start: p, origin: {x: current.x, y: current.y}};
+      populatePointFields(); render(); evt.preventDefault(); return;
+    }
+    if (editorState === 'editing-route') return;
+    const handle = evt.target.closest &amp;&amp; evt.target.closest('.resize-handle');
+    if (handle &amp;&amp; selectedElement &amp;&amp; editorState === 'editing-element') {
+      const el = state.elements[selectedElement];
+      gesture = {kind: 'resize', id: selectedElement, corner: handle.dataset.corner, start: p,
+        geometry: {x: el.x, y: el.y, width: el.width, height: el.height}};
+      evt.preventDefault(); return;
+    }
+    const elementId = elementTarget(evt.target);
+    if (editorState === 'editing-element') {
+      if (elementId !== selectedElement) return;
+      const moving = [elementId].concat(state.elements[elementId].class === 'cluster' ? descendants(elementId) : []), origins = {};
+      moving.forEach(function (key) { origins[key] = {x: state.elements[key].x, y: state.elements[key].y}; });
+      gesture = {kind: 'move', start: p, moving: moving, origins: origins};
+      evt.preventDefault(); return;
+    }
+    if (editorState !== 'idle') return;
+    const routeId = routeTarget(evt.target);
+    if (routeId) {
+      selectEditingRoute(routeId); evt.preventDefault(); return;
+    }
+    if (elementId) {
+      selectElement(elementId);
+      const moving = [elementId].concat(state.elements[elementId].class === 'cluster' ? descendants(elementId) : []), origins = {};
+      moving.forEach(function (key) { origins[key] = {x: state.elements[key].x, y: state.elements[key].y}; });
+      gesture = {kind: 'move', start: p, moving: moving, origins: origins};
+      evt.preventDefault(); return;
+    }
+  }, true);
+  document.addEventListener('pointermove', function (evt) {
+    if (panelDrag) {
+      const p = point(evt); if (!p) return;
+      const width = Number(panelObject.getAttribute('width')), height = Number(panelObject.getAttribute('height'));
+      panelObject.setAttribute('x', rounded(Math.max(0, Math.min(state.canvas.width - width, p.x - panelDrag.dx))));
+      panelObject.setAttribute('y', rounded(Math.max(0, Math.min(state.canvas.height - height, p.y - panelDrag.dy))));
+      panelDrag.moved = true; evt.preventDefault(); return;
+    }
+    if (!gesture) return;
+    const p = point(evt); if (!p) return;
+    let dx = p.x - gesture.start.x, dy = p.y - gesture.start.y;
+    if (gesture.kind === 'move') {
+      gesture.moving.forEach(function (id) {
+        state.elements[id].x = rounded(gesture.origins[id].x + dx);
+        state.elements[id].y = rounded(gesture.origins[id].y + dy);
+      });
+    } else if (gesture.kind === 'resize') {
+      const el = state.elements[gesture.id], g = gesture.geometry, min = 40;
+      if (gesture.corner.indexOf('e') !== -1) el.width = Math.max(min, rounded(g.width + dx));
+      if (gesture.corner.indexOf('s') !== -1) el.height = Math.max(min, rounded(g.height + dy));
+      if (gesture.corner.indexOf('w') !== -1) { el.x = Math.min(g.x + g.width - min, rounded(g.x + dx)); el.width = rounded(g.width + g.x - el.x); }
+      if (gesture.corner.indexOf('n') !== -1) { el.y = Math.min(g.y + g.height - min, rounded(g.y + dy)); el.height = rounded(g.height + g.y - el.y); }
+    } else if (gesture.kind === 'point' &amp;&amp; editingRouteId !== null &amp;&amp; selectedPoint !== null) {
+      const candidate = {x: rounded(p.x), y: rounded(p.y)};
+      const previous = selectedPoint &gt; 0 ? state.routes[editingRouteId].points[selectedPoint - 1] : null;
+      const next = evt.shiftKey &amp;&amp; previous ? orthogonalPoint(previous, candidate) : candidate;
+      const target = state.routes[editingRouteId].points[selectedPoint];
+      target.x = next.x; target.y = next.y;
+    }
+    render(); populateGeometryFields(); populateRouteEditor(); evt.preventDefault();
+  }, true);
+  document.addEventListener('pointerup', function () {
+    gesture = null;
+    if (panelDrag) { if (panelDrag.moved) suppressClick = true; panelDrag = null; }
+  }, true);
+  document.addEventListener('pointercancel', function () { gesture = null; panelDrag = null; }, true);
+  byId('editor-drag-handle').addEventListener('pointerdown', function (evt) {
+    const p = point(evt); if (!p) return;
+    panelDrag = {dx: p.x - Number(panelObject.getAttribute('x')),
+      dy: p.y - Number(panelObject.getAttribute('y')), moved: false};
+    evt.preventDefault(); evt.stopPropagation();
+  });
+
+  function setEditorState(next) {
+    editorState = next;
+    svg.setAttribute('class', 'editor-state-' + editorState);
+    panel.dataset.state = editorState;
+    byId('preview-toolbar').hidden = editorState !== 'preview';
+  }
+  function updatePanelState() {
+    setEditorState(editorState);
+    const showTopLevelActions = editorState === 'idle';
+    byId('begin-create-element').hidden = !showTopLevelActions;
+    byId('begin-create-route').hidden = !showTopLevelActions;
+    byId('begin-preview').hidden = !showTopLevelActions;
+    byId('toggle-place-points').textContent = placingRoutePoints ? 'Finish placing points' : 'Place route points';
+    populateElementPanel(); populateRouteEditor();
+  }
+  function clearEditing() {
+    selectedElement = null; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
+    gesture = null; editorState = 'idle'; refreshRoutes(); updatePanelState(); render();
+  }
+  byId('begin-preview').addEventListener('click', function () {
+    selectedElement = null; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
+    editorState = 'preview'; updatePanelState(); render();
+  });
+  byId('exit-preview').addEventListener('click', function () {
+    clearInspectedRoutes(); editorState = 'idle'; updatePanelState(); render();
+  });
+  function parentOptions(select, selected, excluded) {
+    while (select.firstChild) select.removeChild(select.firstChild);
+    const blank = htmlNode('option'); blank.value = ''; blank.textContent = '— none —';
+    select.appendChild(blank);
+    Object.keys(state.elements).filter(function (id) {
+      return state.elements[id].class === 'cluster' &amp;&amp; (!excluded ||
+        (id !== excluded &amp;&amp; descendants(excluded).indexOf(id) === -1));
+    }).sort().forEach(function (id) {
+      const option = htmlNode('option'); option.value = id; option.textContent = id;
+      select.appendChild(option);
+    });
+    select.value = selected || '';
+  }
+  function hasElementCapability(elementClass, field) {
+    return (ELEMENT_CAPABILITIES[elementClass] || []).indexOf(field) !== -1;
+  }
+  function setElementFieldVisibility(sectionId, elementClass) {
+    const section = byId(sectionId);
+    section.querySelectorAll('[data-field]').forEach(function (field) {
+      field.hidden = !hasElementCapability(elementClass, field.dataset.field);
+    });
+  }
+  function beginCreateElement() {
+    selectedElement = null; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
+    editorState = 'creating-element'; status('element-create-status', '');
+    parentOptions(byId('new-parent'), byId('new-parent').value, null);
+    setElementFieldVisibility('element-create', byId('new-class').value);
+    updatePanelState(); render();
+  }
+  function cancelCreateElement() {
+    editorState = 'idle'; status('element-create-status', ''); updatePanelState(); render();
+  }
+  function selectElement(id) {
+    selectedElement = id; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
+    editorState = 'editing-element'; refreshRoutes(); updatePanelState(); render();
+  }
+  function populateElementPanel() {
+    const el = selectedElement &amp;&amp; state.elements[selectedElement];
+    byId('element-empty').textContent = el ? 'Editing ' + selectedElement : 'Click an element to edit it.';
+    ['el-id','el-class','el-parent','el-color','el-title','el-body','el-hover','el-x','el-y',
+     'el-width','el-height','el-font-size'].forEach(function (id) { byId(id).disabled = !el; });
+    parentOptions(byId('new-parent'), byId('new-parent').value, null);
+    setElementFieldVisibility('element-create', byId('new-class').value);
+    if (!el) return;
+    byId('el-id').value = selectedElement; byId('el-class').value = el.class;
+    parentOptions(byId('el-parent'), el.parent, selectedElement);
+    setLayoutColor(byId('el-color'), el.color || 'neutral');
+    byId('el-title').value = ['title','subtitle','note'].indexOf(el.class) !== -1 ? (el.text || '') : (el.title || '');
+    byId('el-body').value = el.body || ''; byId('el-hover').value = el.hover || '';
+    setElementFieldVisibility('element-edit', el.class); populateGeometryFields();
+  }
+  function populateGeometryFields() {
+    const el = selectedElement &amp;&amp; state.elements[selectedElement]; if (!el) return;
+    byId('el-x').value = el.x; byId('el-y').value = el.y;
+    byId('el-width').value = el.width === undefined ? '' : el.width;
+    byId('el-height').value = el.height === undefined ? '' : el.height;
+    byId('el-font-size').value = el.font_size === undefined ? '' : el.font_size;
+    byId('el-width').disabled = !hasElementCapability(el.class, 'width');
+    byId('el-height').disabled = !hasElementCapability(el.class, 'height');
+  }
+  function optional(obj, key, value) { if (value) obj[key] = value; else delete obj[key]; }
+  function updateElementText() {
+    const el = selectedElement &amp;&amp; state.elements[selectedElement]; if (!el) return;
+    if (['title','subtitle','note'].indexOf(el.class) !== -1) {
+      optional(el, 'text', byId('el-title').value);
+    } else optional(el, 'title', byId('el-title').value);
+    if (hasElementCapability(el.class, 'body')) optional(el, 'body', byId('el-body').value);
+    if (hasElementCapability(el.class, 'hover')) optional(el, 'hover', byId('el-hover').value);
+    render();
+  }
+  ['el-title','el-body','el-hover'].forEach(function (id) {
+    byId(id).addEventListener('input', updateElementText);
+  });
+  byId('el-color').addEventListener('change', function () {
+    if (selectedElement &amp;&amp; hasElementCapability(state.elements[selectedElement].class, 'color')) {
+      state.elements[selectedElement].color = this.value; render();
+    }
+  });
+  byId('el-parent').addEventListener('change', function () {
+    if (!selectedElement) return;
+    if (this.value) state.elements[selectedElement].parent = this.value;
+    else delete state.elements[selectedElement].parent;
+    render();
+  });
+  byId('el-class').addEventListener('change', function () {
+    if (!selectedElement) return;
+    const el = state.elements[selectedElement], old = el.class; el.class = this.value;
+    if (old === 'cluster' &amp;&amp; el.class !== 'cluster') Object.keys(state.elements).forEach(function (id) {
+      if (state.elements[id].parent === selectedElement) delete state.elements[id].parent;
+    });
+    if (el.class === 'box' || el.class === 'cluster') {
+      el.width = Number(el.width || 420); el.height = Number(el.height || 160);
+    }
+    if (['title','subtitle','note'].indexOf(el.class) !== -1) el.text = el.text || el.title || '';
+    populateElementPanel(); render();
+  });
+  byId('el-id').addEventListener('change', function () {
+    if (!selectedElement) return;
+    const next = this.value.trim();
+    if (!next || (state.elements[next] &amp;&amp; next !== selectedElement)) {
+      status('element-status', 'ID must be non-empty and unique.'); this.value = selectedElement; return;
+    }
+    const old = selectedElement, el = state.elements[old]; delete state.elements[old];
+    el.id = next; state.elements[next] = el;
+    Object.keys(state.elements).forEach(function (id) {
+      if (state.elements[id].parent === old) state.elements[id].parent = next;
+    });
+    selectedElement = next; populateElementPanel(); render();
+    status('element-status', 'Renamed ' + old + ' to ' + next + '.');
+  });
+  [['el-x','x'],['el-y','y'],['el-width','width'],['el-height','height']].forEach(function (pair) {
+    byId(pair[0]).addEventListener('input', function () {
+      const el = selectedElement &amp;&amp; state.elements[selectedElement], value = finite(this.value);
+      if (!el || !hasElementCapability(el.class, pair[1]) || value === null ||
+          (['width','height'].indexOf(pair[1]) !== -1 &amp;&amp; value &lt;= 0)) return;
+      const delta = value - Number(el[pair[1]] || 0); el[pair[1]] = value;
+      if (['x','y'].indexOf(pair[1]) !== -1 &amp;&amp; el.class === 'cluster') descendants(selectedElement).forEach(function (id) {
+        state.elements[id][pair[1]] = rounded(state.elements[id][pair[1]] + delta);
+      });
+      render();
+    });
+  });
+  byId('el-font-size').addEventListener('input', function () {
+    const el = selectedElement &amp;&amp; state.elements[selectedElement];
+    if (!el || !hasElementCapability(el.class, 'fontSize')) return;
+    const value = finite(this.value); if (value &amp;&amp; value &gt; 0) el.font_size = value; else delete el.font_size; render();
+  });
+  function copyId(base) {
+    let id = base + '-copy', n = 2;
+    while (state.elements[id]) { id = base + '-copy-' + n; n += 1; }
+    return id;
+  }
+  byId('duplicate-element').addEventListener('click', function () {
+    if (!selectedElement) return;
+    const copy = JSON.parse(JSON.stringify(state.elements[selectedElement])), id = copyId(selectedElement);
+    copy.id = id; copy.x = Number(copy.x) + 40; copy.y = Number(copy.y) + 40;
+    state.elements[id] = copy; selectElement(id); status('element-status', 'Created ' + id + '.');
+  });
+  function deleteSelectedElement() {
+    if (!selectedElement) return;
+    const id = selectedElement, parent = state.elements[id].parent;
+    Object.keys(state.elements).forEach(function (key) {
+      if (state.elements[key].parent === id) {
+        if (parent) state.elements[key].parent = parent; else delete state.elements[key].parent;
+      }
+    });
+    delete state.elements[id]; clearEditing();
+  }
+  byId('delete-element').addEventListener('click', deleteSelectedElement);
+  byId('begin-create-element').addEventListener('click', beginCreateElement);
+  byId('cancel-create-element').addEventListener('click', cancelCreateElement);
+  byId('new-class').addEventListener('change', function () {
+    setElementFieldVisibility('element-create', this.value);
+  });
+  byId('create-element').addEventListener('click', function () {
+    const id = byId('new-id').value.trim(), cls = byId('new-class').value;
+    if (!id || state.elements[id]) { status('element-create-status', 'New element ID must be non-empty and unique.'); return; }
+    const x = finite(byId('new-x').value), y = finite(byId('new-y').value);
+    if (x === null || y === null) { status('element-create-status', 'New element x and y must be numeric.'); return; }
+    const el = {id: id, class: cls, x: x, y: y}, parent = byId('new-parent').value;
+    if (parent) el.parent = parent;
+    if (hasElementCapability(cls, 'width')) {
+      const width = finite(byId('new-width').value), height = finite(byId('new-height').value);
+      if (width === null || height === null || width &lt;= 0 || height &lt;= 0) {
+        status('element-create-status', 'Width and height must be positive.'); return;
+      }
+      el.width = width; el.height = height;
+    }
+    if (hasElementCapability(cls, 'color')) el.color = byId('new-color').value;
+    if (['title','subtitle','note'].indexOf(cls) !== -1) optional(el, 'text', byId('new-title').value);
+    else optional(el, 'title', byId('new-title').value);
+    if (hasElementCapability(cls, 'body')) optional(el, 'body', byId('new-body').value);
+    state.elements[id] = el; byId('new-id').value = ''; selectElement(id);
+    status('element-status', 'Created ' + id + '.');
+  });
+
+  function refreshRoutes() {
+    const select = byId('route-select'); while (select.firstChild) select.removeChild(select.firstChild);
+    const blank = htmlNode('option'); blank.value = ''; blank.textContent = '— select —';
+    select.appendChild(blank);
+    Object.keys(state.routes).sort().forEach(function (id) {
+      const option = htmlNode('option'); option.value = id; option.textContent = id;
+      select.appendChild(option);
+    });
+    select.value = editingRouteId || '';
+  }
+  function beginCreateRoute() {
+    selectedElement = null; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
+    editorState = 'creating-route';
+    byId('route-new-id').value = ''; byId('route-new-type').value = '';
+    byId('route-new-color').value = 'neutral'; byId('route-new-label').value = '';
+    status('route-create-status', ''); refreshRoutes(); updatePanelState(); render();
+  }
+  function cancelCreateRoute() {
+    editorState = 'idle'; byId('route-new-id').value = ''; status('route-create-status', '');
+    updatePanelState(); render();
+  }
+  function selectEditingRoute(id) {
+    selectedElement = null; editingRouteId = id; selectedPoint = null; placingRoutePoints = false;
+    editorState = 'editing-route'; refreshRoutes(); updatePanelState(); render();
+  }
+  function populateRouteEditor() {
+    const route = editingRouteId &amp;&amp; state.routes[editingRouteId];
+    ['route-type','route-color','route-label'].forEach(function (id) { byId(id).disabled = !route; });
+    if (!route) {
+      byId('route-type').value = ''; byId('route-color').value = ''; byId('route-label').value = '';
+      populatePointFields(); return;
+    }
+    byId('route-type').value = route.type || ''; byId('route-color').value = route.color || '';
+    byId('route-label').value = route.label || ''; populatePointFields();
+  }
+  function populatePointFields() {
+    const route = editingRouteId &amp;&amp; state.routes[editingRouteId];
+    const p = route &amp;&amp; selectedPoint !== null ? route.points[selectedPoint] : null;
+    byId('point-x').disabled = !p; byId('point-y').disabled = !p;
+    byId('point-x').value = p ? p.x : ''; byId('point-y').value = p ? p.y : '';
+  }
+  byId('route-select').addEventListener('change', function () {
+    if (this.value) selectEditingRoute(this.value);
+    else { clearEditing(); }
+  });
+  byId('begin-create-route').addEventListener('click', beginCreateRoute);
+  byId('cancel-create-route').addEventListener('click', cancelCreateRoute);
+  byId('create-route').addEventListener('click', function () {
+    const id = byId('route-new-id').value.trim();
+    if (!id || state.routes[id]) { status('route-create-status', 'Route ID must be non-empty and unique.'); return; }
+    const route = {points: [], color: byId('route-new-color').value || 'neutral'};
+    optional(route, 'type', byId('route-new-type').value);
+    optional(route, 'label', byId('route-new-label').value);
+    state.routes[id] = route; byId('route-new-id').value = '';
+    editingRouteId = id; selectedElement = null; selectedPoint = null; placingRoutePoints = true;
+    editorState = 'editing-route'; refreshRoutes(); updatePanelState(); render();
+    status('route-status', 'Click on the diagram to place route points. Hold Shift to keep the next segment horizontal or vertical.');
+  });
+  byId('route-type').addEventListener('change', function () {
+    if (!editingRouteId) return;
+    if (this.value) state.routes[editingRouteId].type = this.value; else delete state.routes[editingRouteId].type;
+    render();
+  });
+  byId('route-color').addEventListener('change', function () {
+    if (!editingRouteId) return;
+    if (this.value) state.routes[editingRouteId].color = this.value; else delete state.routes[editingRouteId].color;
+    render();
+  });
+  byId('route-label').addEventListener('input', function () {
+    if (editingRouteId) { optional(state.routes[editingRouteId], 'label', this.value); render(); }
+  });
+  byId('toggle-place-points').addEventListener('click', function () {
+    if (!editingRouteId) { status('route-status', 'Select or create a route first.'); return; }
+    placingRoutePoints = !placingRoutePoints;
+    updatePanelState();
+    status('route-status', placingRoutePoints
+      ? 'Click on the diagram to place route points. Hold Shift to keep the next segment horizontal or vertical.'
+      : 'Finished placing route points.');
+  });
+  byId('undo-point').addEventListener('click', function () {
+    if (!editingRouteId) return; state.routes[editingRouteId].points.pop(); selectedPoint = null; populateRouteEditor(); render();
+  });
+  byId('clear-route').addEventListener('click', function () {
+    if (!editingRouteId) return; state.routes[editingRouteId].points = []; selectedPoint = null; populateRouteEditor(); render();
+  });
+  function deleteEditingRoute() {
+    if (!editingRouteId) return;
+    delete state.routes[editingRouteId]; clearEditing();
+  }
+  function deleteSelectedPoint() {
+    if (!editingRouteId || selectedPoint === null) return;
+    state.routes[editingRouteId].points.splice(selectedPoint, 1); selectedPoint = null; populateRouteEditor(); render();
+  }
+  byId('delete-route').addEventListener('click', deleteEditingRoute);
+  byId('delete-point').addEventListener('click', deleteSelectedPoint);
+  byId('insert-point').addEventListener('click', function () {
+    if (!editingRouteId || selectedPoint === null) { status('route-status', 'Select a point marker first.'); return; }
+    const points = state.routes[editingRouteId].points, current = points[selectedPoint], next = points[selectedPoint + 1];
+    const inserted = next ? {x: rounded((current.x + next.x) / 2), y: rounded((current.y + next.y) / 2)}
+      : {x: rounded(current.x + 50), y: current.y};
+    points.splice(selectedPoint + 1, 0, inserted); selectedPoint += 1; populateRouteEditor(); render();
+  });
+  [['point-x','x'],['point-y','y']].forEach(function (pair) {
+    byId(pair[0]).addEventListener('input', function () {
+      if (!editingRouteId || selectedPoint === null) return;
+      const value = finite(this.value); if (value === null) return;
+      state.routes[editingRouteId].points[selectedPoint][pair[1]] = value;
+      render();
+    });
+  });
+  function isEditableControl(target) {
+    return Boolean(target &amp;&amp; (target.isContentEditable || (target.closest &amp;&amp;
+      target.closest('input, textarea, select, button, [contenteditable]:not([contenteditable="false"]), [role="textbox"]'))));
+  }
+  document.addEventListener('keydown', function (evt) {
+    if (editorState === 'preview') {
+      if (evt.key === 'Escape') {
+        clearInspectedRoutes(); render(); evt.preventDefault();
+      }
+      return;
+    }
+    if (editorState === 'creating-element') {
+      if (evt.key === 'Escape') {
+        cancelCreateElement(); evt.preventDefault();
+      }
+      return;
+    }
+    if (editorState === 'creating-route') {
+      if (evt.key === 'Escape') { cancelCreateRoute(); evt.preventDefault(); }
+      return;
+    }
+    if (editorState === 'idle') return;
+    if (evt.key === 'Escape') {
+      if (editorState === 'editing-route' &amp;&amp; placingRoutePoints) {
+        placingRoutePoints = false;
+        status('route-status', 'Finished placing route points.');
+      } else {
+        if (gesture &amp;&amp; gesture.kind === 'point' &amp;&amp; editingRouteId &amp;&amp; selectedPoint !== null) {
+          const point = state.routes[editingRouteId].points[selectedPoint];
+          point.x = gesture.origin.x; point.y = gesture.origin.y;
+        }
+        clearEditing(); evt.preventDefault(); return;
+      }
+      updatePanelState(); render(); evt.preventDefault(); return;
+    }
+    if (isEditableControl(evt.target)) return;
+    if ((evt.key === 'Delete' || evt.key === 'Backspace') &amp;&amp; editorState === 'editing-element') {
+      deleteSelectedElement(); evt.preventDefault(); return;
+    }
+    if ((evt.key === 'Delete' || evt.key === 'Backspace') &amp;&amp; editorState === 'editing-route' &amp;&amp; !placingRoutePoints) {
+      if (selectedPoint !== null) deleteSelectedPoint(); else deleteEditingRoute();
+      evt.preventDefault(); return;
+    }
+    if (editingRouteId &amp;&amp; selectedPoint !== null &amp;&amp;
+        ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].indexOf(evt.key) !== -1) {
+      const point = state.routes[editingRouteId].points[selectedPoint], amount = evt.shiftKey ? 10 : 1;
+      if (evt.key === 'ArrowLeft') point.x = rounded(point.x - amount);
+      if (evt.key === 'ArrowRight') point.x = rounded(point.x + amount);
+      if (evt.key === 'ArrowUp') point.y = rounded(point.y - amount);
+      if (evt.key === 'ArrowDown') point.y = rounded(point.y + amount);
+      populateRouteEditor(); render(); evt.preventDefault();
+    }
+  });
+  svg.addEventListener('click', function (evt) {
+    if (suppressClick) { suppressClick = false; return; }
+    if (inPanel(evt)) return;
+    if (editorState === 'preview') {
+      const routeId = routeTarget(evt.target);
+      if (!routeId) return;
+      toggleInspectedRoute(routeId);
+      render(); return;
+    }
+    if (editorState === 'editing-route' &amp;&amp; placingRoutePoints &amp;&amp; editingRouteId) {
+      const p = point(evt); if (!p) return;
+      const points = state.routes[editingRouteId].points;
+      const candidate = {x: rounded(p.x), y: rounded(p.y)}, previous = points[points.length - 1];
+      points.push(evt.shiftKey &amp;&amp; previous ? orthogonalPoint(previous, candidate) : candidate);
+      selectedPoint = state.routes[editingRouteId].points.length - 1;
+      populateRouteEditor(); render();
+      const count = state.routes[editingRouteId].points.length;
+      status('route-status', editingRouteId + ': ' + count + (count === 1 ? ' point. ' : ' points. ') +
+        'Click on the diagram to place route points. Hold Shift to keep the next segment horizontal or vertical.');
+      evt.preventDefault(); evt.stopPropagation(); return;
+    }
+  }, true);
+
+  function validateExport() {
+    const classes = ['title','subtitle','cluster','box','note'];
+    Object.keys(state.elements).forEach(function (id) {
+      const el = state.elements[id];
+      if (el.id !== id) throw new Error('element key/id mismatch for ' + id);
+      if (classes.indexOf(el.class) === -1) throw new Error('unsupported class for ' + id);
+      if (el.color &amp;&amp; palette.layoutAccepted.indexOf(el.color) === -1) {
+        throw new Error('unsupported color for element ' + id);
+      }
+      if (!Number.isFinite(Number(el.x)) || !Number.isFinite(Number(el.y))) throw new Error('invalid geometry for ' + id);
+      if (el.parent &amp;&amp; (!state.elements[el.parent] || state.elements[el.parent].class !== 'cluster')) throw new Error('invalid parent for ' + id);
+    });
+    Object.keys(state.routes).forEach(function (id) {
+      if (state.routes[id].color &amp;&amp; palette.routeAccepted.indexOf(state.routes[id].color) === -1) {
+        throw new Error('unsupported color for route ' + id);
+      }
+      state.routes[id].points.forEach(function (p) {
+        if (!Number.isFinite(Number(p.x)) || !Number.isFinite(Number(p.y))) throw new Error('invalid point in route ' + id);
+      });
+    });
+  }
+  function documentJson() {
+    validateExport(); const elements = {}, routes = {};
+    Object.keys(state.elements).sort().forEach(function (id) { elements[id] = state.elements[id]; });
+    Object.keys(state.routes).sort().forEach(function (id) { routes[id] = state.routes[id]; });
+    return JSON.stringify({canvas: {width: state.canvas.width, height: state.canvas.height},
+      elements: elements, routes: routes}, null, 2) + '\n';
+  }
+  function messageTarget() {
+    if (editorState === 'creating-route') return 'route-create-status';
+    if (editorState === 'editing-route') return 'route-status';
+    if (editorState === 'creating-element') return 'element-create-status';
+    return 'element-status';
+  }
+  byId('export-json').addEventListener('click', function () {
+    try {
+      const blob = new Blob([documentJson()], {type: 'application/json'}), link = htmlNode('a');
+      const url = URL.createObjectURL(blob); link.href = url; link.download = 'diagram.json';
+      panel.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
+    } catch (error) { status(messageTarget(), 'Cannot export: ' + error.message); }
+  });
+  refreshRoutes(); updatePanelState(); render();
+})();
+</script></svg>
