@@ -77,6 +77,7 @@ def _num(value: float | int) -> str:
 class Canvas:
     width: float
     height: float
+    text_scale: float = 1.0
 
     @classmethod
     def from_json(cls, value: Any) -> "Canvas":
@@ -85,12 +86,14 @@ class Canvas:
         return cls(
             _number(value.get("width"), "canvas.width", positive=True),
             _number(value.get("height"), "canvas.height", positive=True),
+            _number(value.get("text_scale", 1.0), "canvas.text_scale", positive=True),
         )
 
     def to_json(self) -> dict[str, int | float]:
         return {
             "width": int(self.width) if self.width.is_integer() else self.width,
             "height": int(self.height) if self.height.is_integer() else self.height,
+            "text_scale": self.text_scale,
         }
 
 
@@ -305,24 +308,36 @@ def _route_classes(route: Route) -> str:
     return f"diagram-route route-{route.data.get('type', 'untyped')}{color_classes}"
 
 
-def _add_route_label(group: ET.Element, route_id: str, data: dict[str, Any]) -> None:
+def _add_route_label(group: ET.Element, route_id: str, data: dict[str, Any], text_scale: float = 1.0) -> None:
     label = data.get("label") or f"Route {route_id}"
     x, y = _route_label_position(data["points"])
-    width = max(100, len(label) * 14 + 28)
+    width = max(100 * text_scale, len(label) * 14 * text_scale + 28 * text_scale)
     label_group = _svg(group, "g", {"class": "route-label", "aria-hidden": "true"})
-    _svg(label_group, "rect", {"x": _num(x - width / 2), "y": _num(y - 24),
-        "width": _num(width), "height": 44})
-    text = _svg(label_group, "text", {"x": _num(x), "y": _num(y + 8), "text-anchor": "middle"})
+    _svg(label_group, "rect", {"x": _num(x - width / 2), "y": _num(y - 24 * text_scale),
+        "width": _num(width), "height": _num(44 * text_scale)})
+    text = _svg(label_group, "text", {"x": _num(x), "y": _num(y + 8 * text_scale), "text-anchor": "middle"})
     text.text = label
 
 
 def render_svg(diagram: Diagram, css: str, *, editor: bool) -> ET.ElementTree:
     width, height = diagram.canvas.width, diagram.canvas.height
-    root = ET.Element(f"{{{SVG}}}svg", {
-        "width": _num(width), "height": _num(height), "viewBox": f"0 0 {_num(width)} {_num(height)}",
-        "version": "1.1", "preserveAspectRatio": "xMidYMid meet",
-        "class": "editor-state-idle" if editor else "clean-render", "data-editor": str(editor).lower(),
-    })
+    text_scale = diagram.canvas.text_scale
+    if editor:
+        # Editor chrome uses browser-viewport coordinates.  The nested SVG below
+        # retains the diagram's fixed logical coordinate system.
+        root = ET.Element(f"{{{SVG}}}svg", {
+            "width": "100%", "height": "100%",
+            "style": f"display:block;width:100vw;height:100vh;overflow:visible;--text-scale:{_num(text_scale)}",
+            "version": "1.1", "preserveAspectRatio": "xMidYMid meet",
+            "class": "editor-state-idle", "data-editor": "true",
+        })
+    else:
+        # Keep the clean renderer byte-for-byte stable when regenerated.
+        root = ET.Element(f"{{{SVG}}}svg", {
+            "width": _num(width), "height": _num(height), "viewBox": f"0 0 {_num(width)} {_num(height)}",
+            "version": "1.1", "preserveAspectRatio": "xMidYMid meet",
+            "class": "clean-render", "data-editor": "false", "style": f"--text-scale:{_num(text_scale)}",
+        })
     defs = _svg(root, "defs")
     style = _svg(defs, "style", {"type": "text/css", "data-source": "styles.css"})
     style.text = css
@@ -337,8 +352,12 @@ def render_svg(diagram: Diagram, css: str, *, editor: bool) -> ET.ElementTree:
             "refX": 11, "refY": 5, "orient": "auto", "markerUnits": "strokeWidth",
             "class": marker_class})
         _svg(marker, "path", {"class": "route-arrowhead", "d": "M 0 0 L 12 5 L 0 10 z"})
-    _svg(root, "rect", {"class": "canvas-background", "x": 0, "y": 0, "width": _num(width), "height": _num(height)})
-    content = _svg(root, "g", {"id": "diagram-content"})
+    canvas_parent = root
+    if editor:
+        canvas_parent = _svg(root, "svg", {"id": "diagram-canvas", "x": 0, "y": 0,
+            "width": _num(width), "height": _num(height), "viewBox": f"0 0 {_num(width)} {_num(height)}"})
+    _svg(canvas_parent, "rect", {"class": "canvas-background", "x": 0, "y": 0, "width": _num(width), "height": _num(height)})
+    content = _svg(canvas_parent, "g", {"id": "diagram-content"})
     cluster_fills = _svg(content, "g", {"id": "cluster-fills"})
     routes = _svg(content, "g", {"id": "routes-layer"})
     boxes = _svg(content, "g", {"id": "boxes-layer"})
@@ -362,7 +381,7 @@ def render_svg(diagram: Diagram, css: str, *, editor: bool) -> ET.ElementTree:
         path_data = _path(points)
         _svg(group, "path", {"class": "route-path", "d": path_data})
         _svg(group, "path", {"class": "route-hit", "d": path_data})
-        _add_route_label(group, route.route_id, route.data)
+        _add_route_label(group, route.route_id, route.data, text_scale)
     box_elements = sorted((e for e in diagram.elements.values() if e.element_class == "box"),
                           key=lambda e: (diagram.depth(e.element_id), e.element_id))
     for element in box_elements:
@@ -371,13 +390,13 @@ def render_svg(diagram: Diagram, css: str, *, editor: bool) -> ET.ElementTree:
         _svg(group, "rect", {"class": "element-surface", "x": _num(data["x"]), "y": _num(data["y"]),
             "width": _num(data["width"]), "height": _num(data["height"])})
         title_value, body_value = data.get("title", ""), data.get("body", "")
-        font_size = float(data.get("font_size", 36))
+        font_size = float(data.get("font_size", 36)) * text_scale
         title_lines = _wrap(title_value, data["width"] - 50, font_size)
         body_size = font_size * 0.88
         body_lines = _wrap(body_value, data["width"] - 50, body_size)
         title_height = len(title_lines) * font_size * 1.15
         body_height = len(body_lines) * body_size * 1.18
-        gap = 16 if title_lines and body_lines else 0
+        gap = 16 * text_scale if title_lines and body_lines else 0
         top = data["y"] + (data["height"] - title_height - body_height - gap) / 2
         center_x = data["x"] + data["width"] / 2
         if title_lines:
@@ -391,7 +410,7 @@ def render_svg(diagram: Diagram, css: str, *, editor: bool) -> ET.ElementTree:
         if not data.get("title"):
             continue
         group = _element_group(cluster_labels, element, "cluster-label-content")
-        font_size = float(data.get("font_size", 38))
+        font_size = float(data.get("font_size", 38)) * text_scale
         lines = _wrap(data["title"], data["width"] - 60, font_size)
         _text(group, data["title"], data["x"] + 30,
               data["y"] + 52 + (len(lines) - 1) * font_size * .55, "cluster-title",
@@ -402,7 +421,7 @@ def render_svg(diagram: Diagram, css: str, *, editor: bool) -> ET.ElementTree:
             continue
         data = element.data
         group = _element_group(texts, element, "text-content")
-        font_size = float(data.get("font_size", defaults[element.element_class]))
+        font_size = float(data.get("font_size", defaults[element.element_class])) * text_scale
         _text(group, data.get("text", data.get("title", "")), data["x"], data["y"],
               f"element-{element.element_class}", width=data.get("width"), font_size=font_size,
               anchor="middle" if element.element_class == "note" else "start")
@@ -430,9 +449,11 @@ ROUTE_COLOR_OPTIONS = _color_options(ROUTE_EDITOR_COLORS, legacy_default=True)
 PANEL_XML = f"""
 <div xmlns="{XHTML}" id="editor-panel-shell" class="editor-panel-shell" data-state="idle">
  <div id="editor-drag-handle" class="editor-drag-handle">Diagram editor — drag here</div>
- <div class="editor-tabs" id="editor-toolbar"><button id="begin-create-element" type="button">Create element</button><button id="begin-create-route" type="button">Create route</button><button id="begin-preview" type="button">Preview</button><button id="export-json" type="button">Export JSON</button></div>
+ <div class="editor-tabs" id="editor-toolbar"><button id="begin-create-element" type="button">Create element</button><button id="begin-create-route" type="button">Create route</button><button id="begin-preview" type="button">Preview</button><button id="deselect" type="button" hidden="hidden">Deselect</button><button id="export-json" type="button">Export JSON</button></div>
  <div class="editor-tabs" id="preview-toolbar" hidden="hidden"><button id="exit-preview" type="button">Return to editor</button></div>
  <div class="editor-panel-body">
+   <section class="document-settings"><h3>Document settings</h3><div class="editor-grid"><label for="canvas-width">Canvas width</label><input id="canvas-width" type="number" step="any" min="0.01"/><label for="canvas-height">Canvas height</label><input id="canvas-height" type="number" step="any" min="0.01"/><label for="document-text-scale">Text size (%)</label><input id="document-text-scale" type="number" step="1" min="1"/> </div><div id="document-settings-status" class="editor-status"/></section>
+   <section class="editor-zoom" aria-label="Editor zoom"><h3>Editor zoom</h3><div class="editor-actions"><button id="zoom-out" type="button" title="Zoom out">−</button><output id="zoom-display" for="zoom-out zoom-in">100%</output><button id="zoom-in" type="button" title="Zoom in">+</button><button id="fit-canvas" type="button">Fit to canvas</button></div></section>
    <div id="editor-idle" class="editor-state"><p class="editor-status">Select an element or route in the diagram to edit it.</p><p class="preview-copy">Export downloads the current diagram as a JSON file.</p></div>
    <div id="element-edit" class="editor-state"><h3>Selected element</h3><div id="element-empty" class="editor-status">Editing element.</div>
     <div class="editor-grid">

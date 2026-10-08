@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml" width="4266.6665" height="3200" viewBox="0 0 4266.6665 3200" version="1.1" preserveAspectRatio="xMidYMid meet" class="editor-state-idle" data-editor="true"><defs><style type="text/css" data-source="styles.css">:root {
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml" width="100%" height="100%" style="display:block;width:100vw;height:100vh;overflow:visible;--text-scale:1" version="1.1" preserveAspectRatio="xMidYMid meet" class="editor-state-idle" data-editor="true"><defs><style type="text/css" data-source="styles.css">:root {
   --ink: #24313d;
   --muted-ink: #526170;
   --route-deployment: #356a9a;
@@ -7,6 +7,7 @@
   --route-default: #596674;
   --selection: #087ea4;
   --handle-fill: #ffffff;
+  --text-scale: 1;
 }
 
 svg {
@@ -93,37 +94,37 @@ svg {
 }
 
 .element-title {
-  font-size: var(--element-font-size, 76px);
+  font-size: calc(var(--element-font-size, 76px) * var(--text-scale));
   font-weight: 720;
   letter-spacing: -1px;
 }
 
 .element-subtitle {
   fill: var(--muted-ink);
-  font-size: var(--element-font-size, 42px);
+  font-size: calc(var(--element-font-size, 42px) * var(--text-scale));
   font-weight: 420;
 }
 
 .cluster-title {
   fill: var(--palette-edge);
-  font-size: var(--element-font-size, 38px);
+  font-size: calc(var(--element-font-size, 38px) * var(--text-scale));
   font-weight: 700;
 }
 
 .box-title {
-  font-size: var(--element-font-size, 36px);
+  font-size: calc(var(--element-font-size, 36px) * var(--text-scale));
   font-weight: 700;
 }
 
 .box-body {
   fill: var(--muted-ink);
-  font-size: calc(var(--element-font-size, 32px) * 0.88);
+  font-size: calc(var(--element-font-size, 32px) * 0.88 * var(--text-scale));
   font-weight: 420;
 }
 
 .element-note {
   fill: var(--muted-ink);
-  font-size: var(--element-font-size, 30px);
+  font-size: calc(var(--element-font-size, 30px) * var(--text-scale));
   font-style: italic;
 }
 
@@ -225,7 +226,7 @@ svg {
 
 .route-label text {
   fill: var(--ink);
-  font-size: 26px;
+  font-size: calc(26px * var(--text-scale));
   font-weight: 650;
   paint-order: stroke;
   stroke: #ffffff;
@@ -374,6 +375,24 @@ svg {
   padding: 16px 20px 24px;
 }
 
+.document-settings,
+.editor-zoom {
+  border-bottom: 1px solid #d8dde2;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+}
+
+.editor-zoom .editor-actions {
+  align-items: center;
+}
+
+#zoom-display {
+  min-width: 72px;
+  color: #4c5964;
+  font-weight: 700;
+  text-align: center;
+}
+
 .editor-panel-shell [hidden] {
   display: none;
 }
@@ -436,11 +455,13 @@ svg {
 .preview-copy {
   color: #526170;
 }
-</style><marker id="arrow-default" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-default"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-deployment" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-deployment"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-runtime" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-runtime"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-amber" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-amber"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-blue" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-blue"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-neutral" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-neutral"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-purple" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-purple"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-red" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-red"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker></defs><rect class="canvas-background" x="0" y="0" width="4266.6665" height="3200" /><g id="diagram-content"><g id="cluster-fills"><g class="diagram-element element-cluster palette-green cluster-fill" data-element-id="live-application" data-editable="true"><rect class="cluster-surface" x="140" y="1640" width="3260" height="1380" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="local-preparation" data-editable="true"><rect class="cluster-surface" x="140" y="340" width="920" height="1180" /></g><g class="diagram-element element-cluster palette-amber cluster-fill" data-element-id="persistent-state" data-editable="true"><rect class="cluster-surface" x="3500" y="1640" width="630" height="1380" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="publishing-kubernetes" data-editable="true"><rect class="cluster-surface" x="1160" y="340" width="1500" height="1180" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="kubernetes-config" data-editable="true"><rect class="cluster-surface" x="1290" y="800" width="560" height="650" /></g><g class="diagram-element element-cluster palette-green cluster-fill" data-element-id="pod" data-editable="true"><rect class="cluster-surface" x="1880" y="1810" width="1370" height="1020" /></g><g class="diagram-element element-cluster palette-neutral cluster-fill" data-element-id="nginx-container" data-editable="true"><rect class="cluster-surface" x="1990" y="2010" width="500" height="680" /></g><g class="diagram-element element-cluster palette-neutral cluster-fill" data-element-id="web-container" data-editable="true"><rect class="cluster-surface" x="2580" y="2010" width="560" height="680" /></g></g><g id="routes-layer"><g class="diagram-route route-runtime" data-route-id="27"><title>Flappie</title><path class="route-path" d="M 984 936 L 1230 978 L 1230 744" /><path class="route-hit" d="M 984 936 L 1230 978 L 1230 744" /><g class="route-label" aria-hidden="true"><rect x="1044" y="905" width="126" height="44" /><text x="1107" y="937" text-anchor="middle">Flappie</text></g></g><g class="diagram-route route-runtime" data-route-id="check"><title>Route check</title><path class="route-path" d="M 2440 826 L 2406 1616" /><path class="route-hit" d="M 2440 826 L 2406 1616" /><g class="route-label" aria-hidden="true"><rect x="2332" y="1169" width="182" height="44" /><text x="2423" y="1201" text-anchor="middle">Route check</text></g></g><g class="diagram-route route-runtime" data-route-id="fsdfas"><title>flappier</title><path class="route-path" d="M 1036 2414 L 1464 2324" /><path class="route-hit" d="M 1036 2414 L 1464 2324" /><g class="route-label" aria-hidden="true"><rect x="1180" y="2317" width="140" height="44" /><text x="1250" y="2349" text-anchor="middle">flappier</text></g></g></g><g id="boxes-layer"><g class="diagram-element element-box palette-blue box-content" data-element-id="browser" data-editable="true"><rect class="element-surface" x="260" y="1860" width="430" height="150" /><text x="475.0" y="1935.0" class="box-title" text-anchor="middle"><tspan x="475.0" y="1935.0">Browser</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="dns" data-editable="true"><rect class="element-surface" x="260" y="2110" width="430" height="160" /><text x="475.0" y="2163.3088" class="box-title" text-anchor="middle"><tspan x="475.0" y="2163.3088">DNS</tspan></text><text x="475.0" y="2218.7000000000003" class="box-body" text-anchor="middle"><tspan x="475.0" y="2218.7000000000003">worldklems.net</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="docker-build" data-editable="true"><rect class="element-surface" x="260" y="1050" width="680" height="180" /><text x="600.0" y="1094.6176" class="box-title" text-anchor="middle"><tspan x="600.0" y="1094.6176">Docker build</tspan></text><text x="600.0" y="1168.7" class="box-body" text-anchor="middle"><tspan x="600.0" y="1150.0088">Packages application and</tspan><tspan x="600.0" y="1187.3912">dependencies</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="docker-image" data-editable="true"><rect class="element-surface" x="260" y="1310" width="680" height="170" /><text x="600.0" y="1368.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="1368.3088">Docker image</tspan></text><text x="600.0" y="1423.7" class="box-body" text-anchor="middle"><tspan x="600.0" y="1423.7">Deployable artifact</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="dockerfile" data-editable="true"><rect class="element-surface" x="260" y="800" width="680" height="170" /><text x="600.0" y="858.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="858.3088">Dockerfile</tspan></text><text x="600.0" y="913.6999999999999" class="box-body" text-anchor="middle"><tspan x="600.0" y="913.6999999999999">Image recipe</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="git-repository" data-editable="true"><rect class="element-surface" x="260" y="540" width="680" height="180" /><text x="600.0" y="603.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="603.3088">WorldKLEMS Git repository</tspan></text><text x="600.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="600.0" y="658.6999999999999">Django / Wagtail application source</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="harbor-registry" data-editable="true"><rect class="element-surface" x="1290" y="540" width="560" height="180" /><text x="1570.0" y="584.6176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="584.6176">Harbor registry</tspan></text><text x="1570.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="1570.0" y="640.0088">Stores the published Docker</tspan><tspan x="1570.0" y="677.3911999999999">image</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="ingress" data-editable="true"><rect class="element-surface" x="800" y="1980" width="430" height="160" /><text x="1015.0" y="2060.0" class="box-title" text-anchor="middle"><tspan x="1015.0" y="2060.0">Ingress</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="juicefs-media" data-editable="true"><rect class="element-surface" x="3610" y="1990" width="410" height="240" /><text x="3815.0" y="2045.9264" class="box-title" text-anchor="middle"><tspan x="3815.0" y="2024.6864">JuiceFS /</tspan><tspan x="3815.0" y="2067.1664">worldklems-media</tspan></text><text x="3815.0" y="2159.4" class="box-body" text-anchor="middle"><tspan x="3815.0" y="2122.0176">Persistent CMS</tspan><tspan x="3815.0" y="2159.4">files, images and</tspan><tspan x="3815.0" y="2196.7824">documents</tspan></text></g><g class="diagram-element element-box palette-purple box-content" data-element-id="kubectl" data-editable="true"><rect class="element-surface" x="1960" y="800" width="560" height="180" /><text x="2240.0" y="844.6176" class="box-title" text-anchor="middle"><tspan x="2240.0" y="844.6176">kubectl</tspan></text><text x="2240.0" y="918.6999999999999" class="box-body" text-anchor="middle"><tspan x="2240.0" y="900.0088">Apply and inspect Kubernetes</tspan><tspan x="2240.0" y="937.3911999999999">configuration</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="mariadb" data-editable="true"><rect class="element-surface" x="3610" y="2440" width="410" height="220" /><text x="3815.0" y="2504.6176" class="box-title" text-anchor="middle"><tspan x="3815.0" y="2504.6176">CIT MariaDB</tspan></text><text x="3815.0" y="2578.7000000000003" class="box-body" text-anchor="middle"><tspan x="3815.0" y="2560.0088">Structured CMS and</tspan><tspan x="3815.0" y="2597.3912">application state</tspan></text></g><g class="diagram-element element-box palette-purple box-content" data-element-id="rancher" data-editable="true"><rect class="element-surface" x="1960" y="540" width="560" height="180" /><text x="2240.0" y="603.3088" class="box-title" text-anchor="middle"><tspan x="2240.0" y="603.3088">Rancher</tspan></text><text x="2240.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="2240.0" y="658.6999999999999">Inspect and manage Kubernetes</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="service" data-editable="true"><rect class="element-surface" x="1340" y="1980" width="430" height="160" /><text x="1555.0" y="2060.0" class="box-title" text-anchor="middle"><tspan x="1555.0" y="2060.0">Service</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="configmap" data-editable="true"><rect class="element-surface" x="1390" y="1160" width="360" height="125" /><text x="1570.0" y="1177.1176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="1177.1176">ConfigMap</tspan></text><text x="1570.0" y="1251.2" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1232.5088">Ordinary</tspan><tspan x="1570.0" y="1269.8912">configuration</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="deployment" data-editable="true"><rect class="element-surface" x="1390" y="960" width="360" height="155" /><text x="1570.0" y="992.1176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="992.1176">Deployment</tspan></text><text x="1570.0" y="1066.1999999999998" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1047.5087999999998">Desired</tspan><tspan x="1570.0" y="1084.8911999999998">application state</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="secrets" data-editable="true"><rect class="element-surface" x="1390" y="1310" width="360" height="125" /><text x="1570.0" y="1308.4264" class="box-title" text-anchor="middle"><tspan x="1570.0" y="1308.4264">Secrets</tspan></text><text x="1570.0" y="1401.2" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1363.8176">Credentials and</tspan><tspan x="1570.0" y="1401.2">sensitive</tspan><tspan x="1570.0" y="1438.5824">configuration</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="django-wagtail" data-editable="true"><rect class="element-surface" x="2680" y="2370" width="360" height="165" /><text x="2860.0" y="2407.1176" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2385.8776000000003">Django /</tspan><tspan x="2860.0" y="2428.3576000000003">Wagtail</tspan></text><text x="2860.0" y="2501.9" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2483.2088">Application and</tspan><tspan x="2860.0" y="2520.5912">CMS</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="gunicorn" data-editable="true"><rect class="element-surface" x="2680" y="2170" width="360" height="150" /><text x="2860.0" y="2199.6176" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2199.6176">Gunicorn</tspan></text><text x="2860.0" y="2273.7000000000003" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2255.0088">Application</tspan><tspan x="2860.0" y="2292.3912">server</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="nginx" data-editable="true"><rect class="element-surface" x="2070" y="2260" width="340" height="190" /><text x="2240.0" y="2309.6176" class="box-title" text-anchor="middle"><tspan x="2240.0" y="2309.6176">NGINX</tspan></text><text x="2240.0" y="2383.7000000000003" class="box-body" text-anchor="middle"><tspan x="2240.0" y="2365.0088">Proxy requests;</tspan><tspan x="2240.0" y="2402.3912">serve /media/</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="whitenoise" data-editable="true" style="--element-font-size:28px"><rect class="element-surface" x="2740" y="2580" width="240" height="90" /><text x="2860.0" y="2587.9248" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2587.9248">WhiteNoise</tspan></text><text x="2860.0" y="2649.1" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2634.5624">serves</tspan><tspan x="2860.0" y="2663.6376">/static/</tspan></text></g></g><g id="cluster-labels"><g class="diagram-element element-cluster palette-green cluster-label-content" data-element-id="live-application" data-editable="true"><text x="170" y="1692.0" class="cluster-title" text-anchor="start"><tspan x="170" y="1692.0">3. Live application &amp; request routing</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="local-preparation" data-editable="true"><text x="170" y="392.0" class="cluster-title" text-anchor="start"><tspan x="170" y="392.0">1. Local preparation</tspan></text></g><g class="diagram-element element-cluster palette-amber cluster-label-content" data-element-id="persistent-state" data-editable="true"><text x="3530" y="1692.0" class="cluster-title" text-anchor="start"><tspan x="3530" y="1692.0">4. Persistent state</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="publishing-kubernetes" data-editable="true"><text x="1190" y="392.0" class="cluster-title" text-anchor="start"><tspan x="1190" y="392.0">2. Publishing &amp; Kubernetes preparation</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="kubernetes-config" data-editable="true"><text x="1320" y="872.9" class="cluster-title" text-anchor="start"><tspan x="1320" y="850.48">Kubernetes</tspan><tspan x="1320" y="895.32">configuration</tspan></text></g><g class="diagram-element element-cluster palette-green cluster-label-content" data-element-id="pod" data-editable="true"><text x="1910" y="1862.0" class="cluster-title" text-anchor="start"><tspan x="1910" y="1862.0">Pod — disposable runtime unit</tspan></text></g><g class="diagram-element element-cluster palette-neutral cluster-label-content" data-element-id="nginx-container" data-editable="true"><text x="2020" y="2062.0" class="cluster-title" text-anchor="start"><tspan x="2020" y="2062.0">NGINX container</tspan></text></g><g class="diagram-element element-cluster palette-neutral cluster-label-content" data-element-id="web-container" data-editable="true"><text x="2610" y="2062.0" class="cluster-title" text-anchor="start"><tspan x="2610" y="2062.0">web container</tspan></text></g></g><g id="text-layer"><g class="diagram-element element-subtitle palette-neutral text-content" data-element-id="diagram-subtitle" data-editable="true"><text x="140" y="225" class="element-subtitle" text-anchor="start"><tspan x="140" y="225.0">The Council's Map</tspan></text></g><g class="diagram-element element-title palette-neutral text-content" data-element-id="diagram-title" data-editable="true"><text x="140" y="130" class="element-title" text-anchor="start"><tspan x="140" y="130.0">WorldKLEMS deployment architecture</tspan></text></g><g class="diagram-element element-note palette-neutral text-content" data-element-id="state-note" data-editable="true" style="--element-font-size:30px"><text x="3815" y="2840" class="element-note" text-anchor="middle"><tspan x="3815" y="2822.3">The Pod is disposable. The</tspan><tspan x="3815" y="2857.7000000000003">data is not.</tspan></text></g></g></g><foreignObject id="diagram-editor-panel" x="3256.6665000000003" y="30" width="980.0" height="1760.0"><html:div id="editor-panel-shell" class="editor-panel-shell" data-state="idle">
+</style><marker id="arrow-default" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-default"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-deployment" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-deployment"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-runtime" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-runtime"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-amber" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-amber"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-blue" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-blue"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-neutral" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-neutral"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-purple" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-purple"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-red" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-red"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker></defs><svg id="diagram-canvas" x="0" y="0" width="4266.6665" height="3200" viewBox="0 0 4266.6665 3200"><rect class="canvas-background" x="0" y="0" width="4266.6665" height="3200" /><g id="diagram-content"><g id="cluster-fills"><g class="diagram-element element-cluster palette-green cluster-fill" data-element-id="live-application" data-editable="true"><rect class="cluster-surface" x="140" y="1640" width="3260" height="1380" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="local-preparation" data-editable="true"><rect class="cluster-surface" x="140" y="340" width="920" height="1180" /></g><g class="diagram-element element-cluster palette-amber cluster-fill" data-element-id="persistent-state" data-editable="true"><rect class="cluster-surface" x="3500" y="1640" width="630" height="1380" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="publishing-kubernetes" data-editable="true"><rect class="cluster-surface" x="1160" y="340" width="1500" height="1180" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="kubernetes-config" data-editable="true"><rect class="cluster-surface" x="1290" y="800" width="560" height="650" /></g><g class="diagram-element element-cluster palette-green cluster-fill" data-element-id="pod" data-editable="true"><rect class="cluster-surface" x="1880" y="1810" width="1370" height="1020" /></g><g class="diagram-element element-cluster palette-neutral cluster-fill" data-element-id="nginx-container" data-editable="true"><rect class="cluster-surface" x="1990" y="2010" width="500" height="680" /></g><g class="diagram-element element-cluster palette-neutral cluster-fill" data-element-id="web-container" data-editable="true"><rect class="cluster-surface" x="2580" y="2010" width="560" height="680" /></g></g><g id="routes-layer"><g class="diagram-route route-runtime" data-route-id="27"><title>Flappie</title><path class="route-path" d="M 984 936 L 1230 978 L 1230 744" /><path class="route-hit" d="M 984 936 L 1230 978 L 1230 744" /><g class="route-label" aria-hidden="true"><rect x="1044" y="905" width="126" height="44" /><text x="1107" y="937" text-anchor="middle">Flappie</text></g></g><g class="diagram-route route-runtime" data-route-id="check"><title>Route check</title><path class="route-path" d="M 2440 826 L 2406 1616" /><path class="route-hit" d="M 2440 826 L 2406 1616" /><g class="route-label" aria-hidden="true"><rect x="2332" y="1169" width="182" height="44" /><text x="2423" y="1201" text-anchor="middle">Route check</text></g></g><g class="diagram-route route-runtime" data-route-id="fsdfas"><title>flappier</title><path class="route-path" d="M 1036 2414 L 1464 2324" /><path class="route-hit" d="M 1036 2414 L 1464 2324" /><g class="route-label" aria-hidden="true"><rect x="1180" y="2317" width="140" height="44" /><text x="1250" y="2349" text-anchor="middle">flappier</text></g></g></g><g id="boxes-layer"><g class="diagram-element element-box palette-blue box-content" data-element-id="browser" data-editable="true"><rect class="element-surface" x="260" y="1860" width="430" height="150" /><text x="475.0" y="1935.0" class="box-title" text-anchor="middle"><tspan x="475.0" y="1935.0">Browser</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="dns" data-editable="true"><rect class="element-surface" x="260" y="2110" width="430" height="160" /><text x="475.0" y="2163.3088" class="box-title" text-anchor="middle"><tspan x="475.0" y="2163.3088">DNS</tspan></text><text x="475.0" y="2218.7000000000003" class="box-body" text-anchor="middle"><tspan x="475.0" y="2218.7000000000003">worldklems.net</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="docker-build" data-editable="true"><rect class="element-surface" x="260" y="1050" width="680" height="180" /><text x="600.0" y="1094.6176" class="box-title" text-anchor="middle"><tspan x="600.0" y="1094.6176">Docker build</tspan></text><text x="600.0" y="1168.7" class="box-body" text-anchor="middle"><tspan x="600.0" y="1150.0088">Packages application and</tspan><tspan x="600.0" y="1187.3912">dependencies</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="docker-image" data-editable="true"><rect class="element-surface" x="260" y="1310" width="680" height="170" /><text x="600.0" y="1368.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="1368.3088">Docker image</tspan></text><text x="600.0" y="1423.7" class="box-body" text-anchor="middle"><tspan x="600.0" y="1423.7">Deployable artifact</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="dockerfile" data-editable="true"><rect class="element-surface" x="260" y="800" width="680" height="170" /><text x="600.0" y="858.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="858.3088">Dockerfile</tspan></text><text x="600.0" y="913.6999999999999" class="box-body" text-anchor="middle"><tspan x="600.0" y="913.6999999999999">Image recipe</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="git-repository" data-editable="true"><rect class="element-surface" x="260" y="540" width="680" height="180" /><text x="600.0" y="603.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="603.3088">WorldKLEMS Git repository</tspan></text><text x="600.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="600.0" y="658.6999999999999">Django / Wagtail application source</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="harbor-registry" data-editable="true"><rect class="element-surface" x="1290" y="540" width="560" height="180" /><text x="1570.0" y="584.6176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="584.6176">Harbor registry</tspan></text><text x="1570.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="1570.0" y="640.0088">Stores the published Docker</tspan><tspan x="1570.0" y="677.3911999999999">image</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="ingress" data-editable="true"><rect class="element-surface" x="800" y="1980" width="430" height="160" /><text x="1015.0" y="2060.0" class="box-title" text-anchor="middle"><tspan x="1015.0" y="2060.0">Ingress</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="juicefs-media" data-editable="true"><rect class="element-surface" x="3610" y="1990" width="410" height="240" /><text x="3815.0" y="2045.9264" class="box-title" text-anchor="middle"><tspan x="3815.0" y="2024.6864">JuiceFS /</tspan><tspan x="3815.0" y="2067.1664">worldklems-media</tspan></text><text x="3815.0" y="2159.4" class="box-body" text-anchor="middle"><tspan x="3815.0" y="2122.0176">Persistent CMS</tspan><tspan x="3815.0" y="2159.4">files, images and</tspan><tspan x="3815.0" y="2196.7824">documents</tspan></text></g><g class="diagram-element element-box palette-purple box-content" data-element-id="kubectl" data-editable="true"><rect class="element-surface" x="1960" y="800" width="560" height="180" /><text x="2240.0" y="844.6176" class="box-title" text-anchor="middle"><tspan x="2240.0" y="844.6176">kubectl</tspan></text><text x="2240.0" y="918.6999999999999" class="box-body" text-anchor="middle"><tspan x="2240.0" y="900.0088">Apply and inspect Kubernetes</tspan><tspan x="2240.0" y="937.3911999999999">configuration</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="mariadb" data-editable="true"><rect class="element-surface" x="3610" y="2440" width="410" height="220" /><text x="3815.0" y="2504.6176" class="box-title" text-anchor="middle"><tspan x="3815.0" y="2504.6176">CIT MariaDB</tspan></text><text x="3815.0" y="2578.7000000000003" class="box-body" text-anchor="middle"><tspan x="3815.0" y="2560.0088">Structured CMS and</tspan><tspan x="3815.0" y="2597.3912">application state</tspan></text></g><g class="diagram-element element-box palette-purple box-content" data-element-id="rancher" data-editable="true"><rect class="element-surface" x="1960" y="540" width="560" height="180" /><text x="2240.0" y="603.3088" class="box-title" text-anchor="middle"><tspan x="2240.0" y="603.3088">Rancher</tspan></text><text x="2240.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="2240.0" y="658.6999999999999">Inspect and manage Kubernetes</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="service" data-editable="true"><rect class="element-surface" x="1340" y="1980" width="430" height="160" /><text x="1555.0" y="2060.0" class="box-title" text-anchor="middle"><tspan x="1555.0" y="2060.0">Service</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="configmap" data-editable="true"><rect class="element-surface" x="1390" y="1160" width="360" height="125" /><text x="1570.0" y="1177.1176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="1177.1176">ConfigMap</tspan></text><text x="1570.0" y="1251.2" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1232.5088">Ordinary</tspan><tspan x="1570.0" y="1269.8912">configuration</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="deployment" data-editable="true"><rect class="element-surface" x="1390" y="960" width="360" height="155" /><text x="1570.0" y="992.1176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="992.1176">Deployment</tspan></text><text x="1570.0" y="1066.1999999999998" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1047.5087999999998">Desired</tspan><tspan x="1570.0" y="1084.8911999999998">application state</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="secrets" data-editable="true"><rect class="element-surface" x="1390" y="1310" width="360" height="125" /><text x="1570.0" y="1308.4264" class="box-title" text-anchor="middle"><tspan x="1570.0" y="1308.4264">Secrets</tspan></text><text x="1570.0" y="1401.2" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1363.8176">Credentials and</tspan><tspan x="1570.0" y="1401.2">sensitive</tspan><tspan x="1570.0" y="1438.5824">configuration</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="django-wagtail" data-editable="true"><rect class="element-surface" x="2680" y="2370" width="360" height="165" /><text x="2860.0" y="2407.1176" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2385.8776000000003">Django /</tspan><tspan x="2860.0" y="2428.3576000000003">Wagtail</tspan></text><text x="2860.0" y="2501.9" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2483.2088">Application and</tspan><tspan x="2860.0" y="2520.5912">CMS</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="gunicorn" data-editable="true"><rect class="element-surface" x="2680" y="2170" width="360" height="150" /><text x="2860.0" y="2199.6176" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2199.6176">Gunicorn</tspan></text><text x="2860.0" y="2273.7000000000003" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2255.0088">Application</tspan><tspan x="2860.0" y="2292.3912">server</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="nginx" data-editable="true"><rect class="element-surface" x="2070" y="2260" width="340" height="190" /><text x="2240.0" y="2309.6176" class="box-title" text-anchor="middle"><tspan x="2240.0" y="2309.6176">NGINX</tspan></text><text x="2240.0" y="2383.7000000000003" class="box-body" text-anchor="middle"><tspan x="2240.0" y="2365.0088">Proxy requests;</tspan><tspan x="2240.0" y="2402.3912">serve /media/</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="whitenoise" data-editable="true" style="--element-font-size:28px"><rect class="element-surface" x="2740" y="2580" width="240" height="90" /><text x="2860.0" y="2587.9248" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2587.9248">WhiteNoise</tspan></text><text x="2860.0" y="2649.1" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2634.5624">serves</tspan><tspan x="2860.0" y="2663.6376">/static/</tspan></text></g></g><g id="cluster-labels"><g class="diagram-element element-cluster palette-green cluster-label-content" data-element-id="live-application" data-editable="true"><text x="170" y="1692.0" class="cluster-title" text-anchor="start"><tspan x="170" y="1692.0">3. Live application &amp; request routing</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="local-preparation" data-editable="true"><text x="170" y="392.0" class="cluster-title" text-anchor="start"><tspan x="170" y="392.0">1. Local preparation</tspan></text></g><g class="diagram-element element-cluster palette-amber cluster-label-content" data-element-id="persistent-state" data-editable="true"><text x="3530" y="1692.0" class="cluster-title" text-anchor="start"><tspan x="3530" y="1692.0">4. Persistent state</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="publishing-kubernetes" data-editable="true"><text x="1190" y="392.0" class="cluster-title" text-anchor="start"><tspan x="1190" y="392.0">2. Publishing &amp; Kubernetes preparation</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="kubernetes-config" data-editable="true"><text x="1320" y="872.9" class="cluster-title" text-anchor="start"><tspan x="1320" y="850.48">Kubernetes</tspan><tspan x="1320" y="895.32">configuration</tspan></text></g><g class="diagram-element element-cluster palette-green cluster-label-content" data-element-id="pod" data-editable="true"><text x="1910" y="1862.0" class="cluster-title" text-anchor="start"><tspan x="1910" y="1862.0">Pod — disposable runtime unit</tspan></text></g><g class="diagram-element element-cluster palette-neutral cluster-label-content" data-element-id="nginx-container" data-editable="true"><text x="2020" y="2062.0" class="cluster-title" text-anchor="start"><tspan x="2020" y="2062.0">NGINX container</tspan></text></g><g class="diagram-element element-cluster palette-neutral cluster-label-content" data-element-id="web-container" data-editable="true"><text x="2610" y="2062.0" class="cluster-title" text-anchor="start"><tspan x="2610" y="2062.0">web container</tspan></text></g></g><g id="text-layer"><g class="diagram-element element-subtitle palette-neutral text-content" data-element-id="diagram-subtitle" data-editable="true"><text x="140" y="225" class="element-subtitle" text-anchor="start"><tspan x="140" y="225.0">The Council's Map</tspan></text></g><g class="diagram-element element-title palette-neutral text-content" data-element-id="diagram-title" data-editable="true"><text x="140" y="130" class="element-title" text-anchor="start"><tspan x="140" y="130.0">WorldKLEMS deployment architecture</tspan></text></g><g class="diagram-element element-note palette-neutral text-content" data-element-id="state-note" data-editable="true" style="--element-font-size:30px"><text x="3815" y="2840" class="element-note" text-anchor="middle"><tspan x="3815" y="2822.3">The Pod is disposable. The</tspan><tspan x="3815" y="2857.7000000000003">data is not.</tspan></text></g></g></g></svg><foreignObject id="diagram-editor-panel" x="3256.6665000000003" y="30" width="980.0" height="1760.0"><html:div id="editor-panel-shell" class="editor-panel-shell" data-state="idle">
  <html:div id="editor-drag-handle" class="editor-drag-handle">Diagram editor — drag here</html:div>
- <html:div class="editor-tabs" id="editor-toolbar"><html:button id="begin-create-element" type="button">Create element</html:button><html:button id="begin-create-route" type="button">Create route</html:button><html:button id="begin-preview" type="button">Preview</html:button><html:button id="export-json" type="button">Export JSON</html:button></html:div>
+ <html:div class="editor-tabs" id="editor-toolbar"><html:button id="begin-create-element" type="button">Create element</html:button><html:button id="begin-create-route" type="button">Create route</html:button><html:button id="begin-preview" type="button">Preview</html:button><html:button id="deselect" type="button" hidden="hidden">Deselect</html:button><html:button id="export-json" type="button">Export JSON</html:button></html:div>
  <html:div class="editor-tabs" id="preview-toolbar" hidden="hidden"><html:button id="exit-preview" type="button">Return to editor</html:button></html:div>
  <html:div class="editor-panel-body">
+   <html:section class="document-settings"><html:h3>Document settings</html:h3><html:div class="editor-grid"><html:label for="canvas-width">Canvas width</html:label><html:input id="canvas-width" type="number" step="any" min="0.01" /><html:label for="canvas-height">Canvas height</html:label><html:input id="canvas-height" type="number" step="any" min="0.01" /><html:label for="document-text-scale">Text size (%)</html:label><html:input id="document-text-scale" type="number" step="1" min="1" /> </html:div><html:div id="document-settings-status" class="editor-status" /></html:section>
+   <html:section class="editor-zoom" aria-label="Editor zoom"><html:h3>Editor zoom</html:h3><html:div class="editor-actions"><html:button id="zoom-out" type="button" title="Zoom out">−</html:button><html:output id="zoom-display" for="zoom-out zoom-in">100%</html:output><html:button id="zoom-in" type="button" title="Zoom in">+</html:button><html:button id="fit-canvas" type="button">Fit to canvas</html:button></html:div></html:section>
    <html:div id="editor-idle" class="editor-state"><html:p class="editor-status">Select an element or route in the diagram to edit it.</html:p><html:p class="preview-copy">Export downloads the current diagram as a JSON file.</html:p></html:div>
    <html:div id="element-edit" class="editor-state"><html:h3>Selected element</html:h3><html:div id="element-empty" class="editor-status">Editing element.</html:div>
     <html:div class="editor-grid">
@@ -460,12 +481,13 @@ svg {
     <html:div class="editor-actions"><html:button id="toggle-place-points" type="button">Place route points</html:button><html:button id="undo-point" type="button">Undo point</html:button><html:button id="insert-point" type="button">Insert bend</html:button><html:button id="delete-point" type="button">Delete point</html:button><html:button id="clear-route" type="button">Clear route</html:button><html:button id="delete-route" type="button">Delete route</html:button></html:div><html:div id="route-status" class="editor-status" /></html:div>
   <html:section id="preview-state" class="editor-state"><html:h3>Preview</html:h3><html:p class="preview-copy">Hover a route to reveal its label. Click routes to toggle persistent highlights; press Escape to clear them all. Empty canvas clicks do not change the selected routes.</html:p></html:section>
  </html:div>
-</html:div></foreignObject><script id="diagram-data" type="application/json">{"canvas": {"width": 4266.6665, "height": 3200}, "elements": {"browser": {"id": "browser", "class": "box", "parent": "live-application", "x": 260, "y": 1860, "width": 430, "height": 150, "color": "blue", "title": "Browser"}, "configmap": {"id": "configmap", "class": "box", "parent": "kubernetes-config", "x": 1390, "y": 1160, "width": 360, "height": 125, "color": "blue", "title": "ConfigMap", "body": "Ordinary configuration"}, "deployment": {"id": "deployment", "class": "box", "parent": "kubernetes-config", "x": 1390, "y": 960, "width": 360, "height": 155, "color": "green", "title": "Deployment", "body": "Desired application state"}, "diagram-subtitle": {"id": "diagram-subtitle", "class": "subtitle", "x": 140, "y": 225, "text": "The Council's Map"}, "diagram-title": {"id": "diagram-title", "class": "title", "x": 140, "y": 130, "text": "WorldKLEMS deployment architecture"}, "django-wagtail": {"id": "django-wagtail", "class": "box", "parent": "web-container", "x": 2680, "y": 2370, "width": 360, "height": 165, "color": "green", "title": "Django / Wagtail", "body": "Application and CMS"}, "dns": {"id": "dns", "class": "box", "parent": "live-application", "x": 260, "y": 2110, "width": 430, "height": 160, "color": "blue", "title": "DNS", "body": "worldklems.net"}, "docker-build": {"id": "docker-build", "class": "box", "parent": "local-preparation", "x": 260, "y": 1050, "width": 680, "height": 180, "color": "neutral", "title": "Docker build", "body": "Packages application and dependencies"}, "docker-image": {"id": "docker-image", "class": "box", "parent": "local-preparation", "x": 260, "y": 1310, "width": 680, "height": 170, "color": "amber", "title": "Docker image", "body": "Deployable artifact"}, "dockerfile": {"id": "dockerfile", "class": "box", "parent": "local-preparation", "x": 260, "y": 800, "width": 680, "height": 170, "color": "neutral", "title": "Dockerfile", "body": "Image recipe"}, "git-repository": {"id": "git-repository", "class": "box", "parent": "local-preparation", "x": 260, "y": 540, "width": 680, "height": 180, "color": "blue", "title": "WorldKLEMS Git repository", "body": "Django / Wagtail application source"}, "gunicorn": {"id": "gunicorn", "class": "box", "parent": "web-container", "x": 2680, "y": 2170, "width": 360, "height": 150, "color": "green", "title": "Gunicorn", "body": "Application server"}, "harbor-registry": {"id": "harbor-registry", "class": "box", "parent": "publishing-kubernetes", "x": 1290, "y": 540, "width": 560, "height": 180, "color": "amber", "title": "Harbor registry", "body": "Stores the published Docker image"}, "ingress": {"id": "ingress", "class": "box", "parent": "live-application", "x": 800, "y": 1980, "width": 430, "height": 160, "color": "green", "title": "Ingress"}, "juicefs-media": {"id": "juicefs-media", "class": "box", "parent": "persistent-state", "x": 3610, "y": 1990, "width": 410, "height": 240, "color": "amber", "title": "JuiceFS / worldklems-media", "body": "Persistent CMS files, images and documents"}, "kubectl": {"id": "kubectl", "class": "box", "parent": "publishing-kubernetes", "x": 1960, "y": 800, "width": 560, "height": 180, "color": "purple", "title": "kubectl", "body": "Apply and inspect Kubernetes configuration"}, "kubernetes-config": {"id": "kubernetes-config", "class": "cluster", "parent": "publishing-kubernetes", "x": 1290, "y": 800, "width": 560, "height": 650, "color": "blue", "title": "Kubernetes configuration"}, "live-application": {"id": "live-application", "class": "cluster", "x": 140, "y": 1640, "width": 3260, "height": 1380, "color": "green", "title": "3. Live application &amp; request routing"}, "local-preparation": {"id": "local-preparation", "class": "cluster", "x": 140, "y": 340, "width": 920, "height": 1180, "color": "blue", "title": "1. Local preparation"}, "mariadb": {"id": "mariadb", "class": "box", "parent": "persistent-state", "x": 3610, "y": 2440, "width": 410, "height": 220, "color": "amber", "title": "CIT MariaDB", "body": "Structured CMS and application state"}, "nginx": {"id": "nginx", "class": "box", "parent": "nginx-container", "x": 2070, "y": 2260, "width": 340, "height": 190, "color": "green", "title": "NGINX", "body": "Proxy requests; serve /media/"}, "nginx-container": {"id": "nginx-container", "class": "cluster", "parent": "pod", "x": 1990, "y": 2010, "width": 500, "height": 680, "color": "neutral", "title": "NGINX container"}, "persistent-state": {"id": "persistent-state", "class": "cluster", "x": 3500, "y": 1640, "width": 630, "height": 1380, "color": "amber", "title": "4. Persistent state"}, "pod": {"id": "pod", "class": "cluster", "parent": "live-application", "x": 1880, "y": 1810, "width": 1370, "height": 1020, "color": "green", "title": "Pod — disposable runtime unit"}, "publishing-kubernetes": {"id": "publishing-kubernetes", "class": "cluster", "x": 1160, "y": 340, "width": 1500, "height": 1180, "color": "blue", "title": "2. Publishing &amp; Kubernetes preparation"}, "rancher": {"id": "rancher", "class": "box", "parent": "publishing-kubernetes", "x": 1960, "y": 540, "width": 560, "height": 180, "color": "purple", "title": "Rancher", "body": "Inspect and manage Kubernetes"}, "secrets": {"id": "secrets", "class": "box", "parent": "kubernetes-config", "x": 1390, "y": 1310, "width": 360, "height": 125, "color": "blue", "title": "Secrets", "body": "Credentials and sensitive configuration"}, "service": {"id": "service", "class": "box", "parent": "live-application", "x": 1340, "y": 1980, "width": 430, "height": 160, "color": "green", "title": "Service"}, "state-note": {"id": "state-note", "class": "note", "parent": "persistent-state", "x": 3815, "y": 2840, "width": 440, "height": 80, "text": "The Pod is disposable. The data is not.", "font_size": 30}, "web-container": {"id": "web-container", "class": "cluster", "parent": "pod", "x": 2580, "y": 2010, "width": 560, "height": 680, "color": "neutral", "title": "web container"}, "whitenoise": {"id": "whitenoise", "class": "box", "parent": "web-container", "x": 2740, "y": 2580, "width": 240, "height": 90, "color": "neutral", "title": "WhiteNoise", "body": "serves /static/", "font_size": 28}}, "routes": {"27": {"points": [{"x": 984, "y": 936}, {"x": 1230, "y": 978}, {"x": 1230, "y": 744}], "label": "Flappie", "type": "runtime"}, "State-1": {"points": [], "type": "runtime"}, "check": {"points": [{"x": 2440, "y": 826}, {"x": 2406, "y": 1616}], "type": "runtime"}, "fsdfas": {"points": [{"x": 1036, "y": 2414}, {"x": 1464, "y": 2324}], "type": "runtime", "label": "flappier"}}}</script><script type="application/ecmascript">
+</html:div></foreignObject><script id="diagram-data" type="application/json">{"canvas": {"width": 4266.6665, "height": 3200, "text_scale": 1.0}, "elements": {"browser": {"id": "browser", "class": "box", "parent": "live-application", "x": 260, "y": 1860, "width": 430, "height": 150, "color": "blue", "title": "Browser"}, "configmap": {"id": "configmap", "class": "box", "parent": "kubernetes-config", "x": 1390, "y": 1160, "width": 360, "height": 125, "color": "blue", "title": "ConfigMap", "body": "Ordinary configuration"}, "deployment": {"id": "deployment", "class": "box", "parent": "kubernetes-config", "x": 1390, "y": 960, "width": 360, "height": 155, "color": "green", "title": "Deployment", "body": "Desired application state"}, "diagram-subtitle": {"id": "diagram-subtitle", "class": "subtitle", "x": 140, "y": 225, "text": "The Council's Map"}, "diagram-title": {"id": "diagram-title", "class": "title", "x": 140, "y": 130, "text": "WorldKLEMS deployment architecture"}, "django-wagtail": {"id": "django-wagtail", "class": "box", "parent": "web-container", "x": 2680, "y": 2370, "width": 360, "height": 165, "color": "green", "title": "Django / Wagtail", "body": "Application and CMS"}, "dns": {"id": "dns", "class": "box", "parent": "live-application", "x": 260, "y": 2110, "width": 430, "height": 160, "color": "blue", "title": "DNS", "body": "worldklems.net"}, "docker-build": {"id": "docker-build", "class": "box", "parent": "local-preparation", "x": 260, "y": 1050, "width": 680, "height": 180, "color": "neutral", "title": "Docker build", "body": "Packages application and dependencies"}, "docker-image": {"id": "docker-image", "class": "box", "parent": "local-preparation", "x": 260, "y": 1310, "width": 680, "height": 170, "color": "amber", "title": "Docker image", "body": "Deployable artifact"}, "dockerfile": {"id": "dockerfile", "class": "box", "parent": "local-preparation", "x": 260, "y": 800, "width": 680, "height": 170, "color": "neutral", "title": "Dockerfile", "body": "Image recipe"}, "git-repository": {"id": "git-repository", "class": "box", "parent": "local-preparation", "x": 260, "y": 540, "width": 680, "height": 180, "color": "blue", "title": "WorldKLEMS Git repository", "body": "Django / Wagtail application source"}, "gunicorn": {"id": "gunicorn", "class": "box", "parent": "web-container", "x": 2680, "y": 2170, "width": 360, "height": 150, "color": "green", "title": "Gunicorn", "body": "Application server"}, "harbor-registry": {"id": "harbor-registry", "class": "box", "parent": "publishing-kubernetes", "x": 1290, "y": 540, "width": 560, "height": 180, "color": "amber", "title": "Harbor registry", "body": "Stores the published Docker image"}, "ingress": {"id": "ingress", "class": "box", "parent": "live-application", "x": 800, "y": 1980, "width": 430, "height": 160, "color": "green", "title": "Ingress"}, "juicefs-media": {"id": "juicefs-media", "class": "box", "parent": "persistent-state", "x": 3610, "y": 1990, "width": 410, "height": 240, "color": "amber", "title": "JuiceFS / worldklems-media", "body": "Persistent CMS files, images and documents"}, "kubectl": {"id": "kubectl", "class": "box", "parent": "publishing-kubernetes", "x": 1960, "y": 800, "width": 560, "height": 180, "color": "purple", "title": "kubectl", "body": "Apply and inspect Kubernetes configuration"}, "kubernetes-config": {"id": "kubernetes-config", "class": "cluster", "parent": "publishing-kubernetes", "x": 1290, "y": 800, "width": 560, "height": 650, "color": "blue", "title": "Kubernetes configuration"}, "live-application": {"id": "live-application", "class": "cluster", "x": 140, "y": 1640, "width": 3260, "height": 1380, "color": "green", "title": "3. Live application &amp; request routing"}, "local-preparation": {"id": "local-preparation", "class": "cluster", "x": 140, "y": 340, "width": 920, "height": 1180, "color": "blue", "title": "1. Local preparation"}, "mariadb": {"id": "mariadb", "class": "box", "parent": "persistent-state", "x": 3610, "y": 2440, "width": 410, "height": 220, "color": "amber", "title": "CIT MariaDB", "body": "Structured CMS and application state"}, "nginx": {"id": "nginx", "class": "box", "parent": "nginx-container", "x": 2070, "y": 2260, "width": 340, "height": 190, "color": "green", "title": "NGINX", "body": "Proxy requests; serve /media/"}, "nginx-container": {"id": "nginx-container", "class": "cluster", "parent": "pod", "x": 1990, "y": 2010, "width": 500, "height": 680, "color": "neutral", "title": "NGINX container"}, "persistent-state": {"id": "persistent-state", "class": "cluster", "x": 3500, "y": 1640, "width": 630, "height": 1380, "color": "amber", "title": "4. Persistent state"}, "pod": {"id": "pod", "class": "cluster", "parent": "live-application", "x": 1880, "y": 1810, "width": 1370, "height": 1020, "color": "green", "title": "Pod — disposable runtime unit"}, "publishing-kubernetes": {"id": "publishing-kubernetes", "class": "cluster", "x": 1160, "y": 340, "width": 1500, "height": 1180, "color": "blue", "title": "2. Publishing &amp; Kubernetes preparation"}, "rancher": {"id": "rancher", "class": "box", "parent": "publishing-kubernetes", "x": 1960, "y": 540, "width": 560, "height": 180, "color": "purple", "title": "Rancher", "body": "Inspect and manage Kubernetes"}, "secrets": {"id": "secrets", "class": "box", "parent": "kubernetes-config", "x": 1390, "y": 1310, "width": 360, "height": 125, "color": "blue", "title": "Secrets", "body": "Credentials and sensitive configuration"}, "service": {"id": "service", "class": "box", "parent": "live-application", "x": 1340, "y": 1980, "width": 430, "height": 160, "color": "green", "title": "Service"}, "state-note": {"id": "state-note", "class": "note", "parent": "persistent-state", "x": 3815, "y": 2840, "width": 440, "height": 80, "text": "The Pod is disposable. The data is not.", "font_size": 30}, "web-container": {"id": "web-container", "class": "cluster", "parent": "pod", "x": 2580, "y": 2010, "width": 560, "height": 680, "color": "neutral", "title": "web container"}, "whitenoise": {"id": "whitenoise", "class": "box", "parent": "web-container", "x": 2740, "y": 2580, "width": 240, "height": 90, "color": "neutral", "title": "WhiteNoise", "body": "serves /static/", "font_size": 28}}, "routes": {"27": {"points": [{"x": 984, "y": 936}, {"x": 1230, "y": 978}, {"x": 1230, "y": 744}], "label": "Flappie", "type": "runtime"}, "State-1": {"points": [], "type": "runtime"}, "check": {"points": [{"x": 2440, "y": 826}, {"x": 2406, "y": 1616}], "type": "runtime"}, "fsdfas": {"points": [{"x": 1036, "y": 2414}, {"x": 1464, "y": 2324}], "type": "runtime", "label": "flappier"}}}</script><script type="application/ecmascript">
 (function () {
   'use strict';
   const NS = 'http://www.w3.org/2000/svg';
   const HTML_NS = 'http://www.w3.org/1999/xhtml';
   const svg = document.documentElement;
+  const diagramCanvas = document.getElementById('diagram-canvas');
   const panelObject = document.getElementById('diagram-editor-panel');
   const panel = document.getElementById('editor-panel-shell');
   const state = JSON.parse(document.getElementById('diagram-data').textContent);
@@ -473,7 +495,8 @@ svg {
   let editorState = 'idle', selectedElement = null, editingRouteId = null;
   const inspectedRouteIds = new Set();
   let selectedPoint = null, placingRoutePoints = false, gesture = null, panelDrag = null;
-  let suppressClick = false;
+  let suppressClick = false, editorZoom = 1;
+  const MIN_EDITOR_ZOOM = 0.1, MAX_EDITOR_ZOOM = 2;
 
   // These are editor capabilities, not schema restrictions.  Existing fields
   // remain in state when a class does not render them.
@@ -484,10 +507,31 @@ svg {
     subtitle: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize'],
     note: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize']
   };
+  if (!state.canvas || typeof state.canvas !== 'object') state.canvas = {};
+  if (finite(state.canvas.text_scale) === null || Number(state.canvas.text_scale) &lt;= 0) state.canvas.text_scale = 1;
 
   function byId(id) { return document.getElementById(id); }
   function finite(value) { const n = Number(value); return Number.isFinite(n) ? n : null; }
   function rounded(value) { return Number(Number(value).toFixed(2)); }
+  function textScale() {
+    const scale = state.canvas &amp;&amp; finite(state.canvas.text_scale);
+    return scale !== null &amp;&amp; scale &gt; 0 ? scale : 1;
+  }
+  function scaledFontSize(value) { return value * textScale(); }
+  function applyTextScale() { svg.style.setProperty('--text-scale', textScale()); }
+  function applyCanvasGeometry() {
+    const width = Number(state.canvas.width), height = Number(state.canvas.height);
+    diagramCanvas.setAttribute('width', rounded(width * editorZoom));
+    diagramCanvas.setAttribute('height', rounded(height * editorZoom));
+    diagramCanvas.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+    const background = diagramCanvas.querySelector('.canvas-background');
+    if (background) { background.setAttribute('width', width); background.setAttribute('height', height); }
+  }
+  function updateZoomDisplay() { byId('zoom-display').value = Math.round(editorZoom * 100) + '%'; byId('zoom-display').textContent = Math.round(editorZoom * 100) + '%'; }
+  function setEditorZoom(value) {
+    editorZoom = Math.max(MIN_EDITOR_ZOOM, Math.min(MAX_EDITOR_ZOOM, value));
+    applyCanvasGeometry(); updateZoomDisplay();
+  }
   function node(name, attrs) {
     const result = document.createElementNS(NS, name);
     Object.keys(attrs || {}).forEach(function (key) { result.setAttribute(key, attrs[key]); });
@@ -505,9 +549,32 @@ svg {
     }
     select.value = color;
   }
-  function point(evt) {
-    const p = svg.createSVGPoint(); p.x = evt.clientX; p.y = evt.clientY;
-    const matrix = svg.getScreenCTM(); return matrix ? p.matrixTransform(matrix.inverse()) : null;
+  function screenPoint(target, evt) {
+    const p = target.createSVGPoint(); p.x = evt.clientX; p.y = evt.clientY;
+    const matrix = target.getScreenCTM(); return matrix ? p.matrixTransform(matrix.inverse()) : null;
+  }
+  // Diagram gestures remain in the nested, fixed logical canvas.  The panel
+  // instead uses the outer SVG's browser-viewport coordinate system.
+  function point(evt) { return screenPoint(diagramCanvas, evt); }
+  function viewportPoint(evt) { return screenPoint(svg, evt); }
+  function viewportBounds() {
+    const first = viewportPoint({clientX: 0, clientY: 0});
+    const second = viewportPoint({clientX: window.innerWidth, clientY: window.innerHeight});
+    if (!first || !second) return null;
+    return {left: Math.min(first.x, second.x), top: Math.min(first.y, second.y),
+      right: Math.max(first.x, second.x), bottom: Math.max(first.y, second.y)};
+  }
+  function panelPosition(x, y) {
+    const bounds = viewportBounds();
+    if (!bounds) return {x: x, y: y};
+    const width = Number(panelObject.getAttribute('width'));
+    const handleWidth = Math.min(width, 120), handleHeight = Math.min(Number(panelObject.getAttribute('height')), 72);
+    return {x: rounded(Math.max(bounds.left - width + handleWidth, Math.min(bounds.right - handleWidth, x))),
+      y: rounded(Math.max(bounds.top, Math.min(bounds.bottom - handleHeight, y)))};
+  }
+  function movePanel(x, y) {
+    const position = panelPosition(x, y);
+    panelObject.setAttribute('x', position.x); panelObject.setAttribute('y', position.y);
   }
   function orthogonalPoint(previous, candidate) {
     return Math.abs(candidate.x - previous.x) &gt;= Math.abs(candidate.y - previous.y)
@@ -544,14 +611,14 @@ svg {
       const length = Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2);
       if (length &gt; bestLength) { bestLength = length; best = [start, end]; }
     }
-    return {x: (best[0].x + best[1].x) / 2, y: (best[0].y + best[1].y) / 2 - 28};
+    return {x: (best[0].x + best[1].x) / 2, y: (best[0].y + best[1].y) / 2 - 28 * textScale()};
   }
   function addRouteLabel(group, id, route) {
     const value = route.label || 'Route ' + id, position = routeLabelPosition(route.points);
-    const width = Math.max(100, value.length * 14 + 28);
+    const scale = textScale(), width = Math.max(100 * scale, value.length * 14 * scale + 28 * scale);
     const label = node('g', {class: 'route-label', 'aria-hidden': 'true'});
-    label.appendChild(node('rect', {x: position.x - width / 2, y: position.y - 24, width: width, height: 44}));
-    const text = node('text', {x: position.x, y: position.y + 8, 'text-anchor': 'middle'});
+    label.appendChild(node('rect', {x: position.x - width / 2, y: position.y - 24 * scale, width: width, height: 44 * scale}));
+    const text = node('text', {x: position.x, y: position.y + 8 * scale, 'text-anchor': 'middle'});
     text.textContent = value; label.appendChild(text); group.appendChild(label);
   }
   function depth(id) {
@@ -633,18 +700,18 @@ svg {
       .forEach(function (id) {
         const el = state.elements[id], group = elementGroup(boxLayer, id, 'box-content');
         group.appendChild(node('rect', {class: 'element-surface', x: el.x, y: el.y, width: el.width, height: el.height}));
-        const fs = Number(el.font_size || 36), titleLines = wrap(el.title || '', el.width - 50, fs);
+        const fs = scaledFontSize(Number(el.font_size || 36)), titleLines = wrap(el.title || '', el.width - 50, fs);
         const bodyFs = fs * .88, bodyLines = wrap(el.body || '', el.width - 50, bodyFs);
         const titleHeight = (el.title ? titleLines.length : 0) * fs * 1.15;
         const bodyHeight = (el.body ? bodyLines.length : 0) * bodyFs * 1.18;
-        const gap = el.title &amp;&amp; el.body ? 16 : 0;
+        const gap = el.title &amp;&amp; el.body ? 16 * textScale() : 0;
         const top = el.y + (el.height - titleHeight - bodyHeight - gap) / 2, cx = el.x + el.width / 2;
         if (el.title) addText(group, el.title, cx, top + titleHeight / 2, 'box-title', el.width - 50, fs);
         if (el.body) addText(group, el.body, cx, top + titleHeight + gap + bodyHeight / 2, 'box-body', el.width - 50, bodyFs);
       });
     clusters.forEach(function (id) {
       const el = state.elements[id]; if (!el.title) return;
-      const group = elementGroup(clusterLabels, id, 'cluster-label-content'), fs = Number(el.font_size || 38);
+      const group = elementGroup(clusterLabels, id, 'cluster-label-content'), fs = scaledFontSize(Number(el.font_size || 38));
       const lines = wrap(el.title, el.width - 60, fs);
       addText(group, el.title, el.x + 30, el.y + 52 + (lines.length - 1) * fs * .55,
         'cluster-title', el.width - 60, fs, 'start');
@@ -652,7 +719,7 @@ svg {
     ids.filter(function (id) { return ['title', 'subtitle', 'note'].indexOf(state.elements[id].class) !== -1; })
       .forEach(function (id) {
         const el = state.elements[id], group = elementGroup(textLayer, id, 'text-content');
-        const fs = Number(el.font_size || {title: 76, subtitle: 42, note: 30}[el.class]);
+        const fs = scaledFontSize(Number(el.font_size || {title: 76, subtitle: 42, note: 30}[el.class]));
         addText(group, el.text || el.title || '', el.x, el.y, 'element-' + el.class,
           el.width, fs, el.class === 'note' ? 'middle' : 'start');
       });
@@ -661,7 +728,7 @@ svg {
   }
 
   function textBounds(el) {
-    const fs = Number(el.font_size || {title: 76, subtitle: 42, note: 30}[el.class] || 32);
+    const fs = scaledFontSize(Number(el.font_size || {title: 76, subtitle: 42, note: 30}[el.class] || 32));
     const width = Number(el.width || Math.max(260, String(el.text || el.title || '').length * fs * .55));
     const height = Number(el.height || fs * 1.35);
     return el.class === 'note' ? {x: el.x - width / 2, y: el.y - height / 2, width: width, height: height}
@@ -719,7 +786,18 @@ svg {
       gesture = {kind: 'point', start: p, origin: {x: current.x, y: current.y}};
       populatePointFields(); render(); evt.preventDefault(); return;
     }
-    if (editorState === 'editing-route') return;
+    if (editorState === 'editing-route') {
+      const routeId = routeTarget(evt.target);
+      if (routeId === editingRouteId) {
+        const origins = state.routes[routeId].points.map(function (routePoint) {
+          return {x: routePoint.x, y: routePoint.y};
+        });
+        gesture = {kind: 'route-move', start: p, clientX: evt.clientX, clientY: evt.clientY,
+          routeId: routeId, origins: origins, moved: false};
+        evt.preventDefault();
+      }
+      return;
+    }
     const handle = evt.target.closest &amp;&amp; evt.target.closest('.resize-handle');
     if (handle &amp;&amp; selectedElement &amp;&amp; editorState === 'editing-element') {
       const el = state.elements[selectedElement];
@@ -750,10 +828,8 @@ svg {
   }, true);
   document.addEventListener('pointermove', function (evt) {
     if (panelDrag) {
-      const p = point(evt); if (!p) return;
-      const width = Number(panelObject.getAttribute('width')), height = Number(panelObject.getAttribute('height'));
-      panelObject.setAttribute('x', rounded(Math.max(0, Math.min(state.canvas.width - width, p.x - panelDrag.dx))));
-      panelObject.setAttribute('y', rounded(Math.max(0, Math.min(state.canvas.height - height, p.y - panelDrag.dy))));
+      const p = viewportPoint(evt); if (!p) return;
+      movePanel(p.x - panelDrag.dx, p.y - panelDrag.dy);
       panelDrag.moved = true; evt.preventDefault(); return;
     }
     if (!gesture) return;
@@ -776,6 +852,14 @@ svg {
       const next = evt.shiftKey &amp;&amp; previous ? orthogonalPoint(previous, candidate) : candidate;
       const target = state.routes[editingRouteId].points[selectedPoint];
       target.x = next.x; target.y = next.y;
+    } else if (gesture.kind === 'route-move' &amp;&amp; state.routes[gesture.routeId]) {
+      if (!gesture.moved &amp;&amp; Math.hypot(evt.clientX - gesture.clientX, evt.clientY - gesture.clientY) &lt; 3) return;
+      gesture.moved = true;
+      const translationX = rounded(dx), translationY = rounded(dy);
+      state.routes[gesture.routeId].points.forEach(function (routePoint, index) {
+        routePoint.x = gesture.origins[index].x + translationX;
+        routePoint.y = gesture.origins[index].y + translationY;
+      });
     }
     render(); populateGeometryFields(); populateRouteEditor(); evt.preventDefault();
   }, true);
@@ -785,11 +869,27 @@ svg {
   }, true);
   document.addEventListener('pointercancel', function () { gesture = null; panelDrag = null; }, true);
   byId('editor-drag-handle').addEventListener('pointerdown', function (evt) {
-    const p = point(evt); if (!p) return;
+    const p = viewportPoint(evt); if (!p) return;
     panelDrag = {dx: p.x - Number(panelObject.getAttribute('x')),
       dy: p.y - Number(panelObject.getAttribute('y')), moved: false};
     evt.preventDefault(); evt.stopPropagation();
   });
+  window.addEventListener('resize', function () {
+    movePanel(Number(panelObject.getAttribute('x')), Number(panelObject.getAttribute('y')));
+  });
+  function fitCanvas() {
+    const margin = 24, panelBounds = panelObject.getBoundingClientRect();
+    let availableWidth = Math.max(160, window.innerWidth - margin * 2);
+    const availableHeight = Math.max(160, window.innerHeight - margin * 2);
+    if (panelBounds.width &amp;&amp; panelBounds.height &amp;&amp; panelBounds.bottom &gt; margin &amp;&amp; panelBounds.top &lt; window.innerHeight - margin) {
+      if (panelBounds.left &gt;= window.innerWidth / 2) availableWidth = Math.max(160, panelBounds.left - margin);
+      else if (panelBounds.right &lt;= window.innerWidth / 2) availableWidth = Math.max(160, window.innerWidth - panelBounds.right - margin);
+    }
+    setEditorZoom(Math.min(availableWidth / Number(state.canvas.width), availableHeight / Number(state.canvas.height)));
+  }
+  byId('zoom-out').addEventListener('click', function () { setEditorZoom(rounded(editorZoom - 0.1)); });
+  byId('zoom-in').addEventListener('click', function () { setEditorZoom(rounded(editorZoom + 0.1)); });
+  byId('fit-canvas').addEventListener('click', fitCanvas);
 
   function setEditorState(next) {
     editorState = next;
@@ -803,13 +903,38 @@ svg {
     byId('begin-create-element').hidden = !showTopLevelActions;
     byId('begin-create-route').hidden = !showTopLevelActions;
     byId('begin-preview').hidden = !showTopLevelActions;
+    byId('deselect').hidden = editorState !== 'editing-element' &amp;&amp; editorState !== 'editing-route';
     byId('toggle-place-points').textContent = placingRoutePoints ? 'Finish placing points' : 'Place route points';
-    populateElementPanel(); populateRouteEditor();
+    populateDocumentSettings(); populateElementPanel(); populateRouteEditor(); updateZoomDisplay();
   }
   function clearEditing() {
     selectedElement = null; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
     gesture = null; editorState = 'idle'; refreshRoutes(); updatePanelState(); render();
   }
+  byId('deselect').addEventListener('click', clearEditing);
+  function populateDocumentSettings() {
+    byId('canvas-width').value = state.canvas.width;
+    byId('canvas-height').value = state.canvas.height;
+    byId('document-text-scale').value = rounded(textScale() * 100);
+  }
+  [['canvas-width', 'width'], ['canvas-height', 'height']].forEach(function (pair) {
+    byId(pair[0]).addEventListener('input', function () {
+      const value = finite(this.value);
+      if (value === null || value &lt;= 0) {
+        status('document-settings-status', 'Canvas dimensions must be positive finite numbers.'); return;
+      }
+      state.canvas[pair[1]] = value;
+      applyCanvasGeometry(); render(); status('document-settings-status', 'Canvas updated. Existing geometry is unchanged.');
+    });
+  });
+  byId('document-text-scale').addEventListener('input', function () {
+    const percentage = finite(this.value);
+    if (percentage === null || percentage &lt;= 0) {
+      status('document-settings-status', 'Text size must be a positive percentage.'); return;
+    }
+    state.canvas.text_scale = percentage / 100;
+    applyTextScale(); render(); status('document-settings-status', 'Text size updated.');
+  });
   byId('begin-preview').addEventListener('click', function () {
     selectedElement = null; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
     editorState = 'preview'; updatePanelState(); render();
@@ -1134,6 +1259,11 @@ svg {
           const point = state.routes[editingRouteId].points[selectedPoint];
           point.x = gesture.origin.x; point.y = gesture.origin.y;
         }
+        if (gesture &amp;&amp; gesture.kind === 'route-move' &amp;&amp; state.routes[gesture.routeId]) {
+          state.routes[gesture.routeId].points.forEach(function (point, index) {
+            point.x = gesture.origins[index].x; point.y = gesture.origins[index].y;
+          });
+        }
         clearEditing(); evt.preventDefault(); return;
       }
       updatePanelState(); render(); evt.preventDefault(); return;
@@ -1180,6 +1310,13 @@ svg {
   }, true);
 
   function validateExport() {
+    if (!Number.isFinite(Number(state.canvas.width)) || Number(state.canvas.width) &lt;= 0 ||
+        !Number.isFinite(Number(state.canvas.height)) || Number(state.canvas.height) &lt;= 0) {
+      throw new Error('canvas dimensions must be positive finite numbers');
+    }
+    if (!Number.isFinite(Number(state.canvas.text_scale)) || Number(state.canvas.text_scale) &lt;= 0) {
+      throw new Error('text scale must be a positive finite number');
+    }
     const classes = ['title','subtitle','cluster','box','note'];
     Object.keys(state.elements).forEach(function (id) {
       const el = state.elements[id];
@@ -1204,7 +1341,7 @@ svg {
     validateExport(); const elements = {}, routes = {};
     Object.keys(state.elements).sort().forEach(function (id) { elements[id] = state.elements[id]; });
     Object.keys(state.routes).sort().forEach(function (id) { routes[id] = state.routes[id]; });
-    return JSON.stringify({canvas: {width: state.canvas.width, height: state.canvas.height},
+    return JSON.stringify({canvas: {width: state.canvas.width, height: state.canvas.height, text_scale: state.canvas.text_scale},
       elements: elements, routes: routes}, null, 2) + '\n';
   }
   function messageTarget() {
@@ -1220,6 +1357,9 @@ svg {
       panel.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
     } catch (error) { status(messageTarget(), 'Cannot export: ' + error.message); }
   });
-  refreshRoutes(); updatePanelState(); render();
+  applyTextScale(); setEditorZoom(1); refreshRoutes(); updatePanelState(); render();
+  window.requestAnimationFrame(function () {
+    movePanel(Number(panelObject.getAttribute('x')), Number(panelObject.getAttribute('y')));
+  });
 })();
 </script></svg>

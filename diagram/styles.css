@@ -6,6 +6,7 @@
   --route-default: #596674;
   --selection: #087ea4;
   --handle-fill: #ffffff;
+  --text-scale: 1;
 }
 
 svg {
@@ -92,37 +93,37 @@ svg {
 }
 
 .element-title {
-  font-size: var(--element-font-size, 76px);
+  font-size: calc(var(--element-font-size, 76px) * var(--text-scale));
   font-weight: 720;
   letter-spacing: -1px;
 }
 
 .element-subtitle {
   fill: var(--muted-ink);
-  font-size: var(--element-font-size, 42px);
+  font-size: calc(var(--element-font-size, 42px) * var(--text-scale));
   font-weight: 420;
 }
 
 .cluster-title {
   fill: var(--palette-edge);
-  font-size: var(--element-font-size, 38px);
+  font-size: calc(var(--element-font-size, 38px) * var(--text-scale));
   font-weight: 700;
 }
 
 .box-title {
-  font-size: var(--element-font-size, 36px);
+  font-size: calc(var(--element-font-size, 36px) * var(--text-scale));
   font-weight: 700;
 }
 
 .box-body {
   fill: var(--muted-ink);
-  font-size: calc(var(--element-font-size, 32px) * 0.88);
+  font-size: calc(var(--element-font-size, 32px) * 0.88 * var(--text-scale));
   font-weight: 420;
 }
 
 .element-note {
   fill: var(--muted-ink);
-  font-size: var(--element-font-size, 30px);
+  font-size: calc(var(--element-font-size, 30px) * var(--text-scale));
   font-style: italic;
 }
 
@@ -224,7 +225,7 @@ svg {
 
 .route-label text {
   fill: var(--ink);
-  font-size: 26px;
+  font-size: calc(26px * var(--text-scale));
   font-weight: 650;
   paint-order: stroke;
   stroke: #ffffff;
@@ -371,6 +372,24 @@ svg {
   height: calc(100% - 122px);
   overflow: auto;
   padding: 16px 20px 24px;
+}
+
+.document-settings,
+.editor-zoom {
+  border-bottom: 1px solid #d8dde2;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+}
+
+.editor-zoom .editor-actions {
+  align-items: center;
+}
+
+#zoom-display {
+  min-width: 72px;
+  color: #4c5964;
+  font-weight: 700;
+  text-align: center;
 }
 
 .editor-panel-shell [hidden] {

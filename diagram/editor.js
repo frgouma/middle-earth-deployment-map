@@ -4,6 +4,7 @@
   const NS = 'http://www.w3.org/2000/svg';
   const HTML_NS = 'http://www.w3.org/1999/xhtml';
   const svg = document.documentElement;
+  const diagramCanvas = document.getElementById('diagram-canvas');
   const panelObject = document.getElementById('diagram-editor-panel');
   const panel = document.getElementById('editor-panel-shell');
   const state = JSON.parse(document.getElementById('diagram-data').textContent);
@@ -11,7 +12,8 @@
   let editorState = 'idle', selectedElement = null, editingRouteId = null;
   const inspectedRouteIds = new Set();
   let selectedPoint = null, placingRoutePoints = false, gesture = null, panelDrag = null;
-  let suppressClick = false;
+  let suppressClick = false, editorZoom = 1;
+  const MIN_EDITOR_ZOOM = 0.1, MAX_EDITOR_ZOOM = 2;
 
   // These are editor capabilities, not schema restrictions.  Existing fields
   // remain in state when a class does not render them.
@@ -22,10 +24,31 @@
     subtitle: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize'],
     note: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize']
   };
+  if (!state.canvas || typeof state.canvas !== 'object') state.canvas = {};
+  if (finite(state.canvas.text_scale) === null || Number(state.canvas.text_scale) <= 0) state.canvas.text_scale = 1;
 
   function byId(id) { return document.getElementById(id); }
   function finite(value) { const n = Number(value); return Number.isFinite(n) ? n : null; }
   function rounded(value) { return Number(Number(value).toFixed(2)); }
+  function textScale() {
+    const scale = state.canvas && finite(state.canvas.text_scale);
+    return scale !== null && scale > 0 ? scale : 1;
+  }
+  function scaledFontSize(value) { return value * textScale(); }
+  function applyTextScale() { svg.style.setProperty('--text-scale', textScale()); }
+  function applyCanvasGeometry() {
+    const width = Number(state.canvas.width), height = Number(state.canvas.height);
+    diagramCanvas.setAttribute('width', rounded(width * editorZoom));
+    diagramCanvas.setAttribute('height', rounded(height * editorZoom));
+    diagramCanvas.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+    const background = diagramCanvas.querySelector('.canvas-background');
+    if (background) { background.setAttribute('width', width); background.setAttribute('height', height); }
+  }
+  function updateZoomDisplay() { byId('zoom-display').value = Math.round(editorZoom * 100) + '%'; byId('zoom-display').textContent = Math.round(editorZoom * 100) + '%'; }
+  function setEditorZoom(value) {
+    editorZoom = Math.max(MIN_EDITOR_ZOOM, Math.min(MAX_EDITOR_ZOOM, value));
+    applyCanvasGeometry(); updateZoomDisplay();
+  }
   function node(name, attrs) {
     const result = document.createElementNS(NS, name);
     Object.keys(attrs || {}).forEach(function (key) { result.setAttribute(key, attrs[key]); });
@@ -43,9 +66,32 @@
     }
     select.value = color;
   }
-  function point(evt) {
-    const p = svg.createSVGPoint(); p.x = evt.clientX; p.y = evt.clientY;
-    const matrix = svg.getScreenCTM(); return matrix ? p.matrixTransform(matrix.inverse()) : null;
+  function screenPoint(target, evt) {
+    const p = target.createSVGPoint(); p.x = evt.clientX; p.y = evt.clientY;
+    const matrix = target.getScreenCTM(); return matrix ? p.matrixTransform(matrix.inverse()) : null;
+  }
+  // Diagram gestures remain in the nested, fixed logical canvas.  The panel
+  // instead uses the outer SVG's browser-viewport coordinate system.
+  function point(evt) { return screenPoint(diagramCanvas, evt); }
+  function viewportPoint(evt) { return screenPoint(svg, evt); }
+  function viewportBounds() {
+    const first = viewportPoint({clientX: 0, clientY: 0});
+    const second = viewportPoint({clientX: window.innerWidth, clientY: window.innerHeight});
+    if (!first || !second) return null;
+    return {left: Math.min(first.x, second.x), top: Math.min(first.y, second.y),
+      right: Math.max(first.x, second.x), bottom: Math.max(first.y, second.y)};
+  }
+  function panelPosition(x, y) {
+    const bounds = viewportBounds();
+    if (!bounds) return {x: x, y: y};
+    const width = Number(panelObject.getAttribute('width'));
+    const handleWidth = Math.min(width, 120), handleHeight = Math.min(Number(panelObject.getAttribute('height')), 72);
+    return {x: rounded(Math.max(bounds.left - width + handleWidth, Math.min(bounds.right - handleWidth, x))),
+      y: rounded(Math.max(bounds.top, Math.min(bounds.bottom - handleHeight, y)))};
+  }
+  function movePanel(x, y) {
+    const position = panelPosition(x, y);
+    panelObject.setAttribute('x', position.x); panelObject.setAttribute('y', position.y);
   }
   function orthogonalPoint(previous, candidate) {
     return Math.abs(candidate.x - previous.x) >= Math.abs(candidate.y - previous.y)
@@ -82,14 +128,14 @@
       const length = Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2);
       if (length > bestLength) { bestLength = length; best = [start, end]; }
     }
-    return {x: (best[0].x + best[1].x) / 2, y: (best[0].y + best[1].y) / 2 - 28};
+    return {x: (best[0].x + best[1].x) / 2, y: (best[0].y + best[1].y) / 2 - 28 * textScale()};
   }
   function addRouteLabel(group, id, route) {
     const value = route.label || 'Route ' + id, position = routeLabelPosition(route.points);
-    const width = Math.max(100, value.length * 14 + 28);
+    const scale = textScale(), width = Math.max(100 * scale, value.length * 14 * scale + 28 * scale);
     const label = node('g', {class: 'route-label', 'aria-hidden': 'true'});
-    label.appendChild(node('rect', {x: position.x - width / 2, y: position.y - 24, width: width, height: 44}));
-    const text = node('text', {x: position.x, y: position.y + 8, 'text-anchor': 'middle'});
+    label.appendChild(node('rect', {x: position.x - width / 2, y: position.y - 24 * scale, width: width, height: 44 * scale}));
+    const text = node('text', {x: position.x, y: position.y + 8 * scale, 'text-anchor': 'middle'});
     text.textContent = value; label.appendChild(text); group.appendChild(label);
   }
   function depth(id) {
@@ -171,18 +217,18 @@
       .forEach(function (id) {
         const el = state.elements[id], group = elementGroup(boxLayer, id, 'box-content');
         group.appendChild(node('rect', {class: 'element-surface', x: el.x, y: el.y, width: el.width, height: el.height}));
-        const fs = Number(el.font_size || 36), titleLines = wrap(el.title || '', el.width - 50, fs);
+        const fs = scaledFontSize(Number(el.font_size || 36)), titleLines = wrap(el.title || '', el.width - 50, fs);
         const bodyFs = fs * .88, bodyLines = wrap(el.body || '', el.width - 50, bodyFs);
         const titleHeight = (el.title ? titleLines.length : 0) * fs * 1.15;
         const bodyHeight = (el.body ? bodyLines.length : 0) * bodyFs * 1.18;
-        const gap = el.title && el.body ? 16 : 0;
+        const gap = el.title && el.body ? 16 * textScale() : 0;
         const top = el.y + (el.height - titleHeight - bodyHeight - gap) / 2, cx = el.x + el.width / 2;
         if (el.title) addText(group, el.title, cx, top + titleHeight / 2, 'box-title', el.width - 50, fs);
         if (el.body) addText(group, el.body, cx, top + titleHeight + gap + bodyHeight / 2, 'box-body', el.width - 50, bodyFs);
       });
     clusters.forEach(function (id) {
       const el = state.elements[id]; if (!el.title) return;
-      const group = elementGroup(clusterLabels, id, 'cluster-label-content'), fs = Number(el.font_size || 38);
+      const group = elementGroup(clusterLabels, id, 'cluster-label-content'), fs = scaledFontSize(Number(el.font_size || 38));
       const lines = wrap(el.title, el.width - 60, fs);
       addText(group, el.title, el.x + 30, el.y + 52 + (lines.length - 1) * fs * .55,
         'cluster-title', el.width - 60, fs, 'start');
@@ -190,7 +236,7 @@
     ids.filter(function (id) { return ['title', 'subtitle', 'note'].indexOf(state.elements[id].class) !== -1; })
       .forEach(function (id) {
         const el = state.elements[id], group = elementGroup(textLayer, id, 'text-content');
-        const fs = Number(el.font_size || {title: 76, subtitle: 42, note: 30}[el.class]);
+        const fs = scaledFontSize(Number(el.font_size || {title: 76, subtitle: 42, note: 30}[el.class]));
         addText(group, el.text || el.title || '', el.x, el.y, 'element-' + el.class,
           el.width, fs, el.class === 'note' ? 'middle' : 'start');
       });
@@ -199,7 +245,7 @@
   }
 
   function textBounds(el) {
-    const fs = Number(el.font_size || {title: 76, subtitle: 42, note: 30}[el.class] || 32);
+    const fs = scaledFontSize(Number(el.font_size || {title: 76, subtitle: 42, note: 30}[el.class] || 32));
     const width = Number(el.width || Math.max(260, String(el.text || el.title || '').length * fs * .55));
     const height = Number(el.height || fs * 1.35);
     return el.class === 'note' ? {x: el.x - width / 2, y: el.y - height / 2, width: width, height: height}
@@ -257,7 +303,18 @@
       gesture = {kind: 'point', start: p, origin: {x: current.x, y: current.y}};
       populatePointFields(); render(); evt.preventDefault(); return;
     }
-    if (editorState === 'editing-route') return;
+    if (editorState === 'editing-route') {
+      const routeId = routeTarget(evt.target);
+      if (routeId === editingRouteId) {
+        const origins = state.routes[routeId].points.map(function (routePoint) {
+          return {x: routePoint.x, y: routePoint.y};
+        });
+        gesture = {kind: 'route-move', start: p, clientX: evt.clientX, clientY: evt.clientY,
+          routeId: routeId, origins: origins, moved: false};
+        evt.preventDefault();
+      }
+      return;
+    }
     const handle = evt.target.closest && evt.target.closest('.resize-handle');
     if (handle && selectedElement && editorState === 'editing-element') {
       const el = state.elements[selectedElement];
@@ -288,10 +345,8 @@
   }, true);
   document.addEventListener('pointermove', function (evt) {
     if (panelDrag) {
-      const p = point(evt); if (!p) return;
-      const width = Number(panelObject.getAttribute('width')), height = Number(panelObject.getAttribute('height'));
-      panelObject.setAttribute('x', rounded(Math.max(0, Math.min(state.canvas.width - width, p.x - panelDrag.dx))));
-      panelObject.setAttribute('y', rounded(Math.max(0, Math.min(state.canvas.height - height, p.y - panelDrag.dy))));
+      const p = viewportPoint(evt); if (!p) return;
+      movePanel(p.x - panelDrag.dx, p.y - panelDrag.dy);
       panelDrag.moved = true; evt.preventDefault(); return;
     }
     if (!gesture) return;
@@ -314,6 +369,14 @@
       const next = evt.shiftKey && previous ? orthogonalPoint(previous, candidate) : candidate;
       const target = state.routes[editingRouteId].points[selectedPoint];
       target.x = next.x; target.y = next.y;
+    } else if (gesture.kind === 'route-move' && state.routes[gesture.routeId]) {
+      if (!gesture.moved && Math.hypot(evt.clientX - gesture.clientX, evt.clientY - gesture.clientY) < 3) return;
+      gesture.moved = true;
+      const translationX = rounded(dx), translationY = rounded(dy);
+      state.routes[gesture.routeId].points.forEach(function (routePoint, index) {
+        routePoint.x = gesture.origins[index].x + translationX;
+        routePoint.y = gesture.origins[index].y + translationY;
+      });
     }
     render(); populateGeometryFields(); populateRouteEditor(); evt.preventDefault();
   }, true);
@@ -323,11 +386,27 @@
   }, true);
   document.addEventListener('pointercancel', function () { gesture = null; panelDrag = null; }, true);
   byId('editor-drag-handle').addEventListener('pointerdown', function (evt) {
-    const p = point(evt); if (!p) return;
+    const p = viewportPoint(evt); if (!p) return;
     panelDrag = {dx: p.x - Number(panelObject.getAttribute('x')),
       dy: p.y - Number(panelObject.getAttribute('y')), moved: false};
     evt.preventDefault(); evt.stopPropagation();
   });
+  window.addEventListener('resize', function () {
+    movePanel(Number(panelObject.getAttribute('x')), Number(panelObject.getAttribute('y')));
+  });
+  function fitCanvas() {
+    const margin = 24, panelBounds = panelObject.getBoundingClientRect();
+    let availableWidth = Math.max(160, window.innerWidth - margin * 2);
+    const availableHeight = Math.max(160, window.innerHeight - margin * 2);
+    if (panelBounds.width && panelBounds.height && panelBounds.bottom > margin && panelBounds.top < window.innerHeight - margin) {
+      if (panelBounds.left >= window.innerWidth / 2) availableWidth = Math.max(160, panelBounds.left - margin);
+      else if (panelBounds.right <= window.innerWidth / 2) availableWidth = Math.max(160, window.innerWidth - panelBounds.right - margin);
+    }
+    setEditorZoom(Math.min(availableWidth / Number(state.canvas.width), availableHeight / Number(state.canvas.height)));
+  }
+  byId('zoom-out').addEventListener('click', function () { setEditorZoom(rounded(editorZoom - 0.1)); });
+  byId('zoom-in').addEventListener('click', function () { setEditorZoom(rounded(editorZoom + 0.1)); });
+  byId('fit-canvas').addEventListener('click', fitCanvas);
 
   function setEditorState(next) {
     editorState = next;
@@ -341,13 +420,38 @@
     byId('begin-create-element').hidden = !showTopLevelActions;
     byId('begin-create-route').hidden = !showTopLevelActions;
     byId('begin-preview').hidden = !showTopLevelActions;
+    byId('deselect').hidden = editorState !== 'editing-element' && editorState !== 'editing-route';
     byId('toggle-place-points').textContent = placingRoutePoints ? 'Finish placing points' : 'Place route points';
-    populateElementPanel(); populateRouteEditor();
+    populateDocumentSettings(); populateElementPanel(); populateRouteEditor(); updateZoomDisplay();
   }
   function clearEditing() {
     selectedElement = null; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
     gesture = null; editorState = 'idle'; refreshRoutes(); updatePanelState(); render();
   }
+  byId('deselect').addEventListener('click', clearEditing);
+  function populateDocumentSettings() {
+    byId('canvas-width').value = state.canvas.width;
+    byId('canvas-height').value = state.canvas.height;
+    byId('document-text-scale').value = rounded(textScale() * 100);
+  }
+  [['canvas-width', 'width'], ['canvas-height', 'height']].forEach(function (pair) {
+    byId(pair[0]).addEventListener('input', function () {
+      const value = finite(this.value);
+      if (value === null || value <= 0) {
+        status('document-settings-status', 'Canvas dimensions must be positive finite numbers.'); return;
+      }
+      state.canvas[pair[1]] = value;
+      applyCanvasGeometry(); render(); status('document-settings-status', 'Canvas updated. Existing geometry is unchanged.');
+    });
+  });
+  byId('document-text-scale').addEventListener('input', function () {
+    const percentage = finite(this.value);
+    if (percentage === null || percentage <= 0) {
+      status('document-settings-status', 'Text size must be a positive percentage.'); return;
+    }
+    state.canvas.text_scale = percentage / 100;
+    applyTextScale(); render(); status('document-settings-status', 'Text size updated.');
+  });
   byId('begin-preview').addEventListener('click', function () {
     selectedElement = null; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
     editorState = 'preview'; updatePanelState(); render();
@@ -672,6 +776,11 @@
           const point = state.routes[editingRouteId].points[selectedPoint];
           point.x = gesture.origin.x; point.y = gesture.origin.y;
         }
+        if (gesture && gesture.kind === 'route-move' && state.routes[gesture.routeId]) {
+          state.routes[gesture.routeId].points.forEach(function (point, index) {
+            point.x = gesture.origins[index].x; point.y = gesture.origins[index].y;
+          });
+        }
         clearEditing(); evt.preventDefault(); return;
       }
       updatePanelState(); render(); evt.preventDefault(); return;
@@ -718,6 +827,13 @@
   }, true);
 
   function validateExport() {
+    if (!Number.isFinite(Number(state.canvas.width)) || Number(state.canvas.width) <= 0 ||
+        !Number.isFinite(Number(state.canvas.height)) || Number(state.canvas.height) <= 0) {
+      throw new Error('canvas dimensions must be positive finite numbers');
+    }
+    if (!Number.isFinite(Number(state.canvas.text_scale)) || Number(state.canvas.text_scale) <= 0) {
+      throw new Error('text scale must be a positive finite number');
+    }
     const classes = ['title','subtitle','cluster','box','note'];
     Object.keys(state.elements).forEach(function (id) {
       const el = state.elements[id];
@@ -742,7 +858,7 @@
     validateExport(); const elements = {}, routes = {};
     Object.keys(state.elements).sort().forEach(function (id) { elements[id] = state.elements[id]; });
     Object.keys(state.routes).sort().forEach(function (id) { routes[id] = state.routes[id]; });
-    return JSON.stringify({canvas: {width: state.canvas.width, height: state.canvas.height},
+    return JSON.stringify({canvas: {width: state.canvas.width, height: state.canvas.height, text_scale: state.canvas.text_scale},
       elements: elements, routes: routes}, null, 2) + '\n';
   }
   function messageTarget() {
@@ -758,5 +874,8 @@
       panel.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
     } catch (error) { status(messageTarget(), 'Cannot export: ' + error.message); }
   });
-  refreshRoutes(); updatePanelState(); render();
+  applyTextScale(); setEditorZoom(1); refreshRoutes(); updatePanelState(); render();
+  window.requestAnimationFrame(function () {
+    movePanel(Number(panelObject.getAttribute('x')), Number(panelObject.getAttribute('y')));
+  });
 })();
