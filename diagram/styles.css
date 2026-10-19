@@ -25,14 +25,22 @@ svg {
 
 .element-surface,
 .cluster-surface {
-  vector-effect: non-scaling-stroke;
   transition: filter 100ms ease, stroke-width 100ms ease;
 }
 
 .element-box .element-surface {
   fill: var(--palette-solid);
   stroke: var(--palette-edge);
-  stroke-width: 3;
+  stroke-width: calc(3px * var(--text-scale));
+  rx: 24px;
+  ry: 24px;
+}
+
+
+.element-frame .frame-surface {
+  fill: none;
+  stroke: var(--frame-stroke, #6d7a86);
+  stroke-width: calc(var(--frame-stroke-width, 4px) * var(--text-scale));
   rx: 24px;
   ry: 24px;
 }
@@ -40,7 +48,7 @@ svg {
 .element-cluster .cluster-surface {
   fill: var(--palette-cluster);
   stroke: var(--palette-edge);
-  stroke-width: 4;
+  stroke-width: calc(4px * var(--text-scale));
   stroke-dasharray: 16 12;
   rx: 34px;
   ry: 34px;
@@ -135,10 +143,9 @@ svg {
 .route-path {
   fill: none;
   stroke: var(--route-default);
-  stroke-width: 7;
+  stroke-width: calc(7px * var(--text-scale));
   stroke-linecap: round;
   stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
   marker-end: url(#arrow-default);
   transition: stroke-width 90ms ease, opacity 90ms ease;
 }
@@ -206,7 +213,7 @@ svg {
 
 .diagram-route:hover .route-path,
 .diagram-route.route-highlighted .route-path {
-  stroke-width: 11;
+  stroke-width: calc(11px * var(--text-scale));
 }
 
 .route-label {
@@ -215,26 +222,22 @@ svg {
 }
 
 .route-label rect {
-  fill: rgba(255, 255, 255, 0.96);
-  stroke: #c8d0d7;
-  stroke-width: 2;
-  rx: 8px;
-  ry: 8px;
-  vector-effect: non-scaling-stroke;
+  fill: var(--callout-fill);
+  stroke: var(--callout-stroke);
+  stroke-width: calc(var(--callout-stroke-width) * var(--text-scale));
 }
 
 .route-label text {
   fill: var(--ink);
-  font-size: calc(26px * var(--text-scale));
+  font-size: calc(var(--callout-font-size) * var(--text-scale));
   font-weight: 650;
   paint-order: stroke;
-  stroke: #ffffff;
-  stroke-width: 4;
+  stroke: var(--callout-text-stroke);
+  stroke-width: calc(var(--callout-text-stroke-width) * var(--text-scale));
   stroke-linejoin: round;
 }
 
-.diagram-route:hover .route-label,
-.diagram-route.route-highlighted .route-label {
+.route-label.route-label-visible {
   display: inline;
 }
 
@@ -247,9 +250,10 @@ svg {
 }
 
 .editor-state-editing-element .diagram-element.element-selected .element-surface,
-.editor-state-editing-element .diagram-element.element-selected .cluster-surface {
+.editor-state-editing-element .diagram-element.element-selected .cluster-surface,
+.editor-state-editing-element .diagram-element.element-selected .frame-surface {
   stroke: var(--selection);
-  stroke-width: 7;
+  stroke-width: calc(7px * var(--text-scale));
 }
 
 .selection-outline {
@@ -318,6 +322,8 @@ svg {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   border: 2px solid #66727d;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.975);
@@ -327,6 +333,7 @@ svg {
 }
 
 .editor-drag-handle {
+  flex: 0 0 auto;
   padding: 18px 22px;
   border-bottom: 2px solid #ccd3d9;
   background: #eef2f5;
@@ -338,6 +345,7 @@ svg {
 }
 
 .editor-tabs {
+  flex: 0 0 auto;
   display: flex;
   gap: 10px;
   padding: 14px 18px;
@@ -369,8 +377,10 @@ svg {
 
 .editor-panel-body {
   box-sizing: border-box;
-  height: calc(100% - 122px);
-  overflow: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px 20px 24px;
 }
 

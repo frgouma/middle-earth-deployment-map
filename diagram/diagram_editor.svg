@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml" width="100%" height="100%" style="display:block;width:100vw;height:100vh;overflow:visible;--text-scale:1" version="1.1" preserveAspectRatio="xMidYMid meet" class="editor-state-idle" data-editor="true"><defs><style type="text/css" data-source="styles.css">:root {
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml" width="100%" height="100%" style="display:block;overflow:visible;--text-scale:1.1;--callout-fill:#ececec;--callout-stroke:#c8d0d7;--callout-font-size:30px;--callout-stroke-width:2px;--callout-text-stroke:#ffffff;--callout-text-stroke-width:4px" version="1.1" preserveAspectRatio="xMidYMid meet" class="editor-state-idle" data-editor="true"><defs><style type="text/css" data-source="styles.css">:root {
   --ink: #24313d;
   --muted-ink: #526170;
   --route-deployment: #356a9a;
@@ -26,14 +26,22 @@ svg {
 
 .element-surface,
 .cluster-surface {
-  vector-effect: non-scaling-stroke;
   transition: filter 100ms ease, stroke-width 100ms ease;
 }
 
 .element-box .element-surface {
   fill: var(--palette-solid);
   stroke: var(--palette-edge);
-  stroke-width: 3;
+  stroke-width: calc(3px * var(--text-scale));
+  rx: 24px;
+  ry: 24px;
+}
+
+
+.element-frame .frame-surface {
+  fill: none;
+  stroke: var(--frame-stroke, #6d7a86);
+  stroke-width: calc(var(--frame-stroke-width, 4px) * var(--text-scale));
   rx: 24px;
   ry: 24px;
 }
@@ -41,7 +49,7 @@ svg {
 .element-cluster .cluster-surface {
   fill: var(--palette-cluster);
   stroke: var(--palette-edge);
-  stroke-width: 4;
+  stroke-width: calc(4px * var(--text-scale));
   stroke-dasharray: 16 12;
   rx: 34px;
   ry: 34px;
@@ -136,10 +144,9 @@ svg {
 .route-path {
   fill: none;
   stroke: var(--route-default);
-  stroke-width: 7;
+  stroke-width: calc(7px * var(--text-scale));
   stroke-linecap: round;
   stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
   marker-end: url(#arrow-default);
   transition: stroke-width 90ms ease, opacity 90ms ease;
 }
@@ -207,7 +214,7 @@ svg {
 
 .diagram-route:hover .route-path,
 .diagram-route.route-highlighted .route-path {
-  stroke-width: 11;
+  stroke-width: calc(11px * var(--text-scale));
 }
 
 .route-label {
@@ -216,26 +223,22 @@ svg {
 }
 
 .route-label rect {
-  fill: rgba(255, 255, 255, 0.96);
-  stroke: #c8d0d7;
-  stroke-width: 2;
-  rx: 8px;
-  ry: 8px;
-  vector-effect: non-scaling-stroke;
+  fill: var(--callout-fill);
+  stroke: var(--callout-stroke);
+  stroke-width: calc(var(--callout-stroke-width) * var(--text-scale));
 }
 
 .route-label text {
   fill: var(--ink);
-  font-size: calc(26px * var(--text-scale));
+  font-size: calc(var(--callout-font-size) * var(--text-scale));
   font-weight: 650;
   paint-order: stroke;
-  stroke: #ffffff;
-  stroke-width: 4;
+  stroke: var(--callout-text-stroke);
+  stroke-width: calc(var(--callout-text-stroke-width) * var(--text-scale));
   stroke-linejoin: round;
 }
 
-.diagram-route:hover .route-label,
-.diagram-route.route-highlighted .route-label {
+.route-label.route-label-visible {
   display: inline;
 }
 
@@ -248,9 +251,10 @@ svg {
 }
 
 .editor-state-editing-element .diagram-element.element-selected .element-surface,
-.editor-state-editing-element .diagram-element.element-selected .cluster-surface {
+.editor-state-editing-element .diagram-element.element-selected .cluster-surface,
+.editor-state-editing-element .diagram-element.element-selected .frame-surface {
   stroke: var(--selection);
-  stroke-width: 7;
+  stroke-width: calc(7px * var(--text-scale));
 }
 
 .selection-outline {
@@ -319,6 +323,8 @@ svg {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   border: 2px solid #66727d;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.975);
@@ -328,6 +334,7 @@ svg {
 }
 
 .editor-drag-handle {
+  flex: 0 0 auto;
   padding: 18px 22px;
   border-bottom: 2px solid #ccd3d9;
   background: #eef2f5;
@@ -339,6 +346,7 @@ svg {
 }
 
 .editor-tabs {
+  flex: 0 0 auto;
   display: flex;
   gap: 10px;
   padding: 14px 18px;
@@ -370,8 +378,10 @@ svg {
 
 .editor-panel-body {
   box-sizing: border-box;
-  height: calc(100% - 122px);
-  overflow: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px 20px 24px;
 }
 
@@ -455,7 +465,7 @@ svg {
 .preview-copy {
   color: #526170;
 }
-</style><marker id="arrow-default" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-default"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-deployment" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-deployment"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-runtime" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-runtime"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-amber" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-amber"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-blue" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-blue"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-neutral" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-neutral"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-purple" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-purple"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-red" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-red"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker></defs><svg id="diagram-canvas" x="0" y="0" width="4266.6665" height="3200" viewBox="0 0 4266.6665 3200"><rect class="canvas-background" x="0" y="0" width="4266.6665" height="3200" /><g id="diagram-content"><g id="cluster-fills"><g class="diagram-element element-cluster palette-green cluster-fill" data-element-id="live-application" data-editable="true"><rect class="cluster-surface" x="140" y="1640" width="3260" height="1380" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="local-preparation" data-editable="true"><rect class="cluster-surface" x="140" y="340" width="920" height="1180" /></g><g class="diagram-element element-cluster palette-amber cluster-fill" data-element-id="persistent-state" data-editable="true"><rect class="cluster-surface" x="3500" y="1640" width="630" height="1380" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="publishing-kubernetes" data-editable="true"><rect class="cluster-surface" x="1160" y="340" width="1500" height="1180" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="kubernetes-config" data-editable="true"><rect class="cluster-surface" x="1290" y="800" width="560" height="650" /></g><g class="diagram-element element-cluster palette-green cluster-fill" data-element-id="pod" data-editable="true"><rect class="cluster-surface" x="1880" y="1810" width="1370" height="1020" /></g><g class="diagram-element element-cluster palette-neutral cluster-fill" data-element-id="nginx-container" data-editable="true"><rect class="cluster-surface" x="1990" y="2010" width="500" height="680" /></g><g class="diagram-element element-cluster palette-neutral cluster-fill" data-element-id="web-container" data-editable="true"><rect class="cluster-surface" x="2580" y="2010" width="560" height="680" /></g></g><g id="routes-layer"><g class="diagram-route route-runtime" data-route-id="27"><title>Flappie</title><path class="route-path" d="M 984 936 L 1230 978 L 1230 744" /><path class="route-hit" d="M 984 936 L 1230 978 L 1230 744" /><g class="route-label" aria-hidden="true"><rect x="1044" y="905" width="126" height="44" /><text x="1107" y="937" text-anchor="middle">Flappie</text></g></g><g class="diagram-route route-runtime" data-route-id="check"><title>Route check</title><path class="route-path" d="M 2440 826 L 2406 1616" /><path class="route-hit" d="M 2440 826 L 2406 1616" /><g class="route-label" aria-hidden="true"><rect x="2332" y="1169" width="182" height="44" /><text x="2423" y="1201" text-anchor="middle">Route check</text></g></g><g class="diagram-route route-runtime" data-route-id="fsdfas"><title>flappier</title><path class="route-path" d="M 1036 2414 L 1464 2324" /><path class="route-hit" d="M 1036 2414 L 1464 2324" /><g class="route-label" aria-hidden="true"><rect x="1180" y="2317" width="140" height="44" /><text x="1250" y="2349" text-anchor="middle">flappier</text></g></g></g><g id="boxes-layer"><g class="diagram-element element-box palette-blue box-content" data-element-id="browser" data-editable="true"><rect class="element-surface" x="260" y="1860" width="430" height="150" /><text x="475.0" y="1935.0" class="box-title" text-anchor="middle"><tspan x="475.0" y="1935.0">Browser</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="dns" data-editable="true"><rect class="element-surface" x="260" y="2110" width="430" height="160" /><text x="475.0" y="2163.3088" class="box-title" text-anchor="middle"><tspan x="475.0" y="2163.3088">DNS</tspan></text><text x="475.0" y="2218.7000000000003" class="box-body" text-anchor="middle"><tspan x="475.0" y="2218.7000000000003">worldklems.net</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="docker-build" data-editable="true"><rect class="element-surface" x="260" y="1050" width="680" height="180" /><text x="600.0" y="1094.6176" class="box-title" text-anchor="middle"><tspan x="600.0" y="1094.6176">Docker build</tspan></text><text x="600.0" y="1168.7" class="box-body" text-anchor="middle"><tspan x="600.0" y="1150.0088">Packages application and</tspan><tspan x="600.0" y="1187.3912">dependencies</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="docker-image" data-editable="true"><rect class="element-surface" x="260" y="1310" width="680" height="170" /><text x="600.0" y="1368.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="1368.3088">Docker image</tspan></text><text x="600.0" y="1423.7" class="box-body" text-anchor="middle"><tspan x="600.0" y="1423.7">Deployable artifact</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="dockerfile" data-editable="true"><rect class="element-surface" x="260" y="800" width="680" height="170" /><text x="600.0" y="858.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="858.3088">Dockerfile</tspan></text><text x="600.0" y="913.6999999999999" class="box-body" text-anchor="middle"><tspan x="600.0" y="913.6999999999999">Image recipe</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="git-repository" data-editable="true"><rect class="element-surface" x="260" y="540" width="680" height="180" /><text x="600.0" y="603.3088" class="box-title" text-anchor="middle"><tspan x="600.0" y="603.3088">WorldKLEMS Git repository</tspan></text><text x="600.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="600.0" y="658.6999999999999">Django / Wagtail application source</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="harbor-registry" data-editable="true"><rect class="element-surface" x="1290" y="540" width="560" height="180" /><text x="1570.0" y="584.6176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="584.6176">Harbor registry</tspan></text><text x="1570.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="1570.0" y="640.0088">Stores the published Docker</tspan><tspan x="1570.0" y="677.3911999999999">image</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="ingress" data-editable="true"><rect class="element-surface" x="800" y="1980" width="430" height="160" /><text x="1015.0" y="2060.0" class="box-title" text-anchor="middle"><tspan x="1015.0" y="2060.0">Ingress</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="juicefs-media" data-editable="true"><rect class="element-surface" x="3610" y="1990" width="410" height="240" /><text x="3815.0" y="2045.9264" class="box-title" text-anchor="middle"><tspan x="3815.0" y="2024.6864">JuiceFS /</tspan><tspan x="3815.0" y="2067.1664">worldklems-media</tspan></text><text x="3815.0" y="2159.4" class="box-body" text-anchor="middle"><tspan x="3815.0" y="2122.0176">Persistent CMS</tspan><tspan x="3815.0" y="2159.4">files, images and</tspan><tspan x="3815.0" y="2196.7824">documents</tspan></text></g><g class="diagram-element element-box palette-purple box-content" data-element-id="kubectl" data-editable="true"><rect class="element-surface" x="1960" y="800" width="560" height="180" /><text x="2240.0" y="844.6176" class="box-title" text-anchor="middle"><tspan x="2240.0" y="844.6176">kubectl</tspan></text><text x="2240.0" y="918.6999999999999" class="box-body" text-anchor="middle"><tspan x="2240.0" y="900.0088">Apply and inspect Kubernetes</tspan><tspan x="2240.0" y="937.3911999999999">configuration</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="mariadb" data-editable="true"><rect class="element-surface" x="3610" y="2440" width="410" height="220" /><text x="3815.0" y="2504.6176" class="box-title" text-anchor="middle"><tspan x="3815.0" y="2504.6176">CIT MariaDB</tspan></text><text x="3815.0" y="2578.7000000000003" class="box-body" text-anchor="middle"><tspan x="3815.0" y="2560.0088">Structured CMS and</tspan><tspan x="3815.0" y="2597.3912">application state</tspan></text></g><g class="diagram-element element-box palette-purple box-content" data-element-id="rancher" data-editable="true"><rect class="element-surface" x="1960" y="540" width="560" height="180" /><text x="2240.0" y="603.3088" class="box-title" text-anchor="middle"><tspan x="2240.0" y="603.3088">Rancher</tspan></text><text x="2240.0" y="658.6999999999999" class="box-body" text-anchor="middle"><tspan x="2240.0" y="658.6999999999999">Inspect and manage Kubernetes</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="service" data-editable="true"><rect class="element-surface" x="1340" y="1980" width="430" height="160" /><text x="1555.0" y="2060.0" class="box-title" text-anchor="middle"><tspan x="1555.0" y="2060.0">Service</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="configmap" data-editable="true"><rect class="element-surface" x="1390" y="1160" width="360" height="125" /><text x="1570.0" y="1177.1176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="1177.1176">ConfigMap</tspan></text><text x="1570.0" y="1251.2" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1232.5088">Ordinary</tspan><tspan x="1570.0" y="1269.8912">configuration</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="deployment" data-editable="true"><rect class="element-surface" x="1390" y="960" width="360" height="155" /><text x="1570.0" y="992.1176" class="box-title" text-anchor="middle"><tspan x="1570.0" y="992.1176">Deployment</tspan></text><text x="1570.0" y="1066.1999999999998" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1047.5087999999998">Desired</tspan><tspan x="1570.0" y="1084.8911999999998">application state</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="secrets" data-editable="true"><rect class="element-surface" x="1390" y="1310" width="360" height="125" /><text x="1570.0" y="1308.4264" class="box-title" text-anchor="middle"><tspan x="1570.0" y="1308.4264">Secrets</tspan></text><text x="1570.0" y="1401.2" class="box-body" text-anchor="middle"><tspan x="1570.0" y="1363.8176">Credentials and</tspan><tspan x="1570.0" y="1401.2">sensitive</tspan><tspan x="1570.0" y="1438.5824">configuration</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="django-wagtail" data-editable="true"><rect class="element-surface" x="2680" y="2370" width="360" height="165" /><text x="2860.0" y="2407.1176" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2385.8776000000003">Django /</tspan><tspan x="2860.0" y="2428.3576000000003">Wagtail</tspan></text><text x="2860.0" y="2501.9" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2483.2088">Application and</tspan><tspan x="2860.0" y="2520.5912">CMS</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="gunicorn" data-editable="true"><rect class="element-surface" x="2680" y="2170" width="360" height="150" /><text x="2860.0" y="2199.6176" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2199.6176">Gunicorn</tspan></text><text x="2860.0" y="2273.7000000000003" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2255.0088">Application</tspan><tspan x="2860.0" y="2292.3912">server</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="nginx" data-editable="true"><rect class="element-surface" x="2070" y="2260" width="340" height="190" /><text x="2240.0" y="2309.6176" class="box-title" text-anchor="middle"><tspan x="2240.0" y="2309.6176">NGINX</tspan></text><text x="2240.0" y="2383.7000000000003" class="box-body" text-anchor="middle"><tspan x="2240.0" y="2365.0088">Proxy requests;</tspan><tspan x="2240.0" y="2402.3912">serve /media/</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="whitenoise" data-editable="true" style="--element-font-size:28px"><rect class="element-surface" x="2740" y="2580" width="240" height="90" /><text x="2860.0" y="2587.9248" class="box-title" text-anchor="middle"><tspan x="2860.0" y="2587.9248">WhiteNoise</tspan></text><text x="2860.0" y="2649.1" class="box-body" text-anchor="middle"><tspan x="2860.0" y="2634.5624">serves</tspan><tspan x="2860.0" y="2663.6376">/static/</tspan></text></g></g><g id="cluster-labels"><g class="diagram-element element-cluster palette-green cluster-label-content" data-element-id="live-application" data-editable="true"><text x="170" y="1692.0" class="cluster-title" text-anchor="start"><tspan x="170" y="1692.0">3. Live application &amp; request routing</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="local-preparation" data-editable="true"><text x="170" y="392.0" class="cluster-title" text-anchor="start"><tspan x="170" y="392.0">1. Local preparation</tspan></text></g><g class="diagram-element element-cluster palette-amber cluster-label-content" data-element-id="persistent-state" data-editable="true"><text x="3530" y="1692.0" class="cluster-title" text-anchor="start"><tspan x="3530" y="1692.0">4. Persistent state</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="publishing-kubernetes" data-editable="true"><text x="1190" y="392.0" class="cluster-title" text-anchor="start"><tspan x="1190" y="392.0">2. Publishing &amp; Kubernetes preparation</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="kubernetes-config" data-editable="true"><text x="1320" y="872.9" class="cluster-title" text-anchor="start"><tspan x="1320" y="850.48">Kubernetes</tspan><tspan x="1320" y="895.32">configuration</tspan></text></g><g class="diagram-element element-cluster palette-green cluster-label-content" data-element-id="pod" data-editable="true"><text x="1910" y="1862.0" class="cluster-title" text-anchor="start"><tspan x="1910" y="1862.0">Pod — disposable runtime unit</tspan></text></g><g class="diagram-element element-cluster palette-neutral cluster-label-content" data-element-id="nginx-container" data-editable="true"><text x="2020" y="2062.0" class="cluster-title" text-anchor="start"><tspan x="2020" y="2062.0">NGINX container</tspan></text></g><g class="diagram-element element-cluster palette-neutral cluster-label-content" data-element-id="web-container" data-editable="true"><text x="2610" y="2062.0" class="cluster-title" text-anchor="start"><tspan x="2610" y="2062.0">web container</tspan></text></g></g><g id="text-layer"><g class="diagram-element element-subtitle palette-neutral text-content" data-element-id="diagram-subtitle" data-editable="true"><text x="140" y="225" class="element-subtitle" text-anchor="start"><tspan x="140" y="225.0">The Council's Map</tspan></text></g><g class="diagram-element element-title palette-neutral text-content" data-element-id="diagram-title" data-editable="true"><text x="140" y="130" class="element-title" text-anchor="start"><tspan x="140" y="130.0">WorldKLEMS deployment architecture</tspan></text></g><g class="diagram-element element-note palette-neutral text-content" data-element-id="state-note" data-editable="true" style="--element-font-size:30px"><text x="3815" y="2840" class="element-note" text-anchor="middle"><tspan x="3815" y="2822.3">The Pod is disposable. The</tspan><tspan x="3815" y="2857.7000000000003">data is not.</tspan></text></g></g></g></svg><foreignObject id="diagram-editor-panel" x="3256.6665000000003" y="30" width="980.0" height="1760.0"><html:div id="editor-panel-shell" class="editor-panel-shell" data-state="idle">
+</style><marker id="arrow-default" markerWidth="9.600000000000001" markerHeight="8.0" viewBox="0 0 12 10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-default"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-deployment" markerWidth="9.600000000000001" markerHeight="8.0" viewBox="0 0 12 10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-deployment"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-runtime" markerWidth="9.600000000000001" markerHeight="8.0" viewBox="0 0 12 10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-runtime"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-amber" markerWidth="9.600000000000001" markerHeight="8.0" viewBox="0 0 12 10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-amber"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-blue" markerWidth="9.600000000000001" markerHeight="8.0" viewBox="0 0 12 10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-blue"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-neutral" markerWidth="9.600000000000001" markerHeight="8.0" viewBox="0 0 12 10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-neutral"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-purple" markerWidth="9.600000000000001" markerHeight="8.0" viewBox="0 0 12 10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-purple"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker><marker id="arrow-red" markerWidth="9.600000000000001" markerHeight="8.0" viewBox="0 0 12 10" refX="11" refY="5" orient="auto" markerUnits="strokeWidth" class="route-arrow-semantic palette-red"><path class="route-arrowhead" d="M 0 0 L 12 5 L 0 10 z" /></marker></defs><svg id="diagram-canvas" x="0" y="0" width="4266.6665" height="3200" viewBox="0 0 4266.6665 3200"><rect class="canvas-background" x="0" y="0" width="4266.6665" height="3200" /><g id="diagram-content"><g id="frames-layer"><g class="diagram-element element-frame palette-neutral frame-content" data-element-id="architecture-frame" data-editable="true"><rect class="frame-surface" x="20" y="20" width="4226.6665" height="3160" rx="24" ry="24" style="--frame-stroke:#6d7a86;--frame-stroke-width:4px" /></g></g><g id="cluster-fills"><g class="diagram-element element-cluster palette-green cluster-fill" data-element-id="live-application" data-editable="true"><rect class="cluster-surface" x="156.67" y="1683.34" width="2908" height="1378" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="local-preparation" data-editable="true"><rect class="cluster-surface" x="266" y="326" width="1398" height="1222" /></g><g class="diagram-element element-cluster palette-amber cluster-fill" data-element-id="persistent-state" data-editable="true"><rect class="cluster-surface" x="3203" y="1854" width="920.5" height="1114" /></g><g class="diagram-element element-cluster palette-purple cluster-fill" data-element-id="publishing-kubernetes" data-editable="true"><rect class="cluster-surface" x="2042" y="330" width="1756" height="1164" /></g><g class="diagram-element element-cluster palette-blue cluster-fill" data-element-id="git-repository" data-editable="true"><rect class="cluster-surface" x="328" y="688" width="686" height="680" /></g><g class="diagram-element element-cluster palette-green cluster-fill" data-element-id="pod" data-editable="true"><rect class="cluster-surface" x="1154.67" y="1792.01" width="1807.33" height="1223.33" /></g><g class="diagram-element element-cluster palette-neutral cluster-fill" data-element-id="nginx-container" data-editable="true"><rect class="cluster-surface" x="1272.67" y="1909.34" width="570" height="1040" /></g><g class="diagram-element element-cluster palette-neutral cluster-fill" data-element-id="web-container" data-editable="true"><rect class="cluster-surface" x="1996.67" y="1911.34" width="904" height="1038" /></g></g><g id="routes-layer"><g class="diagram-route route-runtime" data-route-id="browser-dns"><title>User enters https://www.worldklems.net/</title><path class="route-path" d="M 472 2812 L 472 2656" /><path class="route-hit" d="M 472 2812 L 472 2656" /></g><g class="diagram-route route-deployment palette-purple route-colored route-color-purple" data-route-id="configmap-nginx"><title>The ConfigMap provides the NGINX configuration</title><path class="route-path" d="M 2144 1418 L 1840 1918" /><path class="route-hit" d="M 2144 1418 L 1840 1918" /></g><g class="diagram-route route-deployment palette-purple route-colored route-color-purple" data-route-id="deployment-pod"><title>The Deployment creates and maintains the Pod</title><path class="route-path" d="M 2558 1126 L 2558 1756" /><path class="route-hit" d="M 2558 1126 L 2558 1756" /></g><g class="diagram-route route-runtime" data-route-id="django-juicefs"><title>Django / Wagtail stores uploaded media and documents in JuiceFS</title><path class="route-path" d="M 2844.67 2620.67 L 3398.67 2618.67" /><path class="route-hit" d="M 2844.67 2620.67 L 3398.67 2618.67" /></g><g class="diagram-route route-runtime" data-route-id="django-mariadb"><title>Django / Wagtail reads and updates site data in MariaDB</title><path class="route-path" d="M 2848 2346 L 3480 2344" /><path class="route-hit" d="M 2848 2346 L 3480 2344" /></g><g class="diagram-route route-runtime" data-route-id="django-whitenoise"><title>WhiteNoise serves CSS, JavaScript and other static assets</title><path class="route-path" d="M 2492 2502 L 2303.33 2502" /><path class="route-hit" d="M 2492 2502 L 2303.33 2502" /></g><g class="diagram-route route-runtime" data-route-id="dns-ingress"><title>DNS converts the domain name to an IP address</title><path class="route-path" d="M 473.34 2486.67 L 473.34 2356" /><path class="route-hit" d="M 473.34 2486.67 L 473.34 2356" /></g><g class="diagram-route route-deployment palette-blue route-colored route-color-blue" data-route-id="docker-build-image"><title>Docker build produces a deployable image</title><path class="route-path" d="M 1370 816 L 1370 648" /><path class="route-hit" d="M 1370 816 L 1370 648" /></g><g class="diagram-route route-deployment palette-blue route-colored route-color-blue" data-route-id="docker-image-harbor"><title>The image is pushed to the Harbor registry</title><path class="route-path" d="M 1598 510 L 2634 510" /><path class="route-hit" d="M 1598 510 L 2634 510" /></g><g class="diagram-route route-deployment palette-blue route-colored route-color-blue" data-route-id="dockerfile-docker-build"><title>Docker build follows the instructions in the Dockerfile</title><path class="route-path" d="M 836 1226 L 1166 1226" /><path class="route-hit" d="M 836 1226 L 1166 1226" /></g><g class="diagram-route route-deployment palette-blue route-colored route-color-blue" data-route-id="git-docker-build"><title>Docker build uses the application source from the Git repository</title><path class="route-path" d="M 830 902 L 1170 902" /><path class="route-hit" d="M 830 902 L 1170 902" /></g><g class="diagram-route route-runtime" data-route-id="gunicorn-django"><title>Gunicorn runs the Django / Wagtail application</title><path class="route-path" d="M 2450 2100 L 2548 2248" /><path class="route-hit" d="M 2450 2100 L 2548 2248" /></g><g class="diagram-route route-deployment palette-purple route-colored route-color-purple" data-route-id="harbor-deployment"><title>The Deployment points to the image stored in Harbor</title><path class="route-path" d="M 2704 620 L 2704 744" /><path class="route-hit" d="M 2704 620 L 2704 744" /></g><g class="diagram-route route-runtime" data-route-id="ingress-service"><title>Ingress accepts the HTTPS request and passes it into the cluster</title><path class="route-path" d="M 478.67 2202.67 L 478.67 2052" /><path class="route-hit" d="M 478.67 2202.67 L 478.67 2052" /></g><g class="diagram-route route-runtime palette-amber route-colored route-color-amber" data-route-id="juicefs-django"><title>Django / Wagtail reads stored media and documents from JuiceFS</title><path class="route-path" d="M 3399.33 2556 L 2843.33 2558" /><path class="route-hit" d="M 3399.33 2556 L 2843.33 2558" /></g><g class="diagram-route route-runtime palette-amber route-colored route-color-amber" data-route-id="juicefs-nginx"><title>JuiceFS returns the media file so NGINX can serve it</title><path class="route-path" d="M 3404 2778.67 L 1690 2778.67" /><path class="route-hit" d="M 3404 2778.67 L 1690 2778.67" /></g><g class="diagram-route route-deployment palette-purple route-colored route-color-purple" data-route-id="kubectl-deployment"><title>kubectl applies the desired Kubernetes configuration</title><path class="route-path" d="M 3089 1056 L 2804 1056" /><path class="route-hit" d="M 3089 1056 L 2804 1056" /></g><g class="diagram-route route-runtime palette-amber route-colored route-color-amber" data-route-id="mariadb-django"><title>MariaDB returns the requested data to Django / Wagtail</title><path class="route-path" d="M 3482 2288 L 2850 2290" /><path class="route-hit" d="M 3482 2288 L 2850 2290" /></g><g class="diagram-route route-runtime" data-route-id="nginx-gunicorn"><title>NGINX passes dynamic requests to Gunicorn</title><path class="route-path" d="M 1694 2098 L 2090 2100" /><path class="route-hit" d="M 1694 2098 L 2090 2100" /></g><g class="diagram-route route-runtime" data-route-id="nginx-juicefs-request"><title>For /media/, NGINX asks JuiceFS for the requested file</title><path class="route-path" d="M 1684 2848 L 3402 2848" /><path class="route-hit" d="M 1684 2848 L 3402 2848" /></g><g class="diagram-route route-deployment palette-purple route-colored route-color-purple" data-route-id="rancher-deployment"><title>Rancher lets administrators inspect and manage the deployment</title><path class="route-path" d="M 3089 798 L 2808 798" /><path class="route-hit" d="M 3089 798 L 2808 798" /></g><g class="diagram-route route-deployment palette-purple route-colored route-color-purple" data-route-id="secrets-django"><title>Kubernetes Secrets provide credentials to the web application</title><path class="route-path" d="M 3106 1406 L 2703.33 2250" /><path class="route-hit" d="M 3106 1406 L 2703.33 2250" /></g><g class="diagram-route route-runtime" data-route-id="service-nginx"><title>Service forwards the request to the NGINX container</title><path class="route-path" d="M 688 2024 L 1406 2024" /><path class="route-hit" d="M 688 2024 L 1406 2024" /></g></g><g id="boxes-layer"><g class="diagram-element element-box palette-blue box-content" data-element-id="browser" data-editable="true"><rect class="element-surface" x="253.34" y="2815" width="430" height="150" /><text x="468.34000000000003" y="2890.0" class="box-title" text-anchor="middle"><tspan x="468.34000000000003" y="2890.0">Browser</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="configmap" data-editable="true"><rect class="element-surface" x="2130" y="1225.5" width="360" height="200" /><text x="2310.0" y="1275.57936" class="box-title" text-anchor="middle"><tspan x="2310.0" y="1275.57936">ConfigMap</tspan></text><text x="2310.0" y="1357.07" class="box-body" text-anchor="middle"><tspan x="2310.0" y="1336.50968">NGINX</tspan><tspan x="2310.0" y="1377.63032">configuration</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="deployment" data-editable="true"><rect class="element-surface" x="2190" y="746" width="616" height="378" /><text x="2498.0" y="905.63968" class="box-title" text-anchor="middle"><tspan x="2498.0" y="905.63968">Deployment</tspan></text><text x="2498.0" y="966.57" class="box-body" text-anchor="middle"><tspan x="2498.0" y="966.57">Desired application state</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="dns" data-editable="true"><rect class="element-surface" x="253.34" y="2493.35" width="430" height="160" /><text x="468.34000000000003" y="2543.9896799999997" class="box-title" text-anchor="middle"><tspan x="468.34000000000003" y="2543.9896799999997">DNS</tspan></text><text x="468.34000000000003" y="2604.9199999999996" class="box-body" text-anchor="middle"><tspan x="468.34000000000003" y="2604.9199999999996">worldklems.net</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="docker-build" data-editable="true"><rect class="element-surface" x="1168" y="814" width="412" height="546" /><text x="1374.0" y="1016.5190399999999" class="box-title" text-anchor="middle"><tspan x="1374.0" y="1016.5190399999999">Docker build</tspan></text><text x="1374.0" y="1118.5699999999997" class="box-body" text-anchor="middle"><tspan x="1374.0" y="1077.4493599999996">Packages</tspan><tspan x="1374.0" y="1118.5699999999997">application and</tspan><tspan x="1374.0" y="1159.6906399999996">dependencies</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="docker-image" data-editable="true"><rect class="element-surface" x="1158" y="430" width="442" height="222" /><text x="1379.0" y="511.63968" class="box-title" text-anchor="middle"><tspan x="1379.0" y="511.63968">Docker image</tspan></text><text x="1379.0" y="572.57" class="box-body" text-anchor="middle"><tspan x="1379.0" y="572.57">Deployable artifact</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="harbor-registry" data-editable="true"><rect class="element-surface" x="2640" y="440" width="560" height="180" /><text x="2920.0" y="480.07936" class="box-title" text-anchor="middle"><tspan x="2920.0" y="480.07936">Harbor registry</tspan></text><text x="2920.0" y="561.57" class="box-body" text-anchor="middle"><tspan x="2920.0" y="541.00968">Stores the published</tspan><tspan x="2920.0" y="582.13032">Docker image</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="ingress" data-editable="true"><rect class="element-surface" x="253.34" y="2196.67" width="430" height="160" /><text x="468.34000000000003" y="2247.30968" class="box-title" text-anchor="middle"><tspan x="468.34000000000003" y="2247.30968">Ingress</tspan></text><text x="468.34000000000003" y="2308.24" class="box-body" text-anchor="middle"><tspan x="468.34000000000003" y="2308.24">HTTPS entry point</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="juicefs-media" data-editable="true"><rect class="element-surface" x="3406" y="2443" width="592" height="472" /><text x="3702.0" y="2629.0793599999997" class="box-title" text-anchor="middle"><tspan x="3702.0" y="2605.7153599999997">JuiceFS /</tspan><tspan x="3702.0" y="2652.4433599999998">worldklems-media PVC</tspan></text><text x="3702.0" y="2733.3399999999997" class="box-body" text-anchor="middle"><tspan x="3702.0" y="2712.7796799999996">Persistent CMS files, images</tspan><tspan x="3702.0" y="2753.9003199999997">and documents</tspan></text></g><g class="diagram-element element-box palette-purple box-content" data-element-id="kubectl" data-editable="true"><rect class="element-surface" x="3089" y="966" width="560" height="180" /><text x="3369.0" y="1006.07936" class="box-title" text-anchor="middle"><tspan x="3369.0" y="1006.07936">kubectl</tspan></text><text x="3369.0" y="1087.57" class="box-body" text-anchor="middle"><tspan x="3369.0" y="1067.00968">Apply and inspect</tspan><tspan x="3369.0" y="1108.13032">Kubernetes configuration</tspan></text></g><g class="diagram-element element-box palette-amber box-content" data-element-id="mariadb" data-editable="true"><rect class="element-surface" x="3480" y="2087" width="418" height="312" /><text x="3689.0" y="2193.07936" class="box-title" text-anchor="middle"><tspan x="3689.0" y="2193.07936">CIT MariaDB</tspan></text><text x="3689.0" y="2274.57" class="box-body" text-anchor="middle"><tspan x="3689.0" y="2254.00968">Structured CMS and</tspan><tspan x="3689.0" y="2295.13032">application state</tspan></text></g><g class="diagram-element element-box palette-purple box-content" data-element-id="rancher" data-editable="true"><rect class="element-surface" x="3089" y="708" width="560" height="180" /><text x="3369.0" y="748.07936" class="box-title" text-anchor="middle"><tspan x="3369.0" y="748.07936">Rancher</tspan></text><text x="3369.0" y="829.5699999999999" class="box-body" text-anchor="middle"><tspan x="3369.0" y="809.0096799999999">Inspect and manage</tspan><tspan x="3369.0" y="850.1303199999999">Kubernetes</tspan></text></g><g class="diagram-element element-box palette-blue box-content" data-element-id="secrets" data-editable="true"><rect class="element-surface" x="3102" y="1225.5" width="476.67" height="200" /><text x="3340.335" y="1275.57936" class="box-title" text-anchor="middle"><tspan x="3340.335" y="1275.57936">Secrets</tspan></text><text x="3340.335" y="1357.07" class="box-body" text-anchor="middle"><tspan x="3340.335" y="1336.50968">Registry, database and</tspan><tspan x="3340.335" y="1377.63032">app credentials</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="service" data-editable="true"><rect class="element-surface" x="253.34" y="1846.67" width="436.67" height="200" /><text x="471.675" y="1896.74936" class="box-title" text-anchor="middle"><tspan x="471.675" y="1896.74936">Service</tspan></text><text x="471.675" y="1978.24" class="box-body" text-anchor="middle"><tspan x="471.675" y="1957.67968">Stable route to</tspan><tspan x="471.675" y="1998.80032">NGINX</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="Django" data-editable="true"><rect class="element-surface" x="412" y="780.33" width="418" height="226.67" /><text x="621.0" y="843.74436" class="box-title" text-anchor="middle"><tspan x="621.0" y="843.74436">Django / Wagtail</tspan></text><text x="621.0" y="925.235" class="box-body" text-anchor="middle"><tspan x="621.0" y="904.67468">application source</tspan><tspan x="621.0" y="945.79532">code</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="dockerfile" data-editable="true"><rect class="element-surface" x="418" y="1140" width="420" height="170" /><text x="628.0" y="1195.63968" class="box-title" text-anchor="middle"><tspan x="628.0" y="1195.63968">Dockerfile</tspan></text><text x="628.0" y="1256.57" class="box-body" text-anchor="middle"><tspan x="628.0" y="1256.57">Image recipe</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="django-wagtail" data-editable="true"><rect class="element-surface" x="2488.67" y="2251.34" width="352" height="426" /><text x="2664.67" y="2414.4193600000003" class="box-title" text-anchor="middle"><tspan x="2664.67" y="2391.0553600000003">Django /</tspan><tspan x="2664.67" y="2437.7833600000004">Wagtail</tspan></text><text x="2664.67" y="2518.6800000000003" class="box-body" text-anchor="middle"><tspan x="2664.67" y="2498.1196800000002">Application and</tspan><tspan x="2664.67" y="2539.2403200000003">CMS</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="gunicorn" data-editable="true"><rect class="element-surface" x="2094.67" y="2005.34" width="360" height="213.33" /><text x="2274.67" y="2062.08436" class="box-title" text-anchor="middle"><tspan x="2274.67" y="2062.08436">Gunicorn</tspan></text><text x="2274.67" y="2143.575" class="box-body" text-anchor="middle"><tspan x="2274.67" y="2123.0146799999998">Application</tspan><tspan x="2274.67" y="2164.13532">server</tspan></text></g><g class="diagram-element element-box palette-green box-content" data-element-id="nginx" data-editable="true"><rect class="element-surface" x="1408.67" y="2001.34" width="282" height="882" /><text x="1549.67" y="2330.7383999999997" class="box-title" text-anchor="middle"><tspan x="1549.67" y="2330.7383999999997">NGINX</tspan></text><text x="1549.67" y="2473.9099999999994" class="box-body" text-anchor="middle"><tspan x="1549.67" y="2391.668719999999">Proxy</tspan><tspan x="1549.67" y="2432.7893599999993">application</tspan><tspan x="1549.67" y="2473.9099999999994">requests;</tspan><tspan x="1549.67" y="2515.030639999999">serve</tspan><tspan x="1549.67" y="2556.151279999999">/media/</tspan></text></g><g class="diagram-element element-box palette-neutral box-content" data-element-id="whitenoise" data-editable="true" style="--element-font-size:28px"><rect class="element-surface" x="2060" y="2360" width="242" height="296.66" /><text x="2181.0" y="2419.5732" class="box-title" text-anchor="middle"><tspan x="2181.0" y="2419.5732">WhiteNoise</tspan></text><text x="2181.0" y="2534.8399999999997" class="box-body" text-anchor="middle"><tspan x="2181.0" y="2470.8745599999997">Serves CSS,</tspan><tspan x="2181.0" y="2502.8572799999997">JavaScript</tspan><tspan x="2181.0" y="2534.8399999999997">and other</tspan><tspan x="2181.0" y="2566.8227199999997">static</tspan><tspan x="2181.0" y="2598.8054399999996">assets</tspan></text></g></g><g id="cluster-labels"><g class="diagram-element element-cluster palette-green cluster-label-content" data-element-id="live-application" data-editable="true"><text x="186.67" y="1735.34" class="cluster-title" text-anchor="start"><tspan x="186.67" y="1735.34">3. Live application in Kubernetes &amp; request routing</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="local-preparation" data-editable="true"><text x="296" y="378.0" class="cluster-title" text-anchor="start"><tspan x="296" y="378.0">1. Local preparation</tspan></text></g><g class="diagram-element element-cluster palette-amber cluster-label-content" data-element-id="persistent-state" data-editable="true"><text x="3233" y="1906.0" class="cluster-title" text-anchor="start"><tspan x="3233" y="1906.0">4. Persistent state</tspan></text></g><g class="diagram-element element-cluster palette-purple cluster-label-content" data-element-id="publishing-kubernetes" data-editable="true"><text x="2072" y="382.0" class="cluster-title" text-anchor="start"><tspan x="2072" y="382.0">2. Publishing &amp; Kubernetes preparation</tspan></text></g><g class="diagram-element element-cluster palette-blue cluster-label-content" data-element-id="git-repository" data-editable="true"><text x="358" y="740.0" class="cluster-title" text-anchor="start"><tspan x="358" y="740.0">WorldKLEMS Git repository</tspan></text></g><g class="diagram-element element-cluster palette-green cluster-label-content" data-element-id="pod" data-editable="true"><text x="1184.67" y="1844.01" class="cluster-title" text-anchor="start"><tspan x="1184.67" y="1844.01">Pod — disposable runtime unit</tspan></text></g><g class="diagram-element element-cluster palette-neutral cluster-label-content" data-element-id="nginx-container" data-editable="true"><text x="1302.67" y="1961.34" class="cluster-title" text-anchor="start"><tspan x="1302.67" y="1961.34">NGINX container</tspan></text></g><g class="diagram-element element-cluster palette-neutral cluster-label-content" data-element-id="web-container" data-editable="true"><text x="2026.67" y="1963.34" class="cluster-title" text-anchor="start"><tspan x="2026.67" y="1963.34">Web container</tspan></text></g></g><g id="text-layer"><g class="diagram-element element-subtitle palette-neutral text-content" data-element-id="diagram-subtitle" data-editable="true"><text x="140" y="225" class="element-subtitle" text-anchor="start"><tspan x="140" y="225.0">WorldKLEMS deployment architecture</tspan></text></g><g class="diagram-element element-title palette-neutral text-content" data-element-id="diagram-title" data-editable="true"><text x="140" y="130" class="element-title" text-anchor="start"><tspan x="140" y="130.0">The Council's Map</tspan></text></g><g class="diagram-element element-note palette-neutral text-content" data-element-id="state-note" data-editable="true" style="--element-font-size:30px"><text x="3688" y="2009" class="element-note" text-anchor="middle"><tspan x="3688" y="1989.53">The Pod is disposable.</tspan><tspan x="3688" y="2028.47">The data is not.</tspan></text></g></g><g id="callouts-layer"><g class="route-label" data-route-label-id="browser-dns" aria-hidden="true"><rect x="98.11" y="2666.9" width="747.78" height="59.4" rx="15.4" ry="15.4" /><text x="472" y="2706.83" text-anchor="middle">User enters https://www.worldklems.net/</text></g><g class="route-label" data-route-label-id="configmap-nginx" aria-hidden="true"><rect x="1555.74" y="1600.9" width="872.52" height="59.4" rx="15.4" ry="15.4" /><text x="1992" y="1640.83" text-anchor="middle">The ConfigMap provides the NGINX configuration</text></g><g class="route-label" data-route-label-id="deployment-pod" aria-hidden="true"><rect x="2139.56" y="1373.9" width="836.88" height="59.4" rx="15.4" ry="15.4" /><text x="2558" y="1413.83" text-anchor="middle">The Deployment creates and maintains the Pod</text></g><g class="route-label" data-route-label-id="django-juicefs" aria-hidden="true"><rect x="2533.94" y="2552.57" width="1175.46" height="59.4" rx="15.4" ry="15.4" /><text x="3121.67" y="2592.5" text-anchor="middle">Django / Wagtail stores uploaded media and documents in JuiceFS</text></g><g class="route-label" data-route-label-id="django-mariadb" aria-hidden="true"><rect x="2647.55" y="2277.9" width="1032.9" height="59.4" rx="15.4" ry="15.4" /><text x="3164" y="2317.83" text-anchor="middle">Django / Wagtail reads and updates site data in MariaDB</text></g><g class="route-label" data-route-label-id="django-whitenoise" aria-hidden="true"><rect x="1863.395" y="2434.9" width="1068.54" height="59.4" rx="15.4" ry="15.4" /><text x="2397.665" y="2474.83" text-anchor="middle">WhiteNoise serves CSS, JavaScript and other static assets</text></g><g class="route-label" data-route-label-id="dns-ingress" aria-hidden="true"><rect x="45.99" y="2354.235" width="854.7" height="59.4" rx="15.4" ry="15.4" /><text x="473.34" y="2394.165" text-anchor="middle">DNS converts the domain name to an IP address</text></g><g class="route-label" data-route-label-id="docker-build-image" aria-hidden="true"><rect x="987.2" y="664.9" width="765.6" height="59.4" rx="15.4" ry="15.4" /><text x="1370" y="704.83" text-anchor="middle">Docker build produces a deployable image</text></g><g class="route-label" data-route-label-id="docker-image-harbor" aria-hidden="true"><rect x="1715.38" y="442.9" width="801.24" height="59.4" rx="15.4" ry="15.4" /><text x="2116" y="482.83" text-anchor="middle">The image is pushed to the Harbor registry</text></g><g class="route-label" data-route-label-id="dockerfile-docker-build" aria-hidden="true"><rect x="484.55" y="1158.9" width="1032.9" height="59.4" rx="15.4" ry="15.4" /><text x="1001" y="1198.83" text-anchor="middle">Docker build follows the instructions in the Dockerfile</text></g><g class="route-label" data-route-label-id="git-docker-build" aria-hidden="true"><rect x="403.36" y="834.9" width="1193.28" height="59.4" rx="15.4" ry="15.4" /><text x="1000" y="874.83" text-anchor="middle">Docker build uses the application source from the Git repository</text></g><g class="route-label" data-route-label-id="gunicorn-django" aria-hidden="true"><rect x="2062.74" y="2106.9" width="872.52" height="59.4" rx="15.4" ry="15.4" /><text x="2499" y="2146.83" text-anchor="middle">Gunicorn runs the Django / Wagtail application</text></g><g class="route-label" data-route-label-id="harbor-deployment" aria-hidden="true"><rect x="2223.19" y="614.9" width="961.62" height="59.4" rx="15.4" ry="15.4" /><text x="2704" y="654.83" text-anchor="middle">The Deployment points to the image stored in Harbor</text></g><g class="route-label" data-route-label-id="ingress-service" aria-hidden="true"><rect x="-117.97" y="2060.235" width="1193.28" height="59.4" rx="15.4" ry="15.4" /><text x="478.67" y="2100.165" text-anchor="middle">Ingress accepts the HTTPS request and passes it into the cluster</text></g><g class="route-label" data-route-label-id="juicefs-django" aria-hidden="true"><rect x="2542.51" y="2489.9" width="1157.64" height="59.4" rx="15.4" ry="15.4" /><text x="3121.33" y="2529.83" text-anchor="middle">Django / Wagtail reads stored media and documents from JuiceFS</text></g><g class="route-label" data-route-label-id="juicefs-nginx" aria-hidden="true"><rect x="2057.28" y="2711.57" width="979.44" height="59.4" rx="15.4" ry="15.4" /><text x="2547" y="2751.5" text-anchor="middle">JuiceFS returns the media file so NGINX can serve it</text></g><g class="route-label" data-route-label-id="kubectl-deployment" aria-hidden="true"><rect x="2456.78" y="988.9" width="979.44" height="59.4" rx="15.4" ry="15.4" /><text x="2946.5" y="1028.83" text-anchor="middle">kubectl applies the desired Kubernetes configuration</text></g><g class="route-label" data-route-label-id="mariadb-django" aria-hidden="true"><rect x="2658.46" y="2221.9" width="1015.08" height="59.4" rx="15.4" ry="15.4" /><text x="3166" y="2261.83" text-anchor="middle">MariaDB returns the requested data to Django / Wagtail</text></g><g class="route-label" data-route-label-id="nginx-gunicorn" aria-hidden="true"><rect x="1500.29" y="2031.9" width="783.42" height="59.4" rx="15.4" ry="15.4" /><text x="1892" y="2071.83" text-anchor="middle">NGINX passes dynamic requests to Gunicorn</text></g><g class="route-label" data-route-label-id="nginx-juicefs-request" aria-hidden="true"><rect x="2035.46" y="2780.9" width="1015.08" height="59.4" rx="15.4" ry="15.4" /><text x="2543" y="2820.83" text-anchor="middle">For /media/, NGINX asks JuiceFS for the requested file</text></g><g class="route-label" data-route-label-id="rancher-deployment" aria-hidden="true"><rect x="2378.59" y="730.9" width="1139.82" height="59.4" rx="15.4" ry="15.4" /><text x="2948.5" y="770.83" text-anchor="middle">Rancher lets administrators inspect and manage the deployment</text></g><g class="route-label" data-route-label-id="secrets-django" aria-hidden="true"><rect x="2334.755" y="1760.9" width="1139.82" height="59.4" rx="15.4" ry="15.4" /><text x="2904.665" y="1800.83" text-anchor="middle">Kubernetes Secrets provide credentials to the web application</text></g><g class="route-label" data-route-label-id="service-nginx" aria-hidden="true"><rect x="566.19" y="1956.9" width="961.62" height="59.4" rx="15.4" ry="15.4" /><text x="1047" y="1996.83" text-anchor="middle">Service forwards the request to the NGINX container</text></g></g></g></svg><foreignObject id="diagram-editor-panel" x="3256.6665000000003" y="30" width="980.0" height="1760.0"><html:div id="editor-panel-shell" class="editor-panel-shell" data-state="idle">
  <html:div id="editor-drag-handle" class="editor-drag-handle">Diagram editor — drag here</html:div>
  <html:div class="editor-tabs" id="editor-toolbar"><html:button id="begin-create-element" type="button">Create element</html:button><html:button id="begin-create-route" type="button">Create route</html:button><html:button id="begin-preview" type="button">Preview</html:button><html:button id="deselect" type="button" hidden="hidden">Deselect</html:button><html:button id="export-json" type="button">Export JSON</html:button></html:div>
  <html:div class="editor-tabs" id="preview-toolbar" hidden="hidden"><html:button id="exit-preview" type="button">Return to editor</html:button></html:div>
@@ -465,23 +475,25 @@ svg {
    <html:div id="editor-idle" class="editor-state"><html:p class="editor-status">Select an element or route in the diagram to edit it.</html:p><html:p class="preview-copy">Export downloads the current diagram as a JSON file.</html:p></html:div>
    <html:div id="element-edit" class="editor-state"><html:h3>Selected element</html:h3><html:div id="element-empty" class="editor-status">Editing element.</html:div>
     <html:div class="editor-grid">
-     <html:label for="el-id" data-field="id">ID</html:label><html:input id="el-id" data-field="id" type="text" /><html:label for="el-class" data-field="class">Class</html:label><html:select id="el-class" data-field="class"><html:option>title</html:option><html:option>subtitle</html:option><html:option>cluster</html:option><html:option>box</html:option><html:option>note</html:option></html:select>
+     <html:label for="el-id" data-field="id">ID</html:label><html:input id="el-id" data-field="id" type="text" /><html:label for="el-class" data-field="class">Class</html:label><html:select id="el-class" data-field="class"><html:option>title</html:option><html:option>subtitle</html:option><html:option>cluster</html:option><html:option>box</html:option><html:option>note</html:option><html:option>frame</html:option></html:select>
      <html:label for="el-parent" data-field="parent">Parent</html:label><html:select id="el-parent" data-field="parent" /><html:label for="el-color" data-field="color">Color</html:label><html:select id="el-color" data-field="color"><html:option value="neutral">neutral</html:option><html:option value="blue">blue</html:option><html:option value="amber">amber</html:option><html:option value="purple">purple</html:option></html:select>
      <html:label for="el-title" data-field="text">Title / text</html:label><html:textarea id="el-title" data-field="text" /><html:label for="el-body" data-field="body">Body</html:label><html:textarea id="el-body" data-field="body" /><html:label for="el-hover" data-field="hover">Hover</html:label><html:textarea id="el-hover" data-field="hover" />
      <html:label for="el-x" data-field="x">x</html:label><html:input id="el-x" data-field="x" type="number" step="any" /><html:label for="el-y" data-field="y">y</html:label><html:input id="el-y" data-field="y" type="number" step="any" /><html:label for="el-width" data-field="width">width</html:label><html:input id="el-width" data-field="width" type="number" step="any" min="1" /><html:label for="el-height" data-field="height">height</html:label><html:input id="el-height" data-field="height" type="number" step="any" min="1" /><html:label for="el-font-size" data-field="fontSize">font size</html:label><html:input id="el-font-size" data-field="fontSize" type="number" step="any" min="1" placeholder="CSS default" />
-    </html:div><html:div class="editor-actions"><html:button id="duplicate-element" type="button">Duplicate</html:button><html:button id="delete-element" type="button">Delete</html:button></html:div><html:div id="element-status" class="editor-status" /></html:div>
+     <html:label for="el-frame-margin" data-field="frameMargin">Margin</html:label><html:input id="el-frame-margin" data-field="frameMargin" type="number" step="any" min="0" /><html:label for="el-frame-stroke" data-field="frameStroke">Line color</html:label><html:input id="el-frame-stroke" data-field="frameStroke" type="text" placeholder="#6d7a86" /><html:label for="el-frame-stroke-width" data-field="frameStrokeWidth">Line thickness</html:label><html:input id="el-frame-stroke-width" data-field="frameStrokeWidth" type="number" step="any" min="0.1" /><html:label for="el-frame-radius" data-field="frameRadius">Corner radius</html:label><html:input id="el-frame-radius" data-field="frameRadius" type="number" step="any" min="0" />
+    </html:div><html:section id="multi-selection-tools" class="multi-selection-tools" hidden="hidden"><html:h3>Align selected</html:h3><html:div id="multi-selection-count" class="editor-status" /><html:div class="editor-actions"><html:button id="align-left" type="button">Left</html:button><html:button id="align-h-center" type="button">Horizontal center</html:button><html:button id="align-right" type="button">Right</html:button><html:button id="align-top" type="button">Top</html:button><html:button id="align-v-center" type="button">Vertical center</html:button><html:button id="align-bottom" type="button">Bottom</html:button></html:div></html:section><html:div class="editor-actions"><html:button id="duplicate-element" type="button">Duplicate</html:button><html:button id="delete-element" type="button">Delete</html:button></html:div><html:div id="element-status" class="editor-status" /></html:div>
    <html:div id="element-create" class="editor-state"><html:h3>Create element</html:h3>
     <html:div class="editor-grid">
-     <html:label for="new-id" data-field="id">Unique ID</html:label><html:input id="new-id" data-field="id" type="text" /><html:label for="new-class" data-field="class">Class</html:label><html:select id="new-class" data-field="class"><html:option>box</html:option><html:option>cluster</html:option><html:option>title</html:option><html:option>subtitle</html:option><html:option>note</html:option></html:select>
+     <html:label for="new-id" data-field="id">Unique ID</html:label><html:input id="new-id" data-field="id" type="text" /><html:label for="new-class" data-field="class">Class</html:label><html:select id="new-class" data-field="class"><html:option>box</html:option><html:option>cluster</html:option><html:option>title</html:option><html:option>subtitle</html:option><html:option>note</html:option><html:option>frame</html:option></html:select>
      <html:label for="new-parent" data-field="parent">Parent</html:label><html:select id="new-parent" data-field="parent" /><html:label for="new-color" data-field="color">Color</html:label><html:select id="new-color" data-field="color"><html:option value="neutral">neutral</html:option><html:option value="blue">blue</html:option><html:option value="amber">amber</html:option><html:option value="purple">purple</html:option></html:select>
      <html:label for="new-title" data-field="text">Title / text</html:label><html:textarea id="new-title" data-field="text" /><html:label for="new-body" data-field="body">Body</html:label><html:textarea id="new-body" data-field="body" /><html:label for="new-x" data-field="x">x</html:label><html:input id="new-x" data-field="x" type="number" step="any" value="200" /><html:label for="new-y" data-field="y">y</html:label><html:input id="new-y" data-field="y" type="number" step="any" value="200" /><html:label for="new-width" data-field="width">width</html:label><html:input id="new-width" data-field="width" type="number" step="any" value="420" min="1" /><html:label for="new-height" data-field="height">height</html:label><html:input id="new-height" data-field="height" type="number" step="any" value="160" min="1" />
+     <html:label for="new-frame-margin" data-field="frameMargin">Margin</html:label><html:input id="new-frame-margin" data-field="frameMargin" type="number" step="any" value="20" min="0" /><html:label for="new-frame-stroke" data-field="frameStroke">Line color</html:label><html:input id="new-frame-stroke" data-field="frameStroke" type="text" value="#6d7a86" /><html:label for="new-frame-stroke-width" data-field="frameStrokeWidth">Line thickness</html:label><html:input id="new-frame-stroke-width" data-field="frameStrokeWidth" type="number" step="any" value="4" min="0.1" /><html:label for="new-frame-radius" data-field="frameRadius">Corner radius</html:label><html:input id="new-frame-radius" data-field="frameRadius" type="number" step="any" value="24" min="0" />
     </html:div><html:div class="editor-actions"><html:button id="create-element" type="button">Create element</html:button><html:button id="cancel-create-element" type="button">Cancel</html:button></html:div><html:div id="element-create-status" class="editor-status" /></html:div>
-   <html:div id="route-create" class="editor-state"><html:h3>Create route</html:h3><html:div class="editor-grid"><html:label for="route-new-id">New route ID</html:label><html:input id="route-new-id" type="text" placeholder="route-id" /><html:label for="route-new-type">Type</html:label><html:select id="route-new-type"><html:option value="">Unspecified</html:option><html:option value="deployment">deployment</html:option><html:option value="runtime">runtime</html:option></html:select><html:label for="route-new-color">Color</html:label><html:select id="route-new-color"><html:option value="">Default (legacy)</html:option><html:option value="neutral">Neutral</html:option><html:option value="blue">Blue</html:option><html:option value="amber">Amber</html:option><html:option value="purple">Purple</html:option><html:option value="red">Red</html:option></html:select><html:label for="route-new-label">Label</html:label><html:input id="route-new-label" type="text" /></html:div><html:div class="editor-actions"><html:button id="create-route" type="button">Create route</html:button><html:button id="cancel-create-route" type="button">Cancel</html:button></html:div><html:div id="route-create-status" class="editor-status" /></html:div>
-   <html:div id="route-edit" class="editor-state"><html:h3>Editing route</html:h3><html:div class="editor-grid"><html:label for="route-select">Active editing route</html:label><html:select id="route-select" /><html:label for="route-type">Type</html:label><html:select id="route-type"><html:option value="">Unspecified</html:option><html:option value="deployment">deployment</html:option><html:option value="runtime">runtime</html:option></html:select><html:label for="route-color">Color</html:label><html:select id="route-color"><html:option value="">Default (legacy)</html:option><html:option value="neutral">Neutral</html:option><html:option value="blue">Blue</html:option><html:option value="amber">Amber</html:option><html:option value="purple">Purple</html:option><html:option value="red">Red</html:option></html:select><html:label for="route-label">Label</html:label><html:input id="route-label" type="text" /><html:label for="point-x">Point x</html:label><html:input id="point-x" type="number" step="any" /><html:label for="point-y">Point y</html:label><html:input id="point-y" type="number" step="any" /></html:div>
+   <html:div id="route-create" class="editor-state"><html:h3>Create route</html:h3><html:div class="editor-grid"><html:label for="route-new-id">New route ID</html:label><html:input id="route-new-id" type="text" placeholder="route-id" /><html:label for="route-new-type">Type</html:label><html:select id="route-new-type"><html:option value="">Unspecified</html:option><html:option value="deployment">deployment</html:option><html:option value="runtime">runtime</html:option></html:select><html:label for="route-new-color">Color</html:label><html:select id="route-new-color"><html:option value="">Default (legacy)</html:option><html:option value="neutral">Neutral</html:option><html:option value="blue">Blue</html:option><html:option value="amber">Amber</html:option><html:option value="purple">Purple</html:option><html:option value="red">Red</html:option></html:select><html:label for="route-new-label">Label</html:label><html:input id="route-new-label" type="text" /><html:label for="route-new-start-element">Start element</html:label><html:select id="route-new-start-element" /><html:label for="route-new-end-element">End element</html:label><html:select id="route-new-end-element" /></html:div><html:div class="editor-actions"><html:button id="create-route" type="button">Create route</html:button><html:button id="cancel-create-route" type="button">Cancel</html:button></html:div><html:div id="route-create-status" class="editor-status" /></html:div>
+   <html:div id="route-edit" class="editor-state"><html:h3>Editing route</html:h3><html:div class="editor-grid"><html:label for="route-select">Active editing route</html:label><html:select id="route-select" /><html:label for="route-type">Type</html:label><html:select id="route-type"><html:option value="">Unspecified</html:option><html:option value="deployment">deployment</html:option><html:option value="runtime">runtime</html:option></html:select><html:label for="route-color">Color</html:label><html:select id="route-color"><html:option value="">Default (legacy)</html:option><html:option value="neutral">Neutral</html:option><html:option value="blue">Blue</html:option><html:option value="amber">Amber</html:option><html:option value="purple">Purple</html:option><html:option value="red">Red</html:option></html:select><html:label for="route-label">Label</html:label><html:input id="route-label" type="text" /><html:label for="route-start-element">Start element</html:label><html:select id="route-start-element" /><html:label for="route-end-element">End element</html:label><html:select id="route-end-element" /><html:label for="point-x">Point x</html:label><html:input id="point-x" type="number" step="any" /><html:label for="point-y">Point y</html:label><html:input id="point-y" type="number" step="any" /></html:div>
     <html:div class="editor-actions"><html:button id="toggle-place-points" type="button">Place route points</html:button><html:button id="undo-point" type="button">Undo point</html:button><html:button id="insert-point" type="button">Insert bend</html:button><html:button id="delete-point" type="button">Delete point</html:button><html:button id="clear-route" type="button">Clear route</html:button><html:button id="delete-route" type="button">Delete route</html:button></html:div><html:div id="route-status" class="editor-status" /></html:div>
   <html:section id="preview-state" class="editor-state"><html:h3>Preview</html:h3><html:p class="preview-copy">Hover a route to reveal its label. Click routes to toggle persistent highlights; press Escape to clear them all. Empty canvas clicks do not change the selected routes.</html:p></html:section>
  </html:div>
-</html:div></foreignObject><script id="diagram-data" type="application/json">{"canvas": {"width": 4266.6665, "height": 3200, "text_scale": 1.0}, "elements": {"browser": {"id": "browser", "class": "box", "parent": "live-application", "x": 260, "y": 1860, "width": 430, "height": 150, "color": "blue", "title": "Browser"}, "configmap": {"id": "configmap", "class": "box", "parent": "kubernetes-config", "x": 1390, "y": 1160, "width": 360, "height": 125, "color": "blue", "title": "ConfigMap", "body": "Ordinary configuration"}, "deployment": {"id": "deployment", "class": "box", "parent": "kubernetes-config", "x": 1390, "y": 960, "width": 360, "height": 155, "color": "green", "title": "Deployment", "body": "Desired application state"}, "diagram-subtitle": {"id": "diagram-subtitle", "class": "subtitle", "x": 140, "y": 225, "text": "The Council's Map"}, "diagram-title": {"id": "diagram-title", "class": "title", "x": 140, "y": 130, "text": "WorldKLEMS deployment architecture"}, "django-wagtail": {"id": "django-wagtail", "class": "box", "parent": "web-container", "x": 2680, "y": 2370, "width": 360, "height": 165, "color": "green", "title": "Django / Wagtail", "body": "Application and CMS"}, "dns": {"id": "dns", "class": "box", "parent": "live-application", "x": 260, "y": 2110, "width": 430, "height": 160, "color": "blue", "title": "DNS", "body": "worldklems.net"}, "docker-build": {"id": "docker-build", "class": "box", "parent": "local-preparation", "x": 260, "y": 1050, "width": 680, "height": 180, "color": "neutral", "title": "Docker build", "body": "Packages application and dependencies"}, "docker-image": {"id": "docker-image", "class": "box", "parent": "local-preparation", "x": 260, "y": 1310, "width": 680, "height": 170, "color": "amber", "title": "Docker image", "body": "Deployable artifact"}, "dockerfile": {"id": "dockerfile", "class": "box", "parent": "local-preparation", "x": 260, "y": 800, "width": 680, "height": 170, "color": "neutral", "title": "Dockerfile", "body": "Image recipe"}, "git-repository": {"id": "git-repository", "class": "box", "parent": "local-preparation", "x": 260, "y": 540, "width": 680, "height": 180, "color": "blue", "title": "WorldKLEMS Git repository", "body": "Django / Wagtail application source"}, "gunicorn": {"id": "gunicorn", "class": "box", "parent": "web-container", "x": 2680, "y": 2170, "width": 360, "height": 150, "color": "green", "title": "Gunicorn", "body": "Application server"}, "harbor-registry": {"id": "harbor-registry", "class": "box", "parent": "publishing-kubernetes", "x": 1290, "y": 540, "width": 560, "height": 180, "color": "amber", "title": "Harbor registry", "body": "Stores the published Docker image"}, "ingress": {"id": "ingress", "class": "box", "parent": "live-application", "x": 800, "y": 1980, "width": 430, "height": 160, "color": "green", "title": "Ingress"}, "juicefs-media": {"id": "juicefs-media", "class": "box", "parent": "persistent-state", "x": 3610, "y": 1990, "width": 410, "height": 240, "color": "amber", "title": "JuiceFS / worldklems-media", "body": "Persistent CMS files, images and documents"}, "kubectl": {"id": "kubectl", "class": "box", "parent": "publishing-kubernetes", "x": 1960, "y": 800, "width": 560, "height": 180, "color": "purple", "title": "kubectl", "body": "Apply and inspect Kubernetes configuration"}, "kubernetes-config": {"id": "kubernetes-config", "class": "cluster", "parent": "publishing-kubernetes", "x": 1290, "y": 800, "width": 560, "height": 650, "color": "blue", "title": "Kubernetes configuration"}, "live-application": {"id": "live-application", "class": "cluster", "x": 140, "y": 1640, "width": 3260, "height": 1380, "color": "green", "title": "3. Live application &amp; request routing"}, "local-preparation": {"id": "local-preparation", "class": "cluster", "x": 140, "y": 340, "width": 920, "height": 1180, "color": "blue", "title": "1. Local preparation"}, "mariadb": {"id": "mariadb", "class": "box", "parent": "persistent-state", "x": 3610, "y": 2440, "width": 410, "height": 220, "color": "amber", "title": "CIT MariaDB", "body": "Structured CMS and application state"}, "nginx": {"id": "nginx", "class": "box", "parent": "nginx-container", "x": 2070, "y": 2260, "width": 340, "height": 190, "color": "green", "title": "NGINX", "body": "Proxy requests; serve /media/"}, "nginx-container": {"id": "nginx-container", "class": "cluster", "parent": "pod", "x": 1990, "y": 2010, "width": 500, "height": 680, "color": "neutral", "title": "NGINX container"}, "persistent-state": {"id": "persistent-state", "class": "cluster", "x": 3500, "y": 1640, "width": 630, "height": 1380, "color": "amber", "title": "4. Persistent state"}, "pod": {"id": "pod", "class": "cluster", "parent": "live-application", "x": 1880, "y": 1810, "width": 1370, "height": 1020, "color": "green", "title": "Pod — disposable runtime unit"}, "publishing-kubernetes": {"id": "publishing-kubernetes", "class": "cluster", "x": 1160, "y": 340, "width": 1500, "height": 1180, "color": "blue", "title": "2. Publishing &amp; Kubernetes preparation"}, "rancher": {"id": "rancher", "class": "box", "parent": "publishing-kubernetes", "x": 1960, "y": 540, "width": 560, "height": 180, "color": "purple", "title": "Rancher", "body": "Inspect and manage Kubernetes"}, "secrets": {"id": "secrets", "class": "box", "parent": "kubernetes-config", "x": 1390, "y": 1310, "width": 360, "height": 125, "color": "blue", "title": "Secrets", "body": "Credentials and sensitive configuration"}, "service": {"id": "service", "class": "box", "parent": "live-application", "x": 1340, "y": 1980, "width": 430, "height": 160, "color": "green", "title": "Service"}, "state-note": {"id": "state-note", "class": "note", "parent": "persistent-state", "x": 3815, "y": 2840, "width": 440, "height": 80, "text": "The Pod is disposable. The data is not.", "font_size": 30}, "web-container": {"id": "web-container", "class": "cluster", "parent": "pod", "x": 2580, "y": 2010, "width": 560, "height": 680, "color": "neutral", "title": "web container"}, "whitenoise": {"id": "whitenoise", "class": "box", "parent": "web-container", "x": 2740, "y": 2580, "width": 240, "height": 90, "color": "neutral", "title": "WhiteNoise", "body": "serves /static/", "font_size": 28}}, "routes": {"27": {"points": [{"x": 984, "y": 936}, {"x": 1230, "y": 978}, {"x": 1230, "y": 744}], "label": "Flappie", "type": "runtime"}, "State-1": {"points": [], "type": "runtime"}, "check": {"points": [{"x": 2440, "y": 826}, {"x": 2406, "y": 1616}], "type": "runtime"}, "fsdfas": {"points": [{"x": 1036, "y": 2414}, {"x": 1464, "y": 2324}], "type": "runtime", "label": "flappier"}}}</script><script type="application/ecmascript">
+</html:div></foreignObject><script id="diagram-data" type="application/json">{"canvas": {"width": 4266.6665, "height": 3200, "text_scale": 1.1}, "elements": {"Django": {"id": "Django", "class": "box", "x": 412, "y": 780.33, "width": 418, "height": 226.67, "color": "neutral", "title": "Django / Wagtail", "body": "application source code", "parent": "git-repository"}, "architecture-frame": {"id": "architecture-frame", "class": "frame", "margin": 20, "stroke": "#6d7a86", "stroke_width": 4, "radius": 24}, "browser": {"id": "browser", "class": "box", "parent": "live-application", "x": 253.34, "y": 2815, "width": 430, "height": 150, "color": "blue", "title": "Browser"}, "configmap": {"id": "configmap", "class": "box", "parent": "publishing-kubernetes", "x": 2130, "y": 1225.5, "width": 360, "height": 200, "color": "blue", "title": "ConfigMap", "body": "NGINX configuration"}, "deployment": {"id": "deployment", "class": "box", "parent": "publishing-kubernetes", "x": 2190, "y": 746, "width": 616, "height": 378, "color": "green", "title": "Deployment", "body": "Desired application state"}, "diagram-subtitle": {"id": "diagram-subtitle", "class": "subtitle", "x": 140, "y": 225, "text": "WorldKLEMS deployment architecture"}, "diagram-title": {"id": "diagram-title", "class": "title", "x": 140, "y": 130, "text": "The Council's Map"}, "django-wagtail": {"id": "django-wagtail", "class": "box", "parent": "web-container", "x": 2488.67, "y": 2251.34, "width": 352, "height": 426, "color": "green", "title": "Django / Wagtail", "body": "Application and CMS"}, "dns": {"id": "dns", "class": "box", "parent": "live-application", "x": 253.34, "y": 2493.35, "width": 430, "height": 160, "color": "blue", "title": "DNS", "body": "worldklems.net"}, "docker-build": {"id": "docker-build", "class": "box", "parent": "local-preparation", "x": 1168, "y": 814, "width": 412, "height": 546, "color": "neutral", "title": "Docker build", "body": "Packages application and dependencies"}, "docker-image": {"id": "docker-image", "class": "box", "parent": "local-preparation", "x": 1158, "y": 430, "width": 442, "height": 222, "color": "amber", "title": "Docker image", "body": "Deployable artifact"}, "dockerfile": {"id": "dockerfile", "class": "box", "parent": "git-repository", "x": 418, "y": 1140, "width": 420, "height": 170, "color": "neutral", "title": "Dockerfile", "body": "Image recipe"}, "git-repository": {"id": "git-repository", "class": "cluster", "parent": "local-preparation", "x": 328, "y": 688, "width": 686, "height": 680, "color": "blue", "title": "WorldKLEMS Git repository", "body": "Django / Wagtail application source"}, "gunicorn": {"id": "gunicorn", "class": "box", "parent": "web-container", "x": 2094.67, "y": 2005.34, "width": 360, "height": 213.33, "color": "green", "title": "Gunicorn", "body": "Application server"}, "harbor-registry": {"id": "harbor-registry", "class": "box", "parent": "publishing-kubernetes", "x": 2640, "y": 440, "width": 560, "height": 180, "color": "amber", "title": "Harbor registry", "body": "Stores the published Docker image"}, "ingress": {"id": "ingress", "class": "box", "parent": "live-application", "x": 253.34, "y": 2196.67, "width": 430, "height": 160, "color": "green", "title": "Ingress", "body": "HTTPS entry point"}, "juicefs-media": {"id": "juicefs-media", "class": "box", "parent": "persistent-state", "x": 3406, "y": 2443, "width": 592, "height": 472, "color": "amber", "title": "JuiceFS / worldklems-media PVC", "body": "Persistent CMS files, images and documents"}, "kubectl": {"id": "kubectl", "class": "box", "parent": "publishing-kubernetes", "x": 3089, "y": 966, "width": 560, "height": 180, "color": "purple", "title": "kubectl", "body": "Apply and inspect Kubernetes configuration"}, "live-application": {"id": "live-application", "class": "cluster", "x": 156.67, "y": 1683.34, "width": 2908, "height": 1378, "color": "green", "title": "3. Live application in Kubernetes &amp; request routing"}, "local-preparation": {"id": "local-preparation", "class": "cluster", "x": 266, "y": 326, "width": 1398, "height": 1222, "color": "blue", "title": "1. Local preparation"}, "mariadb": {"id": "mariadb", "class": "box", "parent": "persistent-state", "x": 3480, "y": 2087, "width": 418, "height": 312, "color": "amber", "title": "CIT MariaDB", "body": "Structured CMS and application state"}, "nginx": {"id": "nginx", "class": "box", "parent": "nginx-container", "x": 1408.67, "y": 2001.34, "width": 282, "height": 882, "color": "green", "title": "NGINX", "body": "Proxy application requests; serve /media/"}, "nginx-container": {"id": "nginx-container", "class": "cluster", "parent": "pod", "x": 1272.67, "y": 1909.34, "width": 570, "height": 1040, "color": "neutral", "title": "NGINX container"}, "persistent-state": {"id": "persistent-state", "class": "cluster", "x": 3203, "y": 1854, "width": 920.5, "height": 1114, "color": "amber", "title": "4. Persistent state"}, "pod": {"id": "pod", "class": "cluster", "parent": "live-application", "x": 1154.67, "y": 1792.01, "width": 1807.33, "height": 1223.33, "color": "green", "title": "Pod — disposable runtime unit"}, "publishing-kubernetes": {"id": "publishing-kubernetes", "class": "cluster", "x": 2042, "y": 330, "width": 1756, "height": 1164, "color": "purple", "title": "2. Publishing &amp; Kubernetes preparation"}, "rancher": {"id": "rancher", "class": "box", "parent": "publishing-kubernetes", "x": 3089, "y": 708, "width": 560, "height": 180, "color": "purple", "title": "Rancher", "body": "Inspect and manage Kubernetes"}, "secrets": {"id": "secrets", "class": "box", "parent": "publishing-kubernetes", "x": 3102, "y": 1225.5, "width": 476.67, "height": 200, "color": "blue", "title": "Secrets", "body": "Registry, database and app credentials"}, "service": {"id": "service", "class": "box", "parent": "live-application", "x": 253.34, "y": 1846.67, "width": 436.67, "height": 200, "color": "green", "title": "Service", "body": "Stable route to NGINX"}, "state-note": {"id": "state-note", "class": "note", "parent": "persistent-state", "x": 3688, "y": 2009, "width": 440, "height": 80, "text": "The Pod is disposable. The data is not.", "font_size": 30}, "web-container": {"id": "web-container", "class": "cluster", "parent": "pod", "x": 1996.67, "y": 1911.34, "width": 904, "height": 1038, "color": "neutral", "title": "Web container"}, "whitenoise": {"id": "whitenoise", "class": "box", "parent": "web-container", "x": 2060, "y": 2360, "width": 242, "height": 296.66, "color": "neutral", "title": "WhiteNoise", "body": "Serves CSS, JavaScript and other static assets", "font_size": 28}}, "routes": {"browser-dns": {"points": [{"x": 472, "y": 2812}, {"x": 472, "y": 2656}], "type": "runtime", "label": "User enters https://www.worldklems.net/", "start_element": "browser", "end_element": "dns"}, "configmap-nginx": {"points": [{"x": 2144, "y": 1418}, {"x": 1840, "y": 1918}], "type": "deployment", "label": "The ConfigMap provides the NGINX configuration", "color": "purple", "start_element": "configmap", "end_element": "nginx"}, "deployment-pod": {"points": [{"x": 2558, "y": 1126}, {"x": 2558, "y": 1756}], "type": "deployment", "label": "The Deployment creates and maintains the Pod", "color": "purple", "start_element": "deployment", "end_element": "pod"}, "django-juicefs": {"points": [{"x": 2844.67, "y": 2620.67}, {"x": 3398.67, "y": 2618.67}], "type": "runtime", "label": "Django / Wagtail stores uploaded media and documents in JuiceFS", "start_element": "django-wagtail", "end_element": "juicefs-media"}, "django-mariadb": {"points": [{"x": 2848, "y": 2346}, {"x": 3480, "y": 2344}], "type": "runtime", "label": "Django / Wagtail reads and updates site data in MariaDB", "start_element": "django-wagtail", "end_element": "mariadb"}, "django-whitenoise": {"points": [{"x": 2492, "y": 2502}, {"x": 2303.33, "y": 2502}], "type": "runtime", "label": "WhiteNoise serves CSS, JavaScript and other static assets", "start_element": "django-wagtail", "end_element": "whitenoise"}, "dns-ingress": {"points": [{"x": 473.34, "y": 2486.67}, {"x": 473.34, "y": 2356}], "type": "runtime", "label": "DNS converts the domain name to an IP address", "start_element": "dns", "end_element": "ingress"}, "docker-build-image": {"points": [{"x": 1370, "y": 816}, {"x": 1370, "y": 648}], "type": "deployment", "label": "Docker build produces a deployable image", "color": "blue", "start_element": "docker-build", "end_element": "docker-image"}, "docker-image-harbor": {"points": [{"x": 1598, "y": 510}, {"x": 2634, "y": 510}], "type": "deployment", "label": "The image is pushed to the Harbor registry", "color": "blue", "start_element": "docker-image", "end_element": "harbor-registry"}, "dockerfile-docker-build": {"points": [{"x": 836, "y": 1226}, {"x": 1166, "y": 1226}], "type": "deployment", "label": "Docker build follows the instructions in the Dockerfile", "color": "blue", "start_element": "dockerfile", "end_element": "docker-build"}, "git-docker-build": {"points": [{"x": 830, "y": 902}, {"x": 1170, "y": 902}], "type": "deployment", "label": "Docker build uses the application source from the Git repository", "color": "blue", "start_element": "Django", "end_element": "docker-build"}, "gunicorn-django": {"points": [{"x": 2450, "y": 2100}, {"x": 2548, "y": 2248}], "type": "runtime", "label": "Gunicorn runs the Django / Wagtail application", "start_element": "gunicorn", "end_element": "django-wagtail"}, "harbor-deployment": {"points": [{"x": 2704, "y": 620}, {"x": 2704, "y": 744}], "type": "deployment", "label": "The Deployment points to the image stored in Harbor", "color": "purple", "start_element": "harbor-registry", "end_element": "deployment"}, "ingress-service": {"points": [{"x": 478.67, "y": 2202.67}, {"x": 478.67, "y": 2052}], "type": "runtime", "label": "Ingress accepts the HTTPS request and passes it into the cluster", "start_element": "ingress", "end_element": "service"}, "juicefs-django": {"points": [{"x": 3399.33, "y": 2556}, {"x": 2843.33, "y": 2558}], "type": "runtime", "label": "Django / Wagtail reads stored media and documents from JuiceFS", "color": "amber", "start_element": "juicefs-media", "end_element": "django-wagtail"}, "juicefs-nginx": {"points": [{"x": 3404, "y": 2778.67}, {"x": 1690, "y": 2778.67}], "type": "runtime", "label": "JuiceFS returns the media file so NGINX can serve it", "color": "amber", "start_element": "juicefs-media", "end_element": "nginx"}, "kubectl-deployment": {"points": [{"x": 3089, "y": 1056}, {"x": 2804, "y": 1056}], "type": "deployment", "label": "kubectl applies the desired Kubernetes configuration", "color": "purple", "start_element": "kubectl", "end_element": "deployment"}, "mariadb-django": {"points": [{"x": 3482, "y": 2288}, {"x": 2850, "y": 2290}], "type": "runtime", "label": "MariaDB returns the requested data to Django / Wagtail", "color": "amber", "start_element": "mariadb", "end_element": "django-wagtail"}, "nginx-gunicorn": {"points": [{"x": 1694, "y": 2098}, {"x": 2090, "y": 2100}], "type": "runtime", "label": "NGINX passes dynamic requests to Gunicorn", "start_element": "nginx", "end_element": "gunicorn"}, "nginx-juicefs-request": {"points": [{"x": 1684, "y": 2848}, {"x": 3402, "y": 2848}], "type": "runtime", "label": "For /media/, NGINX asks JuiceFS for the requested file", "start_element": "nginx", "end_element": "juicefs-media"}, "rancher-deployment": {"points": [{"x": 3089, "y": 798}, {"x": 2808, "y": 798}], "type": "deployment", "label": "Rancher lets administrators inspect and manage the deployment", "color": "purple", "start_element": "rancher", "end_element": "deployment"}, "secrets-django": {"points": [{"x": 3106, "y": 1406}, {"x": 2703.33, "y": 2250}], "type": "deployment", "label": "Kubernetes Secrets provide credentials to the web application", "color": "purple", "start_element": "secrets", "end_element": "django-wagtail"}, "service-nginx": {"points": [{"x": 688, "y": 2024}, {"x": 1406, "y": 2024}], "type": "runtime", "label": "Service forwards the request to the NGINX container", "start_element": "service", "end_element": "nginx"}}}</script><script type="application/ecmascript">
 (function () {
   'use strict';
   const NS = 'http://www.w3.org/2000/svg';
@@ -492,10 +504,12 @@ svg {
   const panel = document.getElementById('editor-panel-shell');
   const state = JSON.parse(document.getElementById('diagram-data').textContent);
   const palette = {"layoutAccepted": ["amber", "blue", "green", "neutral", "purple"], "layoutCompatibility": ["green"], "routeAccepted": ["neutral", "blue", "amber", "purple", "red"]};
+  const calloutStyle = {"font_size": 30.0, "padding_x": 24.0, "padding_y": 12.0, "radius": 14.0, "fill": "#ececec", "stroke": "#c8d0d7", "stroke_width": 2.0, "text_stroke": "#ffffff", "text_stroke_width": 4.0, "char_width_factor": 0.54, "min_width": 120.0, "offset_y": 34.0, "baseline_factor": 0.31};
   let editorState = 'idle', selectedElement = null, editingRouteId = null;
+  const selectedElementIds = new Set();
   const inspectedRouteIds = new Set();
   let selectedPoint = null, placingRoutePoints = false, gesture = null, panelDrag = null;
-  let suppressClick = false, editorZoom = 1;
+  let suppressClick = false, editorZoom = 1, shiftHeld = false;
   const MIN_EDITOR_ZOOM = 0.1, MAX_EDITOR_ZOOM = 2;
 
   // These are editor capabilities, not schema restrictions.  Existing fields
@@ -505,7 +519,8 @@ svg {
     cluster: ['id', 'class', 'parent', 'color', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize'],
     title: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize'],
     subtitle: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize'],
-    note: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize']
+    note: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize'],
+    frame: ['id', 'class', 'frameMargin', 'frameStroke', 'frameStrokeWidth', 'frameRadius']
   };
   if (!state.canvas || typeof state.canvas !== 'object') state.canvas = {};
   if (finite(state.canvas.text_scale) === null || Number(state.canvas.text_scale) &lt;= 0) state.canvas.text_scale = 1;
@@ -519,13 +534,31 @@ svg {
   }
   function scaledFontSize(value) { return value * textScale(); }
   function applyTextScale() { svg.style.setProperty('--text-scale', textScale()); }
+  function applyOuterGeometry() {
+    const displayWidth = Number(state.canvas.width) * editorZoom;
+    const displayHeight = Number(state.canvas.height) * editorZoom;
+    const width = Math.max(displayWidth, window.innerWidth);
+    const height = Math.max(displayHeight, window.innerHeight);
+    svg.setAttribute('width', rounded(width));
+    svg.setAttribute('height', rounded(height));
+    svg.style.width = rounded(width) + 'px';
+    svg.style.height = rounded(height) + 'px';
+  }
   function applyCanvasGeometry() {
     const width = Number(state.canvas.width), height = Number(state.canvas.height);
+    diagramCanvas.setAttribute('x', 0);
+    diagramCanvas.setAttribute('y', 0);
     diagramCanvas.setAttribute('width', rounded(width * editorZoom));
     diagramCanvas.setAttribute('height', rounded(height * editorZoom));
     diagramCanvas.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+    applyOuterGeometry();
     const background = diagramCanvas.querySelector('.canvas-background');
     if (background) { background.setAttribute('width', width); background.setAttribute('height', height); }
+  }
+  function frameGeometry(el) {
+    const margin = Math.max(0, Number(el.margin === undefined ? 20 : el.margin));
+    return {x: margin, y: margin, width: Math.max(0, Number(state.canvas.width) - margin * 2),
+      height: Math.max(0, Number(state.canvas.height) - margin * 2)};
   }
   function updateZoomDisplay() { byId('zoom-display').value = Math.round(editorZoom * 100) + '%'; byId('zoom-display').textContent = Math.round(editorZoom * 100) + '%'; }
   function setEditorZoom(value) {
@@ -611,15 +644,31 @@ svg {
       const length = Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2);
       if (length &gt; bestLength) { bestLength = length; best = [start, end]; }
     }
-    return {x: (best[0].x + best[1].x) / 2, y: (best[0].y + best[1].y) / 2 - 28 * textScale()};
+    return {
+      x: (best[0].x + best[1].x) / 2,
+      y: (best[0].y + best[1].y) / 2 - calloutStyle.offset_y * textScale()
+    };
   }
   function addRouteLabel(group, id, route) {
     const value = route.label || 'Route ' + id, position = routeLabelPosition(route.points);
-    const scale = textScale(), width = Math.max(100 * scale, value.length * 14 * scale + 28 * scale);
-    const label = node('g', {class: 'route-label', 'aria-hidden': 'true'});
-    label.appendChild(node('rect', {x: position.x - width / 2, y: position.y - 24 * scale, width: width, height: 44 * scale}));
-    const text = node('text', {x: position.x, y: position.y + 8 * scale, 'text-anchor': 'middle'});
+    const scale = textScale();
+    const fontSize = calloutStyle.font_size * scale;
+    const paddingX = calloutStyle.padding_x * scale;
+    const paddingY = calloutStyle.padding_y * scale;
+    const width = Math.max(calloutStyle.min_width * scale,
+      value.length * fontSize * calloutStyle.char_width_factor + 2 * paddingX);
+    const height = fontSize + 2 * paddingY;
+    const label = node('g', {class: 'route-label' + (isRouteHighlighted(id) ? ' route-label-visible' : ''),
+      'data-route-label-id': id, 'aria-hidden': 'true'});
+    label.appendChild(node('rect', {x: position.x - width / 2, y: position.y - height / 2,
+      width: width, height: height, rx: calloutStyle.radius * scale, ry: calloutStyle.radius * scale}));
+    const text = node('text', {x: position.x,
+      y: position.y + fontSize * calloutStyle.baseline_factor, 'text-anchor': 'middle'});
     text.textContent = value; label.appendChild(text); group.appendChild(label);
+  }
+  function setRouteCalloutVisible(id, visible) {
+    const label = diagramCanvas.querySelector('[data-route-label-id="' + id + '"]');
+    if (label) label.classList.toggle('route-label-visible', Boolean(visible));
   }
   function depth(id) {
     let n = 0, parent = state.elements[id] &amp;&amp; state.elements[id].parent;
@@ -663,22 +712,31 @@ svg {
     });
     if (el.font_size) group.setAttribute('style', '--element-font-size:' + el.font_size + 'px');
     if (el.hover) { const title = node('title'); title.textContent = el.hover; group.appendChild(title); }
-    if (selectedElement === id) group.classList.add('element-selected');
+    if (selectedElementIds.has(id)) group.classList.add('element-selected');
     parent.appendChild(group); return group;
   }
 
   function render() {
     const content = byId('diagram-content');
     while (content.firstChild) content.removeChild(content.firstChild);
+    const frameLayer = addLayer(content, 'frames-layer');
     const clusterFills = addLayer(content, 'cluster-fills');
     const routeLayer = addLayer(content, 'routes-layer');
     const boxLayer = addLayer(content, 'boxes-layer');
     const clusterLabels = addLayer(content, 'cluster-labels');
     const textLayer = addLayer(content, 'text-layer');
+    const calloutLayer = addLayer(content, 'callouts-layer');
     const overlay = addLayer(content, 'editor-overlay-layer');
     overlay.setAttribute('class', 'editor-overlay ' +
       (editorState === 'editing-route' ? 'route-overlay' : 'element-overlay'));
     const ids = Object.keys(state.elements);
+    const frames = ids.filter(function (id) { return state.elements[id].class === 'frame'; }).sort();
+    frames.forEach(function (id) {
+      const el = state.elements[id], box = frameGeometry(el), group = elementGroup(frameLayer, id, 'frame-content');
+      group.appendChild(node('rect', {class: 'frame-surface', x: box.x, y: box.y, width: box.width, height: box.height,
+        rx: Number(el.radius === undefined ? 24 : el.radius), ry: Number(el.radius === undefined ? 24 : el.radius),
+        style: '--frame-stroke:' + (el.stroke || '#6d7a86') + ';--frame-stroke-width:' + Number(el.stroke_width === undefined ? 4 : el.stroke_width) + 'px'}));
+    });
     const clusters = ids.filter(function (id) { return state.elements[id].class === 'cluster'; })
       .sort(function (a, b) { return depth(a) - depth(b) || a.localeCompare(b); });
 
@@ -693,7 +751,10 @@ svg {
       const d = pathData(route.points);
       group.appendChild(node('path', {class: 'route-path', d: d}));
       group.appendChild(node('path', {class: 'route-hit', d: d}));
-      addRouteLabel(group, id, route); routeLayer.appendChild(group);
+      group.addEventListener('mouseenter', function () { setRouteCalloutVisible(id, true); });
+      group.addEventListener('mouseleave', function () { setRouteCalloutVisible(id, isRouteHighlighted(id)); });
+      routeLayer.appendChild(group);
+      addRouteLabel(calloutLayer, id, route);
     });
     ids.filter(function (id) { return state.elements[id].class === 'box'; })
       .sort(function (a, b) { return depth(a) - depth(b) || a.localeCompare(b); })
@@ -736,9 +797,11 @@ svg {
   }
   function renderElementOverlay(overlay) {
     const el = state.elements[selectedElement];
-    const box = ['box', 'cluster'].indexOf(el.class) !== -1 ? el : textBounds(el);
+    const box = el.class === 'frame' ? frameGeometry(el) :
+      (['box', 'cluster'].indexOf(el.class) !== -1 ? el : textBounds(el));
     overlay.appendChild(node('rect', {class: 'selection-outline', x: box.x, y: box.y,
       width: box.width, height: box.height}));
+    if (el.class === 'frame') return;
     if (['box', 'cluster'].indexOf(el.class) === -1) return;
     [['nw', el.x, el.y], ['ne', el.x + el.width, el.y], ['se', el.x + el.width, el.y + el.height],
      ['sw', el.x, el.y + el.height]].forEach(function (item) {
@@ -763,6 +826,137 @@ svg {
     }
     visit(id); return result;
   }
+  function selectedRootIds() {
+    return Array.from(selectedElementIds).filter(function (id) {
+      let parent = state.elements[id] &amp;&amp; state.elements[id].parent;
+      while (parent &amp;&amp; state.elements[parent]) {
+        if (selectedElementIds.has(parent)) return false;
+        parent = state.elements[parent].parent;
+      }
+      return true;
+    });
+  }
+
+  function movementIdsForSelection() {
+    const result = new Set();
+    selectedRootIds().forEach(function (id) {
+      result.add(id);
+      if (state.elements[id] &amp;&amp; state.elements[id].class === 'cluster') {
+        descendants(id).forEach(function (child) { result.add(child); });
+      }
+    });
+    return Array.from(result);
+  }
+
+  function anchoredRouteOrigins(elementIds) {
+    const moved = new Set(elementIds), result = {};
+    Object.keys(state.routes).forEach(function (routeId) {
+      const route = state.routes[routeId], points = route.points || [];
+      if (!points.length) return;
+      const item = {};
+      if (route.start_element &amp;&amp; moved.has(route.start_element)) item.start = {x: points[0].x, y: points[0].y};
+      if (route.end_element &amp;&amp; moved.has(route.end_element)) {
+        const last = points.length - 1; item.end = {x: points[last].x, y: points[last].y};
+      }
+      if (item.start || item.end) result[routeId] = item;
+    });
+    return result;
+  }
+
+  function applyAnchoredRouteTranslation(origins, dx, dy) {
+    Object.keys(origins || {}).forEach(function (routeId) {
+      const route = state.routes[routeId], item = origins[routeId];
+      if (!route || !route.points || !route.points.length) return;
+      if (item.start) { route.points[0].x = rounded(item.start.x + dx); route.points[0].y = rounded(item.start.y + dy); }
+      if (item.end) {
+        const last = route.points.length - 1;
+        route.points[last].x = rounded(item.end.x + dx); route.points[last].y = rounded(item.end.y + dy);
+      }
+    });
+  }
+
+  function translateAnchoredEndpoints(elementIds, dx, dy) {
+    applyAnchoredRouteTranslation(anchoredRouteOrigins(elementIds), dx, dy);
+  }
+
+  function selectionGesture(p) {
+    const moving = movementIdsForSelection(), origins = {};
+    moving.forEach(function (key) { origins[key] = {x: state.elements[key].x, y: state.elements[key].y}; });
+    return {kind: 'move', start: p, moving: moving, origins: origins, routeOrigins: anchoredRouteOrigins(moving)};
+  }
+
+  function setSingleElementSelection(id) {
+    selectedElementIds.clear();
+    if (id &amp;&amp; state.elements[id]) selectedElementIds.add(id);
+    selectedElement = id &amp;&amp; state.elements[id] ? id : null;
+  }
+
+  function toggleElementSelection(id) {
+    if (!state.elements[id]) return;
+    if (selectedElementIds.has(id)) {
+      selectedElementIds.delete(id);
+      if (selectedElement === id) selectedElement = selectedElementIds.size ? Array.from(selectedElementIds).slice(-1)[0] : null;
+    } else {
+      selectedElementIds.add(id);
+      selectedElement = id;
+    }
+    editorState = selectedElement ? 'editing-element' : 'idle';
+    updatePanelState(); render();
+  }
+
+  function elementBoundsById(id) {
+    const el = state.elements[id];
+    if (!el) return null;
+    if (el.class === 'frame') return frameGeometry(el);
+    return ['box', 'cluster'].indexOf(el.class) !== -1
+      ? {x: Number(el.x), y: Number(el.y), width: Number(el.width), height: Number(el.height)}
+      : textBounds(el);
+  }
+
+  function moveElementTreeBy(id, dx, dy) {
+    const moving = [id].concat(state.elements[id].class === 'cluster' ? descendants(id) : []);
+    const unique = Array.from(new Set(moving));
+    unique.forEach(function (key) {
+      state.elements[key].x = rounded(Number(state.elements[key].x) + dx);
+      state.elements[key].y = rounded(Number(state.elements[key].y) + dy);
+    });
+    translateAnchoredEndpoints(unique, dx, dy);
+  }
+
+  function alignSelected(kind) {
+    const ids = selectedRootIds();
+    if (ids.length &lt; 2) return;
+    const bounds = ids.map(function (id) { return {id: id, box: elementBoundsById(id)}; });
+    const minLeft = Math.min.apply(null, bounds.map(function (x) { return x.box.x; }));
+    const maxRight = Math.max.apply(null, bounds.map(function (x) { return x.box.x + x.box.width; }));
+    const minTop = Math.min.apply(null, bounds.map(function (x) { return x.box.y; }));
+    const maxBottom = Math.max.apply(null, bounds.map(function (x) { return x.box.y + x.box.height; }));
+    const centerX = (minLeft + maxRight) / 2, centerY = (minTop + maxBottom) / 2;
+    bounds.forEach(function (item) {
+      let dx = 0, dy = 0;
+      if (kind === 'left') dx = minLeft - item.box.x;
+      if (kind === 'h-center') dx = centerX - (item.box.x + item.box.width / 2);
+      if (kind === 'right') dx = maxRight - (item.box.x + item.box.width);
+      if (kind === 'top') dy = minTop - item.box.y;
+      if (kind === 'v-center') dy = centerY - (item.box.y + item.box.height / 2);
+      if (kind === 'bottom') dy = maxBottom - (item.box.y + item.box.height);
+      if (dx || dy) moveElementTreeBy(item.id, rounded(dx), rounded(dy));
+    });
+    populateGeometryFields(); render();
+  }
+
+  function routeElementOptions(select, selected) {
+    while (select.firstChild) select.removeChild(select.firstChild);
+    const blank = htmlNode('option'); blank.value = ''; blank.textContent = '— free point —';
+    select.appendChild(blank);
+    Object.keys(state.elements).filter(function (id) {
+      return ['box', 'cluster'].indexOf(state.elements[id].class) !== -1;
+    }).sort().forEach(function (id) {
+      const option = htmlNode('option'); option.value = id; option.textContent = id; select.appendChild(option);
+    });
+    select.value = selected || '';
+  }
+
   function elementTarget(target) {
     const group = target &amp;&amp; target.closest ? target.closest('[data-element-id]') : null;
     return group ? group.getAttribute('data-element-id') : null;
@@ -807,10 +1001,15 @@ svg {
     }
     const elementId = elementTarget(evt.target);
     if (editorState === 'editing-element') {
-      if (elementId !== selectedElement) return;
-      const moving = [elementId].concat(state.elements[elementId].class === 'cluster' ? descendants(elementId) : []), origins = {};
-      moving.forEach(function (key) { origins[key] = {x: state.elements[key].x, y: state.elements[key].y}; });
-      gesture = {kind: 'move', start: p, moving: moving, origins: origins};
+      if (!elementId) return;
+      if (evt.shiftKey || shiftHeld) {
+        toggleElementSelection(elementId);
+        if (selectedElementIds.has(elementId)) gesture = selectionGesture(p);
+        evt.preventDefault(); return;
+      }
+      if (!selectedElementIds.has(elementId)) return;
+      selectedElement = elementId; updatePanelState();
+      gesture = selectionGesture(p);
       evt.preventDefault(); return;
     }
     if (editorState !== 'idle') return;
@@ -820,9 +1019,7 @@ svg {
     }
     if (elementId) {
       selectElement(elementId);
-      const moving = [elementId].concat(state.elements[elementId].class === 'cluster' ? descendants(elementId) : []), origins = {};
-      moving.forEach(function (key) { origins[key] = {x: state.elements[key].x, y: state.elements[key].y}; });
-      gesture = {kind: 'move', start: p, moving: moving, origins: origins};
+      if (state.elements[elementId].class !== 'frame') gesture = selectionGesture(p);
       evt.preventDefault(); return;
     }
   }, true);
@@ -840,6 +1037,7 @@ svg {
         state.elements[id].x = rounded(gesture.origins[id].x + dx);
         state.elements[id].y = rounded(gesture.origins[id].y + dy);
       });
+      applyAnchoredRouteTranslation(gesture.routeOrigins, dx, dy);
     } else if (gesture.kind === 'resize') {
       const el = state.elements[gesture.id], g = gesture.geometry, min = 40;
       if (gesture.corner.indexOf('e') !== -1) el.width = Math.max(min, rounded(g.width + dx));
@@ -849,7 +1047,7 @@ svg {
     } else if (gesture.kind === 'point' &amp;&amp; editingRouteId !== null &amp;&amp; selectedPoint !== null) {
       const candidate = {x: rounded(p.x), y: rounded(p.y)};
       const previous = selectedPoint &gt; 0 ? state.routes[editingRouteId].points[selectedPoint - 1] : null;
-      const next = evt.shiftKey &amp;&amp; previous ? orthogonalPoint(previous, candidate) : candidate;
+      const next = (evt.shiftKey || shiftHeld) &amp;&amp; previous ? orthogonalPoint(previous, candidate) : candidate;
       const target = state.routes[editingRouteId].points[selectedPoint];
       target.x = next.x; target.y = next.y;
     } else if (gesture.kind === 'route-move' &amp;&amp; state.routes[gesture.routeId]) {
@@ -875,8 +1073,12 @@ svg {
     evt.preventDefault(); evt.stopPropagation();
   });
   window.addEventListener('resize', function () {
+    applyCanvasGeometry();
     movePanel(Number(panelObject.getAttribute('x')), Number(panelObject.getAttribute('y')));
   });
+  window.addEventListener('scroll', function () {
+    movePanel(Number(panelObject.getAttribute('x')), Number(panelObject.getAttribute('y')));
+  }, {passive: true});
   function fitCanvas() {
     const margin = 24, panelBounds = panelObject.getBoundingClientRect();
     let availableWidth = Math.max(160, window.innerWidth - margin * 2);
@@ -905,10 +1107,15 @@ svg {
     byId('begin-preview').hidden = !showTopLevelActions;
     byId('deselect').hidden = editorState !== 'editing-element' &amp;&amp; editorState !== 'editing-route';
     byId('toggle-place-points').textContent = placingRoutePoints ? 'Finish placing points' : 'Place route points';
+    const multiTools = byId('multi-selection-tools');
+    if (multiTools) {
+      multiTools.hidden = editorState !== 'editing-element' || selectedElementIds.size &lt; 2;
+      byId('multi-selection-count').textContent = selectedElementIds.size + ' elements selected. Shift-click to add or remove elements.';
+    }
     populateDocumentSettings(); populateElementPanel(); populateRouteEditor(); updateZoomDisplay();
   }
   function clearEditing() {
-    selectedElement = null; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
+    selectedElement = null; selectedElementIds.clear(); editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
     gesture = null; editorState = 'idle'; refreshRoutes(); updatePanelState(); render();
   }
   byId('deselect').addEventListener('click', clearEditing);
@@ -936,7 +1143,7 @@ svg {
     applyTextScale(); render(); status('document-settings-status', 'Text size updated.');
   });
   byId('begin-preview').addEventListener('click', function () {
-    selectedElement = null; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
+    selectedElement = null; selectedElementIds.clear(); editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
     editorState = 'preview'; updatePanelState(); render();
   });
   byId('exit-preview').addEventListener('click', function () {
@@ -965,7 +1172,7 @@ svg {
     });
   }
   function beginCreateElement() {
-    selectedElement = null; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
+    selectedElement = null; selectedElementIds.clear(); editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
     editorState = 'creating-element'; status('element-create-status', '');
     parentOptions(byId('new-parent'), byId('new-parent').value, null);
     setElementFieldVisibility('element-create', byId('new-class').value);
@@ -975,14 +1182,15 @@ svg {
     editorState = 'idle'; status('element-create-status', ''); updatePanelState(); render();
   }
   function selectElement(id) {
-    selectedElement = id; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
+    setSingleElementSelection(id); editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
     editorState = 'editing-element'; refreshRoutes(); updatePanelState(); render();
   }
   function populateElementPanel() {
     const el = selectedElement &amp;&amp; state.elements[selectedElement];
     byId('element-empty').textContent = el ? 'Editing ' + selectedElement : 'Click an element to edit it.';
     ['el-id','el-class','el-parent','el-color','el-title','el-body','el-hover','el-x','el-y',
-     'el-width','el-height','el-font-size'].forEach(function (id) { byId(id).disabled = !el; });
+     'el-width','el-height','el-font-size','el-frame-margin','el-frame-stroke','el-frame-stroke-width','el-frame-radius']
+      .forEach(function (id) { byId(id).disabled = !el; });
     parentOptions(byId('new-parent'), byId('new-parent').value, null);
     setElementFieldVisibility('element-create', byId('new-class').value);
     if (!el) return;
@@ -991,6 +1199,10 @@ svg {
     setLayoutColor(byId('el-color'), el.color || 'neutral');
     byId('el-title').value = ['title','subtitle','note'].indexOf(el.class) !== -1 ? (el.text || '') : (el.title || '');
     byId('el-body').value = el.body || ''; byId('el-hover').value = el.hover || '';
+    byId('el-frame-margin').value = el.margin === undefined ? 20 : el.margin;
+    byId('el-frame-stroke').value = el.stroke || '#6d7a86';
+    byId('el-frame-stroke-width').value = el.stroke_width === undefined ? 4 : el.stroke_width;
+    byId('el-frame-radius').value = el.radius === undefined ? 24 : el.radius;
     setElementFieldVisibility('element-edit', el.class); populateGeometryFields();
   }
   function populateGeometryFields() {
@@ -1035,6 +1247,12 @@ svg {
     if (el.class === 'box' || el.class === 'cluster') {
       el.width = Number(el.width || 420); el.height = Number(el.height || 160);
     }
+    if (el.class === 'frame') {
+      delete el.x; delete el.y; delete el.width; delete el.height; delete el.color; delete el.parent;
+      el.margin = Number(el.margin === undefined ? 20 : el.margin);
+      el.stroke = el.stroke || '#6d7a86'; el.stroke_width = Number(el.stroke_width || 4);
+      el.radius = Number(el.radius === undefined ? 24 : el.radius);
+    }
     if (['title','subtitle','note'].indexOf(el.class) !== -1) el.text = el.text || el.title || '';
     populateElementPanel(); render();
   });
@@ -1049,6 +1267,11 @@ svg {
     Object.keys(state.elements).forEach(function (id) {
       if (state.elements[id].parent === old) state.elements[id].parent = next;
     });
+    Object.keys(state.routes).forEach(function (routeId) {
+      if (state.routes[routeId].start_element === old) state.routes[routeId].start_element = next;
+      if (state.routes[routeId].end_element === old) state.routes[routeId].end_element = next;
+    });
+    if (selectedElementIds.delete(old)) selectedElementIds.add(next);
     selectedElement = next; populateElementPanel(); render();
     status('element-status', 'Renamed ' + old + ' to ' + next + '.');
   });
@@ -1058,9 +1281,13 @@ svg {
       if (!el || !hasElementCapability(el.class, pair[1]) || value === null ||
           (['width','height'].indexOf(pair[1]) !== -1 &amp;&amp; value &lt;= 0)) return;
       const delta = value - Number(el[pair[1]] || 0); el[pair[1]] = value;
-      if (['x','y'].indexOf(pair[1]) !== -1 &amp;&amp; el.class === 'cluster') descendants(selectedElement).forEach(function (id) {
-        state.elements[id][pair[1]] = rounded(state.elements[id][pair[1]] + delta);
-      });
+      if (['x','y'].indexOf(pair[1]) !== -1) {
+        const moved = [selectedElement];
+        if (el.class === 'cluster') descendants(selectedElement).forEach(function (id) {
+          state.elements[id][pair[1]] = rounded(state.elements[id][pair[1]] + delta); moved.push(id);
+        });
+        translateAnchoredEndpoints(moved, pair[1] === 'x' ? delta : 0, pair[1] === 'y' ? delta : 0);
+      }
       render();
     });
   });
@@ -1068,6 +1295,21 @@ svg {
     const el = selectedElement &amp;&amp; state.elements[selectedElement];
     if (!el || !hasElementCapability(el.class, 'fontSize')) return;
     const value = finite(this.value); if (value &amp;&amp; value &gt; 0) el.font_size = value; else delete el.font_size; render();
+  });
+  [['el-frame-margin','margin'],['el-frame-stroke-width','stroke_width'],['el-frame-radius','radius']].forEach(function (pair) {
+    byId(pair[0]).addEventListener('input', function () {
+      const el = selectedElement &amp;&amp; state.elements[selectedElement], value = finite(this.value);
+      if (!el || el.class !== 'frame' || value === null) return;
+      if (pair[1] === 'stroke_width' &amp;&amp; value &lt;= 0) return;
+      if ((pair[1] === 'margin' || pair[1] === 'radius') &amp;&amp; value &lt; 0) return;
+      el[pair[1]] = value; render();
+    });
+  });
+  byId('el-frame-stroke').addEventListener('input', function () {
+    const el = selectedElement &amp;&amp; state.elements[selectedElement];
+    if (!el || el.class !== 'frame') return;
+    if (this.value.trim()) el.stroke = this.value.trim();
+    render();
   });
   function copyId(base) {
     let id = base + '-copy', n = 2;
@@ -1077,7 +1319,8 @@ svg {
   byId('duplicate-element').addEventListener('click', function () {
     if (!selectedElement) return;
     const copy = JSON.parse(JSON.stringify(state.elements[selectedElement])), id = copyId(selectedElement);
-    copy.id = id; copy.x = Number(copy.x) + 40; copy.y = Number(copy.y) + 40;
+    copy.id = id;
+    if (copy.class !== 'frame') { copy.x = Number(copy.x) + 40; copy.y = Number(copy.y) + 40; }
     state.elements[id] = copy; selectElement(id); status('element-status', 'Created ' + id + '.');
   });
   function deleteSelectedElement() {
@@ -1088,9 +1331,17 @@ svg {
         if (parent) state.elements[key].parent = parent; else delete state.elements[key].parent;
       }
     });
-    delete state.elements[id]; clearEditing();
+    Object.keys(state.routes).forEach(function (routeId) {
+      if (state.routes[routeId].start_element === id) delete state.routes[routeId].start_element;
+      if (state.routes[routeId].end_element === id) delete state.routes[routeId].end_element;
+    });
+    delete state.elements[id]; selectedElementIds.delete(id); clearEditing();
   }
   byId('delete-element').addEventListener('click', deleteSelectedElement);
+  [['align-left','left'],['align-h-center','h-center'],['align-right','right'],
+   ['align-top','top'],['align-v-center','v-center'],['align-bottom','bottom']].forEach(function (pair) {
+    byId(pair[0]).addEventListener('click', function () { alignSelected(pair[1]); });
+  });
   byId('begin-create-element').addEventListener('click', beginCreateElement);
   byId('cancel-create-element').addEventListener('click', cancelCreateElement);
   byId('new-class').addEventListener('change', function () {
@@ -1100,9 +1351,10 @@ svg {
     const id = byId('new-id').value.trim(), cls = byId('new-class').value;
     if (!id || state.elements[id]) { status('element-create-status', 'New element ID must be non-empty and unique.'); return; }
     const x = finite(byId('new-x').value), y = finite(byId('new-y').value);
-    if (x === null || y === null) { status('element-create-status', 'New element x and y must be numeric.'); return; }
-    const el = {id: id, class: cls, x: x, y: y}, parent = byId('new-parent').value;
-    if (parent) el.parent = parent;
+    if (cls !== 'frame' &amp;&amp; (x === null || y === null)) { status('element-create-status', 'New element x and y must be numeric.'); return; }
+    const el = cls === 'frame' ? {id: id, class: cls} : {id: id, class: cls, x: x, y: y};
+    const parent = byId('new-parent').value;
+    if (parent &amp;&amp; cls !== 'frame') el.parent = parent;
     if (hasElementCapability(cls, 'width')) {
       const width = finite(byId('new-width').value), height = finite(byId('new-height').value);
       if (width === null || height === null || width &lt;= 0 || height &lt;= 0) {
@@ -1111,6 +1363,14 @@ svg {
       el.width = width; el.height = height;
     }
     if (hasElementCapability(cls, 'color')) el.color = byId('new-color').value;
+    if (cls === 'frame') {
+      const margin = finite(byId('new-frame-margin').value), strokeWidth = finite(byId('new-frame-stroke-width').value),
+        radius = finite(byId('new-frame-radius').value), stroke = byId('new-frame-stroke').value.trim();
+      if (margin === null || margin &lt; 0 || strokeWidth === null || strokeWidth &lt;= 0 || radius === null || radius &lt; 0 || !stroke) {
+        status('element-create-status', 'Frame margin/radius must be non-negative; line thickness positive; line color non-empty.'); return;
+      }
+      el.margin = margin; el.stroke = stroke; el.stroke_width = strokeWidth; el.radius = radius;
+    }
     if (['title','subtitle','note'].indexOf(cls) !== -1) optional(el, 'text', byId('new-title').value);
     else optional(el, 'title', byId('new-title').value);
     if (hasElementCapability(cls, 'body')) optional(el, 'body', byId('new-body').value);
@@ -1133,6 +1393,7 @@ svg {
     editorState = 'creating-route';
     byId('route-new-id').value = ''; byId('route-new-type').value = '';
     byId('route-new-color').value = 'neutral'; byId('route-new-label').value = '';
+    routeElementOptions(byId('route-new-start-element'), ''); routeElementOptions(byId('route-new-end-element'), '');
     status('route-create-status', ''); refreshRoutes(); updatePanelState(); render();
   }
   function cancelCreateRoute() {
@@ -1140,18 +1401,22 @@ svg {
     updatePanelState(); render();
   }
   function selectEditingRoute(id) {
-    selectedElement = null; editingRouteId = id; selectedPoint = null; placingRoutePoints = false;
+    selectedElement = null; selectedElementIds.clear(); editingRouteId = id; selectedPoint = null; placingRoutePoints = false;
     editorState = 'editing-route'; refreshRoutes(); updatePanelState(); render();
   }
   function populateRouteEditor() {
     const route = editingRouteId &amp;&amp; state.routes[editingRouteId];
-    ['route-type','route-color','route-label'].forEach(function (id) { byId(id).disabled = !route; });
+    ['route-type','route-color','route-label','route-start-element','route-end-element'].forEach(function (id) { byId(id).disabled = !route; });
     if (!route) {
       byId('route-type').value = ''; byId('route-color').value = ''; byId('route-label').value = '';
+      routeElementOptions(byId('route-start-element'), ''); routeElementOptions(byId('route-end-element'), '');
       populatePointFields(); return;
     }
     byId('route-type').value = route.type || ''; byId('route-color').value = route.color || '';
-    byId('route-label').value = route.label || ''; populatePointFields();
+    byId('route-label').value = route.label || '';
+    routeElementOptions(byId('route-start-element'), route.start_element || '');
+    routeElementOptions(byId('route-end-element'), route.end_element || '');
+    populatePointFields();
   }
   function populatePointFields() {
     const route = editingRouteId &amp;&amp; state.routes[editingRouteId];
@@ -1171,8 +1436,10 @@ svg {
     const route = {points: [], color: byId('route-new-color').value || 'neutral'};
     optional(route, 'type', byId('route-new-type').value);
     optional(route, 'label', byId('route-new-label').value);
+    optional(route, 'start_element', byId('route-new-start-element').value);
+    optional(route, 'end_element', byId('route-new-end-element').value);
     state.routes[id] = route; byId('route-new-id').value = '';
-    editingRouteId = id; selectedElement = null; selectedPoint = null; placingRoutePoints = true;
+    editingRouteId = id; selectedElement = null; selectedElementIds.clear(); selectedPoint = null; placingRoutePoints = true;
     editorState = 'editing-route'; refreshRoutes(); updatePanelState(); render();
     status('route-status', 'Click on the diagram to place route points. Hold Shift to keep the next segment horizontal or vertical.');
   });
@@ -1188,6 +1455,12 @@ svg {
   });
   byId('route-label').addEventListener('input', function () {
     if (editingRouteId) { optional(state.routes[editingRouteId], 'label', this.value); render(); }
+  });
+  [['route-start-element', 'start_element'], ['route-end-element', 'end_element']].forEach(function (pair) {
+    byId(pair[0]).addEventListener('change', function () {
+      if (!editingRouteId) return;
+      optional(state.routes[editingRouteId], pair[1], this.value); render();
+    });
   });
   byId('toggle-place-points').addEventListener('click', function () {
     if (!editingRouteId) { status('route-status', 'Select or create a route first.'); return; }
@@ -1232,6 +1505,10 @@ svg {
     return Boolean(target &amp;&amp; (target.isContentEditable || (target.closest &amp;&amp;
       target.closest('input, textarea, select, button, [contenteditable]:not([contenteditable="false"]), [role="textbox"]'))));
   }
+  document.addEventListener('keydown', function (evt) { if (evt.key === 'Shift') shiftHeld = true; }, true);
+  document.addEventListener('keyup', function (evt) { if (evt.key === 'Shift') shiftHeld = false; }, true);
+  window.addEventListener('blur', function () { shiftHeld = false; });
+
   document.addEventListener('keydown', function (evt) {
     if (editorState === 'preview') {
       if (evt.key === 'Escape') {
@@ -1299,7 +1576,7 @@ svg {
       const p = point(evt); if (!p) return;
       const points = state.routes[editingRouteId].points;
       const candidate = {x: rounded(p.x), y: rounded(p.y)}, previous = points[points.length - 1];
-      points.push(evt.shiftKey &amp;&amp; previous ? orthogonalPoint(previous, candidate) : candidate);
+      points.push((evt.shiftKey || shiftHeld) &amp;&amp; previous ? orthogonalPoint(previous, candidate) : candidate);
       selectedPoint = state.routes[editingRouteId].points.length - 1;
       populateRouteEditor(); render();
       const count = state.routes[editingRouteId].points.length;
@@ -1317,21 +1594,32 @@ svg {
     if (!Number.isFinite(Number(state.canvas.text_scale)) || Number(state.canvas.text_scale) &lt;= 0) {
       throw new Error('text scale must be a positive finite number');
     }
-    const classes = ['title','subtitle','cluster','box','note'];
+    const classes = ['title','subtitle','cluster','box','note','frame'];
     Object.keys(state.elements).forEach(function (id) {
       const el = state.elements[id];
       if (el.id !== id) throw new Error('element key/id mismatch for ' + id);
       if (classes.indexOf(el.class) === -1) throw new Error('unsupported class for ' + id);
-      if (el.color &amp;&amp; palette.layoutAccepted.indexOf(el.color) === -1) {
-        throw new Error('unsupported color for element ' + id);
+      if (el.class === 'frame') {
+        if (!Number.isFinite(Number(el.margin)) || Number(el.margin) &lt; 0) throw new Error('invalid frame margin for ' + id);
+        if (!el.stroke || typeof el.stroke !== 'string') throw new Error('invalid frame line color for ' + id);
+        if (!Number.isFinite(Number(el.stroke_width)) || Number(el.stroke_width) &lt;= 0) throw new Error('invalid frame line thickness for ' + id);
+        if (!Number.isFinite(Number(el.radius)) || Number(el.radius) &lt; 0) throw new Error('invalid frame corner radius for ' + id);
+      } else {
+        if (el.color &amp;&amp; palette.layoutAccepted.indexOf(el.color) === -1) throw new Error('unsupported color for element ' + id);
+        if (!Number.isFinite(Number(el.x)) || !Number.isFinite(Number(el.y))) throw new Error('invalid geometry for ' + id);
+        if (el.parent &amp;&amp; (!state.elements[el.parent] || state.elements[el.parent].class !== 'cluster')) throw new Error('invalid parent for ' + id);
       }
-      if (!Number.isFinite(Number(el.x)) || !Number.isFinite(Number(el.y))) throw new Error('invalid geometry for ' + id);
-      if (el.parent &amp;&amp; (!state.elements[el.parent] || state.elements[el.parent].class !== 'cluster')) throw new Error('invalid parent for ' + id);
     });
     Object.keys(state.routes).forEach(function (id) {
       if (state.routes[id].color &amp;&amp; palette.routeAccepted.indexOf(state.routes[id].color) === -1) {
         throw new Error('unsupported color for route ' + id);
       }
+      ['start_element','end_element'].forEach(function (field) {
+        const target = state.routes[id][field];
+        if (target &amp;&amp; (!state.elements[target] || ['box','cluster'].indexOf(state.elements[target].class) === -1)) {
+          throw new Error('invalid ' + field + ' for route ' + id);
+        }
+      });
       state.routes[id].points.forEach(function (p) {
         if (!Number.isFinite(Number(p.x)) || !Number.isFinite(Number(p.y))) throw new Error('invalid point in route ' + id);
       });

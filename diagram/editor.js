@@ -9,10 +9,12 @@
   const panel = document.getElementById('editor-panel-shell');
   const state = JSON.parse(document.getElementById('diagram-data').textContent);
   const palette = __PALETTE_MEMBERSHIP__;
+  const calloutStyle = __CALLOUT_STYLE__;
   let editorState = 'idle', selectedElement = null, editingRouteId = null;
+  const selectedElementIds = new Set();
   const inspectedRouteIds = new Set();
   let selectedPoint = null, placingRoutePoints = false, gesture = null, panelDrag = null;
-  let suppressClick = false, editorZoom = 1;
+  let suppressClick = false, editorZoom = 1, shiftHeld = false;
   const MIN_EDITOR_ZOOM = 0.1, MAX_EDITOR_ZOOM = 2;
 
   // These are editor capabilities, not schema restrictions.  Existing fields
@@ -22,7 +24,8 @@
     cluster: ['id', 'class', 'parent', 'color', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize'],
     title: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize'],
     subtitle: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize'],
-    note: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize']
+    note: ['id', 'class', 'parent', 'text', 'hover', 'x', 'y', 'width', 'height', 'fontSize'],
+    frame: ['id', 'class', 'frameMargin', 'frameStroke', 'frameStrokeWidth', 'frameRadius']
   };
   if (!state.canvas || typeof state.canvas !== 'object') state.canvas = {};
   if (finite(state.canvas.text_scale) === null || Number(state.canvas.text_scale) <= 0) state.canvas.text_scale = 1;
@@ -36,13 +39,31 @@
   }
   function scaledFontSize(value) { return value * textScale(); }
   function applyTextScale() { svg.style.setProperty('--text-scale', textScale()); }
+  function applyOuterGeometry() {
+    const displayWidth = Number(state.canvas.width) * editorZoom;
+    const displayHeight = Number(state.canvas.height) * editorZoom;
+    const width = Math.max(displayWidth, window.innerWidth);
+    const height = Math.max(displayHeight, window.innerHeight);
+    svg.setAttribute('width', rounded(width));
+    svg.setAttribute('height', rounded(height));
+    svg.style.width = rounded(width) + 'px';
+    svg.style.height = rounded(height) + 'px';
+  }
   function applyCanvasGeometry() {
     const width = Number(state.canvas.width), height = Number(state.canvas.height);
+    diagramCanvas.setAttribute('x', 0);
+    diagramCanvas.setAttribute('y', 0);
     diagramCanvas.setAttribute('width', rounded(width * editorZoom));
     diagramCanvas.setAttribute('height', rounded(height * editorZoom));
     diagramCanvas.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+    applyOuterGeometry();
     const background = diagramCanvas.querySelector('.canvas-background');
     if (background) { background.setAttribute('width', width); background.setAttribute('height', height); }
+  }
+  function frameGeometry(el) {
+    const margin = Math.max(0, Number(el.margin === undefined ? 20 : el.margin));
+    return {x: margin, y: margin, width: Math.max(0, Number(state.canvas.width) - margin * 2),
+      height: Math.max(0, Number(state.canvas.height) - margin * 2)};
   }
   function updateZoomDisplay() { byId('zoom-display').value = Math.round(editorZoom * 100) + '%'; byId('zoom-display').textContent = Math.round(editorZoom * 100) + '%'; }
   function setEditorZoom(value) {
@@ -128,15 +149,31 @@
       const length = Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2);
       if (length > bestLength) { bestLength = length; best = [start, end]; }
     }
-    return {x: (best[0].x + best[1].x) / 2, y: (best[0].y + best[1].y) / 2 - 28 * textScale()};
+    return {
+      x: (best[0].x + best[1].x) / 2,
+      y: (best[0].y + best[1].y) / 2 - calloutStyle.offset_y * textScale()
+    };
   }
   function addRouteLabel(group, id, route) {
     const value = route.label || 'Route ' + id, position = routeLabelPosition(route.points);
-    const scale = textScale(), width = Math.max(100 * scale, value.length * 14 * scale + 28 * scale);
-    const label = node('g', {class: 'route-label', 'aria-hidden': 'true'});
-    label.appendChild(node('rect', {x: position.x - width / 2, y: position.y - 24 * scale, width: width, height: 44 * scale}));
-    const text = node('text', {x: position.x, y: position.y + 8 * scale, 'text-anchor': 'middle'});
+    const scale = textScale();
+    const fontSize = calloutStyle.font_size * scale;
+    const paddingX = calloutStyle.padding_x * scale;
+    const paddingY = calloutStyle.padding_y * scale;
+    const width = Math.max(calloutStyle.min_width * scale,
+      value.length * fontSize * calloutStyle.char_width_factor + 2 * paddingX);
+    const height = fontSize + 2 * paddingY;
+    const label = node('g', {class: 'route-label' + (isRouteHighlighted(id) ? ' route-label-visible' : ''),
+      'data-route-label-id': id, 'aria-hidden': 'true'});
+    label.appendChild(node('rect', {x: position.x - width / 2, y: position.y - height / 2,
+      width: width, height: height, rx: calloutStyle.radius * scale, ry: calloutStyle.radius * scale}));
+    const text = node('text', {x: position.x,
+      y: position.y + fontSize * calloutStyle.baseline_factor, 'text-anchor': 'middle'});
     text.textContent = value; label.appendChild(text); group.appendChild(label);
+  }
+  function setRouteCalloutVisible(id, visible) {
+    const label = diagramCanvas.querySelector('[data-route-label-id="' + id + '"]');
+    if (label) label.classList.toggle('route-label-visible', Boolean(visible));
   }
   function depth(id) {
     let n = 0, parent = state.elements[id] && state.elements[id].parent;
@@ -180,22 +217,31 @@
     });
     if (el.font_size) group.setAttribute('style', '--element-font-size:' + el.font_size + 'px');
     if (el.hover) { const title = node('title'); title.textContent = el.hover; group.appendChild(title); }
-    if (selectedElement === id) group.classList.add('element-selected');
+    if (selectedElementIds.has(id)) group.classList.add('element-selected');
     parent.appendChild(group); return group;
   }
 
   function render() {
     const content = byId('diagram-content');
     while (content.firstChild) content.removeChild(content.firstChild);
+    const frameLayer = addLayer(content, 'frames-layer');
     const clusterFills = addLayer(content, 'cluster-fills');
     const routeLayer = addLayer(content, 'routes-layer');
     const boxLayer = addLayer(content, 'boxes-layer');
     const clusterLabels = addLayer(content, 'cluster-labels');
     const textLayer = addLayer(content, 'text-layer');
+    const calloutLayer = addLayer(content, 'callouts-layer');
     const overlay = addLayer(content, 'editor-overlay-layer');
     overlay.setAttribute('class', 'editor-overlay ' +
       (editorState === 'editing-route' ? 'route-overlay' : 'element-overlay'));
     const ids = Object.keys(state.elements);
+    const frames = ids.filter(function (id) { return state.elements[id].class === 'frame'; }).sort();
+    frames.forEach(function (id) {
+      const el = state.elements[id], box = frameGeometry(el), group = elementGroup(frameLayer, id, 'frame-content');
+      group.appendChild(node('rect', {class: 'frame-surface', x: box.x, y: box.y, width: box.width, height: box.height,
+        rx: Number(el.radius === undefined ? 24 : el.radius), ry: Number(el.radius === undefined ? 24 : el.radius),
+        style: '--frame-stroke:' + (el.stroke || '#6d7a86') + ';--frame-stroke-width:' + Number(el.stroke_width === undefined ? 4 : el.stroke_width) + 'px'}));
+    });
     const clusters = ids.filter(function (id) { return state.elements[id].class === 'cluster'; })
       .sort(function (a, b) { return depth(a) - depth(b) || a.localeCompare(b); });
 
@@ -210,7 +256,10 @@
       const d = pathData(route.points);
       group.appendChild(node('path', {class: 'route-path', d: d}));
       group.appendChild(node('path', {class: 'route-hit', d: d}));
-      addRouteLabel(group, id, route); routeLayer.appendChild(group);
+      group.addEventListener('mouseenter', function () { setRouteCalloutVisible(id, true); });
+      group.addEventListener('mouseleave', function () { setRouteCalloutVisible(id, isRouteHighlighted(id)); });
+      routeLayer.appendChild(group);
+      addRouteLabel(calloutLayer, id, route);
     });
     ids.filter(function (id) { return state.elements[id].class === 'box'; })
       .sort(function (a, b) { return depth(a) - depth(b) || a.localeCompare(b); })
@@ -253,9 +302,11 @@
   }
   function renderElementOverlay(overlay) {
     const el = state.elements[selectedElement];
-    const box = ['box', 'cluster'].indexOf(el.class) !== -1 ? el : textBounds(el);
+    const box = el.class === 'frame' ? frameGeometry(el) :
+      (['box', 'cluster'].indexOf(el.class) !== -1 ? el : textBounds(el));
     overlay.appendChild(node('rect', {class: 'selection-outline', x: box.x, y: box.y,
       width: box.width, height: box.height}));
+    if (el.class === 'frame') return;
     if (['box', 'cluster'].indexOf(el.class) === -1) return;
     [['nw', el.x, el.y], ['ne', el.x + el.width, el.y], ['se', el.x + el.width, el.y + el.height],
      ['sw', el.x, el.y + el.height]].forEach(function (item) {
@@ -280,6 +331,137 @@
     }
     visit(id); return result;
   }
+  function selectedRootIds() {
+    return Array.from(selectedElementIds).filter(function (id) {
+      let parent = state.elements[id] && state.elements[id].parent;
+      while (parent && state.elements[parent]) {
+        if (selectedElementIds.has(parent)) return false;
+        parent = state.elements[parent].parent;
+      }
+      return true;
+    });
+  }
+
+  function movementIdsForSelection() {
+    const result = new Set();
+    selectedRootIds().forEach(function (id) {
+      result.add(id);
+      if (state.elements[id] && state.elements[id].class === 'cluster') {
+        descendants(id).forEach(function (child) { result.add(child); });
+      }
+    });
+    return Array.from(result);
+  }
+
+  function anchoredRouteOrigins(elementIds) {
+    const moved = new Set(elementIds), result = {};
+    Object.keys(state.routes).forEach(function (routeId) {
+      const route = state.routes[routeId], points = route.points || [];
+      if (!points.length) return;
+      const item = {};
+      if (route.start_element && moved.has(route.start_element)) item.start = {x: points[0].x, y: points[0].y};
+      if (route.end_element && moved.has(route.end_element)) {
+        const last = points.length - 1; item.end = {x: points[last].x, y: points[last].y};
+      }
+      if (item.start || item.end) result[routeId] = item;
+    });
+    return result;
+  }
+
+  function applyAnchoredRouteTranslation(origins, dx, dy) {
+    Object.keys(origins || {}).forEach(function (routeId) {
+      const route = state.routes[routeId], item = origins[routeId];
+      if (!route || !route.points || !route.points.length) return;
+      if (item.start) { route.points[0].x = rounded(item.start.x + dx); route.points[0].y = rounded(item.start.y + dy); }
+      if (item.end) {
+        const last = route.points.length - 1;
+        route.points[last].x = rounded(item.end.x + dx); route.points[last].y = rounded(item.end.y + dy);
+      }
+    });
+  }
+
+  function translateAnchoredEndpoints(elementIds, dx, dy) {
+    applyAnchoredRouteTranslation(anchoredRouteOrigins(elementIds), dx, dy);
+  }
+
+  function selectionGesture(p) {
+    const moving = movementIdsForSelection(), origins = {};
+    moving.forEach(function (key) { origins[key] = {x: state.elements[key].x, y: state.elements[key].y}; });
+    return {kind: 'move', start: p, moving: moving, origins: origins, routeOrigins: anchoredRouteOrigins(moving)};
+  }
+
+  function setSingleElementSelection(id) {
+    selectedElementIds.clear();
+    if (id && state.elements[id]) selectedElementIds.add(id);
+    selectedElement = id && state.elements[id] ? id : null;
+  }
+
+  function toggleElementSelection(id) {
+    if (!state.elements[id]) return;
+    if (selectedElementIds.has(id)) {
+      selectedElementIds.delete(id);
+      if (selectedElement === id) selectedElement = selectedElementIds.size ? Array.from(selectedElementIds).slice(-1)[0] : null;
+    } else {
+      selectedElementIds.add(id);
+      selectedElement = id;
+    }
+    editorState = selectedElement ? 'editing-element' : 'idle';
+    updatePanelState(); render();
+  }
+
+  function elementBoundsById(id) {
+    const el = state.elements[id];
+    if (!el) return null;
+    if (el.class === 'frame') return frameGeometry(el);
+    return ['box', 'cluster'].indexOf(el.class) !== -1
+      ? {x: Number(el.x), y: Number(el.y), width: Number(el.width), height: Number(el.height)}
+      : textBounds(el);
+  }
+
+  function moveElementTreeBy(id, dx, dy) {
+    const moving = [id].concat(state.elements[id].class === 'cluster' ? descendants(id) : []);
+    const unique = Array.from(new Set(moving));
+    unique.forEach(function (key) {
+      state.elements[key].x = rounded(Number(state.elements[key].x) + dx);
+      state.elements[key].y = rounded(Number(state.elements[key].y) + dy);
+    });
+    translateAnchoredEndpoints(unique, dx, dy);
+  }
+
+  function alignSelected(kind) {
+    const ids = selectedRootIds();
+    if (ids.length < 2) return;
+    const bounds = ids.map(function (id) { return {id: id, box: elementBoundsById(id)}; });
+    const minLeft = Math.min.apply(null, bounds.map(function (x) { return x.box.x; }));
+    const maxRight = Math.max.apply(null, bounds.map(function (x) { return x.box.x + x.box.width; }));
+    const minTop = Math.min.apply(null, bounds.map(function (x) { return x.box.y; }));
+    const maxBottom = Math.max.apply(null, bounds.map(function (x) { return x.box.y + x.box.height; }));
+    const centerX = (minLeft + maxRight) / 2, centerY = (minTop + maxBottom) / 2;
+    bounds.forEach(function (item) {
+      let dx = 0, dy = 0;
+      if (kind === 'left') dx = minLeft - item.box.x;
+      if (kind === 'h-center') dx = centerX - (item.box.x + item.box.width / 2);
+      if (kind === 'right') dx = maxRight - (item.box.x + item.box.width);
+      if (kind === 'top') dy = minTop - item.box.y;
+      if (kind === 'v-center') dy = centerY - (item.box.y + item.box.height / 2);
+      if (kind === 'bottom') dy = maxBottom - (item.box.y + item.box.height);
+      if (dx || dy) moveElementTreeBy(item.id, rounded(dx), rounded(dy));
+    });
+    populateGeometryFields(); render();
+  }
+
+  function routeElementOptions(select, selected) {
+    while (select.firstChild) select.removeChild(select.firstChild);
+    const blank = htmlNode('option'); blank.value = ''; blank.textContent = '— free point —';
+    select.appendChild(blank);
+    Object.keys(state.elements).filter(function (id) {
+      return ['box', 'cluster'].indexOf(state.elements[id].class) !== -1;
+    }).sort().forEach(function (id) {
+      const option = htmlNode('option'); option.value = id; option.textContent = id; select.appendChild(option);
+    });
+    select.value = selected || '';
+  }
+
   function elementTarget(target) {
     const group = target && target.closest ? target.closest('[data-element-id]') : null;
     return group ? group.getAttribute('data-element-id') : null;
@@ -324,10 +506,15 @@
     }
     const elementId = elementTarget(evt.target);
     if (editorState === 'editing-element') {
-      if (elementId !== selectedElement) return;
-      const moving = [elementId].concat(state.elements[elementId].class === 'cluster' ? descendants(elementId) : []), origins = {};
-      moving.forEach(function (key) { origins[key] = {x: state.elements[key].x, y: state.elements[key].y}; });
-      gesture = {kind: 'move', start: p, moving: moving, origins: origins};
+      if (!elementId) return;
+      if (evt.shiftKey || shiftHeld) {
+        toggleElementSelection(elementId);
+        if (selectedElementIds.has(elementId)) gesture = selectionGesture(p);
+        evt.preventDefault(); return;
+      }
+      if (!selectedElementIds.has(elementId)) return;
+      selectedElement = elementId; updatePanelState();
+      gesture = selectionGesture(p);
       evt.preventDefault(); return;
     }
     if (editorState !== 'idle') return;
@@ -337,9 +524,7 @@
     }
     if (elementId) {
       selectElement(elementId);
-      const moving = [elementId].concat(state.elements[elementId].class === 'cluster' ? descendants(elementId) : []), origins = {};
-      moving.forEach(function (key) { origins[key] = {x: state.elements[key].x, y: state.elements[key].y}; });
-      gesture = {kind: 'move', start: p, moving: moving, origins: origins};
+      if (state.elements[elementId].class !== 'frame') gesture = selectionGesture(p);
       evt.preventDefault(); return;
     }
   }, true);
@@ -357,6 +542,7 @@
         state.elements[id].x = rounded(gesture.origins[id].x + dx);
         state.elements[id].y = rounded(gesture.origins[id].y + dy);
       });
+      applyAnchoredRouteTranslation(gesture.routeOrigins, dx, dy);
     } else if (gesture.kind === 'resize') {
       const el = state.elements[gesture.id], g = gesture.geometry, min = 40;
       if (gesture.corner.indexOf('e') !== -1) el.width = Math.max(min, rounded(g.width + dx));
@@ -366,7 +552,7 @@
     } else if (gesture.kind === 'point' && editingRouteId !== null && selectedPoint !== null) {
       const candidate = {x: rounded(p.x), y: rounded(p.y)};
       const previous = selectedPoint > 0 ? state.routes[editingRouteId].points[selectedPoint - 1] : null;
-      const next = evt.shiftKey && previous ? orthogonalPoint(previous, candidate) : candidate;
+      const next = (evt.shiftKey || shiftHeld) && previous ? orthogonalPoint(previous, candidate) : candidate;
       const target = state.routes[editingRouteId].points[selectedPoint];
       target.x = next.x; target.y = next.y;
     } else if (gesture.kind === 'route-move' && state.routes[gesture.routeId]) {
@@ -392,8 +578,12 @@
     evt.preventDefault(); evt.stopPropagation();
   });
   window.addEventListener('resize', function () {
+    applyCanvasGeometry();
     movePanel(Number(panelObject.getAttribute('x')), Number(panelObject.getAttribute('y')));
   });
+  window.addEventListener('scroll', function () {
+    movePanel(Number(panelObject.getAttribute('x')), Number(panelObject.getAttribute('y')));
+  }, {passive: true});
   function fitCanvas() {
     const margin = 24, panelBounds = panelObject.getBoundingClientRect();
     let availableWidth = Math.max(160, window.innerWidth - margin * 2);
@@ -422,10 +612,15 @@
     byId('begin-preview').hidden = !showTopLevelActions;
     byId('deselect').hidden = editorState !== 'editing-element' && editorState !== 'editing-route';
     byId('toggle-place-points').textContent = placingRoutePoints ? 'Finish placing points' : 'Place route points';
+    const multiTools = byId('multi-selection-tools');
+    if (multiTools) {
+      multiTools.hidden = editorState !== 'editing-element' || selectedElementIds.size < 2;
+      byId('multi-selection-count').textContent = selectedElementIds.size + ' elements selected. Shift-click to add or remove elements.';
+    }
     populateDocumentSettings(); populateElementPanel(); populateRouteEditor(); updateZoomDisplay();
   }
   function clearEditing() {
-    selectedElement = null; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
+    selectedElement = null; selectedElementIds.clear(); editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
     gesture = null; editorState = 'idle'; refreshRoutes(); updatePanelState(); render();
   }
   byId('deselect').addEventListener('click', clearEditing);
@@ -453,7 +648,7 @@
     applyTextScale(); render(); status('document-settings-status', 'Text size updated.');
   });
   byId('begin-preview').addEventListener('click', function () {
-    selectedElement = null; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
+    selectedElement = null; selectedElementIds.clear(); editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
     editorState = 'preview'; updatePanelState(); render();
   });
   byId('exit-preview').addEventListener('click', function () {
@@ -482,7 +677,7 @@
     });
   }
   function beginCreateElement() {
-    selectedElement = null; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
+    selectedElement = null; selectedElementIds.clear(); editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
     editorState = 'creating-element'; status('element-create-status', '');
     parentOptions(byId('new-parent'), byId('new-parent').value, null);
     setElementFieldVisibility('element-create', byId('new-class').value);
@@ -492,14 +687,15 @@
     editorState = 'idle'; status('element-create-status', ''); updatePanelState(); render();
   }
   function selectElement(id) {
-    selectedElement = id; editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
+    setSingleElementSelection(id); editingRouteId = null; selectedPoint = null; placingRoutePoints = false;
     editorState = 'editing-element'; refreshRoutes(); updatePanelState(); render();
   }
   function populateElementPanel() {
     const el = selectedElement && state.elements[selectedElement];
     byId('element-empty').textContent = el ? 'Editing ' + selectedElement : 'Click an element to edit it.';
     ['el-id','el-class','el-parent','el-color','el-title','el-body','el-hover','el-x','el-y',
-     'el-width','el-height','el-font-size'].forEach(function (id) { byId(id).disabled = !el; });
+     'el-width','el-height','el-font-size','el-frame-margin','el-frame-stroke','el-frame-stroke-width','el-frame-radius']
+      .forEach(function (id) { byId(id).disabled = !el; });
     parentOptions(byId('new-parent'), byId('new-parent').value, null);
     setElementFieldVisibility('element-create', byId('new-class').value);
     if (!el) return;
@@ -508,6 +704,10 @@
     setLayoutColor(byId('el-color'), el.color || 'neutral');
     byId('el-title').value = ['title','subtitle','note'].indexOf(el.class) !== -1 ? (el.text || '') : (el.title || '');
     byId('el-body').value = el.body || ''; byId('el-hover').value = el.hover || '';
+    byId('el-frame-margin').value = el.margin === undefined ? 20 : el.margin;
+    byId('el-frame-stroke').value = el.stroke || '#6d7a86';
+    byId('el-frame-stroke-width').value = el.stroke_width === undefined ? 4 : el.stroke_width;
+    byId('el-frame-radius').value = el.radius === undefined ? 24 : el.radius;
     setElementFieldVisibility('element-edit', el.class); populateGeometryFields();
   }
   function populateGeometryFields() {
@@ -552,6 +752,12 @@
     if (el.class === 'box' || el.class === 'cluster') {
       el.width = Number(el.width || 420); el.height = Number(el.height || 160);
     }
+    if (el.class === 'frame') {
+      delete el.x; delete el.y; delete el.width; delete el.height; delete el.color; delete el.parent;
+      el.margin = Number(el.margin === undefined ? 20 : el.margin);
+      el.stroke = el.stroke || '#6d7a86'; el.stroke_width = Number(el.stroke_width || 4);
+      el.radius = Number(el.radius === undefined ? 24 : el.radius);
+    }
     if (['title','subtitle','note'].indexOf(el.class) !== -1) el.text = el.text || el.title || '';
     populateElementPanel(); render();
   });
@@ -566,6 +772,11 @@
     Object.keys(state.elements).forEach(function (id) {
       if (state.elements[id].parent === old) state.elements[id].parent = next;
     });
+    Object.keys(state.routes).forEach(function (routeId) {
+      if (state.routes[routeId].start_element === old) state.routes[routeId].start_element = next;
+      if (state.routes[routeId].end_element === old) state.routes[routeId].end_element = next;
+    });
+    if (selectedElementIds.delete(old)) selectedElementIds.add(next);
     selectedElement = next; populateElementPanel(); render();
     status('element-status', 'Renamed ' + old + ' to ' + next + '.');
   });
@@ -575,9 +786,13 @@
       if (!el || !hasElementCapability(el.class, pair[1]) || value === null ||
           (['width','height'].indexOf(pair[1]) !== -1 && value <= 0)) return;
       const delta = value - Number(el[pair[1]] || 0); el[pair[1]] = value;
-      if (['x','y'].indexOf(pair[1]) !== -1 && el.class === 'cluster') descendants(selectedElement).forEach(function (id) {
-        state.elements[id][pair[1]] = rounded(state.elements[id][pair[1]] + delta);
-      });
+      if (['x','y'].indexOf(pair[1]) !== -1) {
+        const moved = [selectedElement];
+        if (el.class === 'cluster') descendants(selectedElement).forEach(function (id) {
+          state.elements[id][pair[1]] = rounded(state.elements[id][pair[1]] + delta); moved.push(id);
+        });
+        translateAnchoredEndpoints(moved, pair[1] === 'x' ? delta : 0, pair[1] === 'y' ? delta : 0);
+      }
       render();
     });
   });
@@ -585,6 +800,21 @@
     const el = selectedElement && state.elements[selectedElement];
     if (!el || !hasElementCapability(el.class, 'fontSize')) return;
     const value = finite(this.value); if (value && value > 0) el.font_size = value; else delete el.font_size; render();
+  });
+  [['el-frame-margin','margin'],['el-frame-stroke-width','stroke_width'],['el-frame-radius','radius']].forEach(function (pair) {
+    byId(pair[0]).addEventListener('input', function () {
+      const el = selectedElement && state.elements[selectedElement], value = finite(this.value);
+      if (!el || el.class !== 'frame' || value === null) return;
+      if (pair[1] === 'stroke_width' && value <= 0) return;
+      if ((pair[1] === 'margin' || pair[1] === 'radius') && value < 0) return;
+      el[pair[1]] = value; render();
+    });
+  });
+  byId('el-frame-stroke').addEventListener('input', function () {
+    const el = selectedElement && state.elements[selectedElement];
+    if (!el || el.class !== 'frame') return;
+    if (this.value.trim()) el.stroke = this.value.trim();
+    render();
   });
   function copyId(base) {
     let id = base + '-copy', n = 2;
@@ -594,7 +824,8 @@
   byId('duplicate-element').addEventListener('click', function () {
     if (!selectedElement) return;
     const copy = JSON.parse(JSON.stringify(state.elements[selectedElement])), id = copyId(selectedElement);
-    copy.id = id; copy.x = Number(copy.x) + 40; copy.y = Number(copy.y) + 40;
+    copy.id = id;
+    if (copy.class !== 'frame') { copy.x = Number(copy.x) + 40; copy.y = Number(copy.y) + 40; }
     state.elements[id] = copy; selectElement(id); status('element-status', 'Created ' + id + '.');
   });
   function deleteSelectedElement() {
@@ -605,9 +836,17 @@
         if (parent) state.elements[key].parent = parent; else delete state.elements[key].parent;
       }
     });
-    delete state.elements[id]; clearEditing();
+    Object.keys(state.routes).forEach(function (routeId) {
+      if (state.routes[routeId].start_element === id) delete state.routes[routeId].start_element;
+      if (state.routes[routeId].end_element === id) delete state.routes[routeId].end_element;
+    });
+    delete state.elements[id]; selectedElementIds.delete(id); clearEditing();
   }
   byId('delete-element').addEventListener('click', deleteSelectedElement);
+  [['align-left','left'],['align-h-center','h-center'],['align-right','right'],
+   ['align-top','top'],['align-v-center','v-center'],['align-bottom','bottom']].forEach(function (pair) {
+    byId(pair[0]).addEventListener('click', function () { alignSelected(pair[1]); });
+  });
   byId('begin-create-element').addEventListener('click', beginCreateElement);
   byId('cancel-create-element').addEventListener('click', cancelCreateElement);
   byId('new-class').addEventListener('change', function () {
@@ -617,9 +856,10 @@
     const id = byId('new-id').value.trim(), cls = byId('new-class').value;
     if (!id || state.elements[id]) { status('element-create-status', 'New element ID must be non-empty and unique.'); return; }
     const x = finite(byId('new-x').value), y = finite(byId('new-y').value);
-    if (x === null || y === null) { status('element-create-status', 'New element x and y must be numeric.'); return; }
-    const el = {id: id, class: cls, x: x, y: y}, parent = byId('new-parent').value;
-    if (parent) el.parent = parent;
+    if (cls !== 'frame' && (x === null || y === null)) { status('element-create-status', 'New element x and y must be numeric.'); return; }
+    const el = cls === 'frame' ? {id: id, class: cls} : {id: id, class: cls, x: x, y: y};
+    const parent = byId('new-parent').value;
+    if (parent && cls !== 'frame') el.parent = parent;
     if (hasElementCapability(cls, 'width')) {
       const width = finite(byId('new-width').value), height = finite(byId('new-height').value);
       if (width === null || height === null || width <= 0 || height <= 0) {
@@ -628,6 +868,14 @@
       el.width = width; el.height = height;
     }
     if (hasElementCapability(cls, 'color')) el.color = byId('new-color').value;
+    if (cls === 'frame') {
+      const margin = finite(byId('new-frame-margin').value), strokeWidth = finite(byId('new-frame-stroke-width').value),
+        radius = finite(byId('new-frame-radius').value), stroke = byId('new-frame-stroke').value.trim();
+      if (margin === null || margin < 0 || strokeWidth === null || strokeWidth <= 0 || radius === null || radius < 0 || !stroke) {
+        status('element-create-status', 'Frame margin/radius must be non-negative; line thickness positive; line color non-empty.'); return;
+      }
+      el.margin = margin; el.stroke = stroke; el.stroke_width = strokeWidth; el.radius = radius;
+    }
     if (['title','subtitle','note'].indexOf(cls) !== -1) optional(el, 'text', byId('new-title').value);
     else optional(el, 'title', byId('new-title').value);
     if (hasElementCapability(cls, 'body')) optional(el, 'body', byId('new-body').value);
@@ -650,6 +898,7 @@
     editorState = 'creating-route';
     byId('route-new-id').value = ''; byId('route-new-type').value = '';
     byId('route-new-color').value = 'neutral'; byId('route-new-label').value = '';
+    routeElementOptions(byId('route-new-start-element'), ''); routeElementOptions(byId('route-new-end-element'), '');
     status('route-create-status', ''); refreshRoutes(); updatePanelState(); render();
   }
   function cancelCreateRoute() {
@@ -657,18 +906,22 @@
     updatePanelState(); render();
   }
   function selectEditingRoute(id) {
-    selectedElement = null; editingRouteId = id; selectedPoint = null; placingRoutePoints = false;
+    selectedElement = null; selectedElementIds.clear(); editingRouteId = id; selectedPoint = null; placingRoutePoints = false;
     editorState = 'editing-route'; refreshRoutes(); updatePanelState(); render();
   }
   function populateRouteEditor() {
     const route = editingRouteId && state.routes[editingRouteId];
-    ['route-type','route-color','route-label'].forEach(function (id) { byId(id).disabled = !route; });
+    ['route-type','route-color','route-label','route-start-element','route-end-element'].forEach(function (id) { byId(id).disabled = !route; });
     if (!route) {
       byId('route-type').value = ''; byId('route-color').value = ''; byId('route-label').value = '';
+      routeElementOptions(byId('route-start-element'), ''); routeElementOptions(byId('route-end-element'), '');
       populatePointFields(); return;
     }
     byId('route-type').value = route.type || ''; byId('route-color').value = route.color || '';
-    byId('route-label').value = route.label || ''; populatePointFields();
+    byId('route-label').value = route.label || '';
+    routeElementOptions(byId('route-start-element'), route.start_element || '');
+    routeElementOptions(byId('route-end-element'), route.end_element || '');
+    populatePointFields();
   }
   function populatePointFields() {
     const route = editingRouteId && state.routes[editingRouteId];
@@ -688,8 +941,10 @@
     const route = {points: [], color: byId('route-new-color').value || 'neutral'};
     optional(route, 'type', byId('route-new-type').value);
     optional(route, 'label', byId('route-new-label').value);
+    optional(route, 'start_element', byId('route-new-start-element').value);
+    optional(route, 'end_element', byId('route-new-end-element').value);
     state.routes[id] = route; byId('route-new-id').value = '';
-    editingRouteId = id; selectedElement = null; selectedPoint = null; placingRoutePoints = true;
+    editingRouteId = id; selectedElement = null; selectedElementIds.clear(); selectedPoint = null; placingRoutePoints = true;
     editorState = 'editing-route'; refreshRoutes(); updatePanelState(); render();
     status('route-status', 'Click on the diagram to place route points. Hold Shift to keep the next segment horizontal or vertical.');
   });
@@ -705,6 +960,12 @@
   });
   byId('route-label').addEventListener('input', function () {
     if (editingRouteId) { optional(state.routes[editingRouteId], 'label', this.value); render(); }
+  });
+  [['route-start-element', 'start_element'], ['route-end-element', 'end_element']].forEach(function (pair) {
+    byId(pair[0]).addEventListener('change', function () {
+      if (!editingRouteId) return;
+      optional(state.routes[editingRouteId], pair[1], this.value); render();
+    });
   });
   byId('toggle-place-points').addEventListener('click', function () {
     if (!editingRouteId) { status('route-status', 'Select or create a route first.'); return; }
@@ -749,6 +1010,10 @@
     return Boolean(target && (target.isContentEditable || (target.closest &&
       target.closest('input, textarea, select, button, [contenteditable]:not([contenteditable="false"]), [role="textbox"]'))));
   }
+  document.addEventListener('keydown', function (evt) { if (evt.key === 'Shift') shiftHeld = true; }, true);
+  document.addEventListener('keyup', function (evt) { if (evt.key === 'Shift') shiftHeld = false; }, true);
+  window.addEventListener('blur', function () { shiftHeld = false; });
+
   document.addEventListener('keydown', function (evt) {
     if (editorState === 'preview') {
       if (evt.key === 'Escape') {
@@ -816,7 +1081,7 @@
       const p = point(evt); if (!p) return;
       const points = state.routes[editingRouteId].points;
       const candidate = {x: rounded(p.x), y: rounded(p.y)}, previous = points[points.length - 1];
-      points.push(evt.shiftKey && previous ? orthogonalPoint(previous, candidate) : candidate);
+      points.push((evt.shiftKey || shiftHeld) && previous ? orthogonalPoint(previous, candidate) : candidate);
       selectedPoint = state.routes[editingRouteId].points.length - 1;
       populateRouteEditor(); render();
       const count = state.routes[editingRouteId].points.length;
@@ -834,21 +1099,32 @@
     if (!Number.isFinite(Number(state.canvas.text_scale)) || Number(state.canvas.text_scale) <= 0) {
       throw new Error('text scale must be a positive finite number');
     }
-    const classes = ['title','subtitle','cluster','box','note'];
+    const classes = ['title','subtitle','cluster','box','note','frame'];
     Object.keys(state.elements).forEach(function (id) {
       const el = state.elements[id];
       if (el.id !== id) throw new Error('element key/id mismatch for ' + id);
       if (classes.indexOf(el.class) === -1) throw new Error('unsupported class for ' + id);
-      if (el.color && palette.layoutAccepted.indexOf(el.color) === -1) {
-        throw new Error('unsupported color for element ' + id);
+      if (el.class === 'frame') {
+        if (!Number.isFinite(Number(el.margin)) || Number(el.margin) < 0) throw new Error('invalid frame margin for ' + id);
+        if (!el.stroke || typeof el.stroke !== 'string') throw new Error('invalid frame line color for ' + id);
+        if (!Number.isFinite(Number(el.stroke_width)) || Number(el.stroke_width) <= 0) throw new Error('invalid frame line thickness for ' + id);
+        if (!Number.isFinite(Number(el.radius)) || Number(el.radius) < 0) throw new Error('invalid frame corner radius for ' + id);
+      } else {
+        if (el.color && palette.layoutAccepted.indexOf(el.color) === -1) throw new Error('unsupported color for element ' + id);
+        if (!Number.isFinite(Number(el.x)) || !Number.isFinite(Number(el.y))) throw new Error('invalid geometry for ' + id);
+        if (el.parent && (!state.elements[el.parent] || state.elements[el.parent].class !== 'cluster')) throw new Error('invalid parent for ' + id);
       }
-      if (!Number.isFinite(Number(el.x)) || !Number.isFinite(Number(el.y))) throw new Error('invalid geometry for ' + id);
-      if (el.parent && (!state.elements[el.parent] || state.elements[el.parent].class !== 'cluster')) throw new Error('invalid parent for ' + id);
     });
     Object.keys(state.routes).forEach(function (id) {
       if (state.routes[id].color && palette.routeAccepted.indexOf(state.routes[id].color) === -1) {
         throw new Error('unsupported color for route ' + id);
       }
+      ['start_element','end_element'].forEach(function (field) {
+        const target = state.routes[id][field];
+        if (target && (!state.elements[target] || ['box','cluster'].indexOf(state.elements[target].class) === -1)) {
+          throw new Error('invalid ' + field + ' for route ' + id);
+        }
+      });
       state.routes[id].points.forEach(function (p) {
         if (!Number.isFinite(Number(p.x)) || !Number.isFinite(Number(p.y))) throw new Error('invalid point in route ' + id);
       });
