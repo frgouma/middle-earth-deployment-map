@@ -539,7 +539,7 @@ def render_svg(diagram: Diagram, css: str, *, editor: bool) -> ET.ElementTree:
         font_size = float(data.get("font_size", defaults[element.element_class])) * text_scale
         _text(group, data.get("text", data.get("title", "")), data["x"], data["y"],
               f"element-{element.element_class}", width=data.get("width"), font_size=font_size,
-              anchor="middle" if element.element_class == "note" else "start")
+              anchor="middle" if element.element_class in {"title", "subtitle", "note"} else "start")
     if editor:
         _add_editor(root, diagram)
     else:

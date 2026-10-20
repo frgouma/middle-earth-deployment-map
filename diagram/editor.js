@@ -287,7 +287,7 @@
         const el = state.elements[id], group = elementGroup(textLayer, id, 'text-content');
         const fs = scaledFontSize(Number(el.font_size || {title: 76, subtitle: 42, note: 30}[el.class]));
         addText(group, el.text || el.title || '', el.x, el.y, 'element-' + el.class,
-          el.width, fs, el.class === 'note' ? 'middle' : 'start');
+          el.width, fs, ['title', 'subtitle', 'note'].includes(el.class) ? 'middle' : 'start');
       });
     if (editorState === 'editing-element' && selectedElement && state.elements[selectedElement]) renderElementOverlay(overlay);
     if (editorState === 'editing-route' && editingRouteId && state.routes[editingRouteId]) renderRouteOverlay(overlay);
@@ -297,7 +297,8 @@
     const fs = scaledFontSize(Number(el.font_size || {title: 76, subtitle: 42, note: 30}[el.class] || 32));
     const width = Number(el.width || Math.max(260, String(el.text || el.title || '').length * fs * .55));
     const height = Number(el.height || fs * 1.35);
-    return el.class === 'note' ? {x: el.x - width / 2, y: el.y - height / 2, width: width, height: height}
+    return ['title', 'subtitle', 'note'].includes(el.class)
+      ? {x: el.x - width / 2, y: el.y - height / 2, width: width, height: height}
       : {x: el.x, y: el.y - height, width: width, height: height};
   }
   function renderElementOverlay(overlay) {

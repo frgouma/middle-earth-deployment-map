@@ -63,14 +63,14 @@
     "diagram-subtitle": {
       "id": "diagram-subtitle",
       "class": "subtitle",
-      "x": 140,
+      "x": 2133,
       "y": 225,
       "text": "WorldKLEMS deployment architecture"
     },
     "diagram-title": {
       "id": "diagram-title",
       "class": "title",
-      "x": 140,
+      "x": 2133,
       "y": 130,
       "text": "The Council's Map"
     },

@@ -8,27 +8,39 @@
 </head>
 <body>
   <main class="map-app">
-    <div class="controls" aria-label="Journey controls">
-      <label class="chapter-selector">
-        <span>Chapter</span>
-        <select id="chapter-select">
-          <option value="intro">Introduction</option>
-          <option value="1">I — The Council of CIT</option>
-          <option value="2">II — Concerning Docker</option>
-          <option value="3">III — An Unexpected Container</option>
-          <option value="4">IV — The Grey Havens of Harbor</option>
-          <option value="all">Complete journey</option>
-        </select>
-      </label>
+    <div class="controls">
+      <div class="public-controls" aria-label="Journey controls">
+        <label class="chapter-selector">
+          <span>Chapter</span>
+          <select id="chapter-select">
+            <option value="intro">Introduction</option>
+            <option value="1">I — The Council of CIT</option>
+            <option value="2">II — Concerning Docker</option>
+            <option value="3">III — An Unexpected Container</option>
+            <option value="4">IV — The Grey Havens of Harbor</option>
+            <option value="5">V — Riddles in the Cluster</option>
+            <option value="6">VI — The Balrog of Database Connectivity</option>
+            <option value="7">VII — The Entmoot of Migration Warnings</option>
+            <option value="8">VIII — The Mines of Persistence</option>
+            <option value="9">IX — A Long-expected Detour</option>
+            <option value="10">X — The Two Containers</option>
+            <option value="11">XI — A Short Cut to Kubernetes</option>
+            <option value="12">XII — The Return of the Pod</option>
+            <option value="13">XIII — The Last Stage</option>
+            <option value="14">Epilogue — The Council's Map</option>
+            <option value="all">Complete journey</option>
+          </select>
+        </label>
 
-      <button id="play-story" class="story-button" type="button"
-              aria-label="Play full story" title="Play full story">Play story</button>
-      <button id="play-pause" class="icon-button" type="button"
-              aria-label="Play" title="Play">▶</button>
-      <button id="previous-chapter" class="icon-button" type="button"
-              aria-label="Previous chapter" title="Previous chapter">⏮</button>
-      <button id="next-chapter" class="icon-button" type="button"
-              aria-label="Next chapter" title="Next chapter">⏭</button>
+        <div class="play-controls">
+          <button id="play-story" class="story-button" type="button"
+                  aria-label="Play full story" title="Play full story">Play story</button>
+          <button id="play-pause" class="icon-button" type="button"
+                  aria-label="Play" title="Play">▶</button>
+          <button id="stop-playback" class="icon-button" type="button"
+                  aria-label="Stop and finish" title="Stop and finish">■</button>
+        </div>
+      </div>
 
       <div class="waypoint-tools" aria-label="Waypoint logger">
         <textarea
@@ -47,13 +59,15 @@
       </div>
     </div>
 
-    <svg
-      id="map"
-      viewBox="0 0 4266.6665 3200"
-      role="img"
-      aria-label="Interactive Middle-earth deployment journey"
-    >
-      <defs id="route-defs"></defs>
+    <div class="scene-stack">
+      <svg
+        id="map"
+        class="scene scene-middle-earth"
+        viewBox="0 0 4266.6665 3200"
+        role="img"
+        aria-label="Interactive Middle-earth deployment journey"
+      >
+        <defs id="route-defs"></defs>
 
       
 
@@ -106,9 +120,22 @@
         pointer-events="none"
       />
 
-      <g id="routes-layer" aria-label="Journey routes"></g>
-      <g id="markers-layer" aria-label="Chapter markers"></g>
-    </svg>
+        <g id="routes-layer" aria-label="Journey routes"></g>
+        <g id="markers-layer" aria-label="Chapter markers"></g>
+      </svg>
+
+      <object
+        id="council-map"
+        class="scene scene-council"
+        data="diagram/diagram.svg"
+        type="image/svg+xml"
+        role="img"
+        aria-label="The Council's Map deployment architecture"
+        aria-hidden="true"
+      >
+        The Council's Map could not be loaded.
+      </object>
+    </div>
   </main>
 
   <script src="app.js"></script>

@@ -1,4 +1,5 @@
 const svg = document.getElementById("map");
+const councilObject = document.getElementById("council-map");
 const routeDefs = document.getElementById("route-defs");
 const routesLayer = document.getElementById("routes-layer");
 const markersLayer = document.getElementById("markers-layer");
@@ -6,8 +7,7 @@ const markersLayer = document.getElementById("markers-layer");
 const chapterSelect = document.getElementById("chapter-select");
 const playStoryButton = document.getElementById("play-story");
 const playPauseButton = document.getElementById("play-pause");
-const previousButton = document.getElementById("previous-chapter");
-const nextButton = document.getElementById("next-chapter");
+const stopPlaybackButton = document.getElementById("stop-playback");
 const waypointLog = document.getElementById("waypoint-log");
 const undoWaypointButton = document.getElementById("undo-waypoint");
 const clearWaypointsButton = document.getElementById("clear-waypoints");
@@ -34,6 +34,38 @@ function centeredView(x, y, width) {
     y: y - height / 2,
     width,
     height,
+  };
+}
+
+function readSvgViewBox(root) {
+  const baseView = root.viewBox?.baseVal;
+
+  if (baseView && baseView.width > 0 && baseView.height > 0) {
+    return {
+      x: baseView.x,
+      y: baseView.y,
+      width: baseView.width,
+      height: baseView.height,
+    };
+  }
+
+  const values = (root.getAttribute("viewBox") || "")
+    .trim()
+    .split(/[\s,]+/)
+    .map(Number);
+
+  if (
+    values.length !== 4 ||
+    !values.every(Number.isFinite) ||
+    values[2] <= 0 ||
+    values[3] <= 0
+  ) return null;
+
+  return {
+    x: values[0],
+    y: values[1],
+    width: values[2],
+    height: values[3],
   };
 }
 
@@ -68,7 +100,7 @@ const locations = {
   },
   5: {
     roman: "V",
-    title: "A Short Cut to Kubernetes",
+    title: "Riddles in the Cluster",
     x: 1303.4,
     y: 1018.9,
     view: centeredView(1303.4, 1018.9, 950),
@@ -79,7 +111,7 @@ const chapters = {
   1: {
     from: 1,
     to: 2,
-    duration: 8500,
+    duration: 7000,
     curveTension: 0.10,
     routeWaypoints: [
       { x: 2069.5, y: 846.9 },
@@ -123,7 +155,7 @@ const chapters = {
   2: {
     from: 2,
     to: 3,
-    duration: 12000,
+    duration: 7000,
     curveTension: 0.10,
     routeWaypoints: [
       { x: 1095.9, y: 880.2 },
@@ -318,9 +350,88 @@ const chapters = {
       { progress: 1.00, width: 950 },
     ],
   },
+
+  5: {
+    from: 5,
+    to: 6,
+    routeWaypoints: [],
+    cameraZoom: [],
+  },
+  6: {
+    from: 6,
+    to: 7,
+    routeWaypoints: [],
+    cameraZoom: [],
+  },
+  7: {
+    from: 7,
+    to: 8,
+    routeWaypoints: [],
+    cameraZoom: [],
+  },
+  8: {
+    from: 8,
+    to: 9,
+    routeWaypoints: [],
+    cameraZoom: [],
+  },
+  9: {
+    from: 9,
+    to: 10,
+    routeWaypoints: [],
+    cameraZoom: [],
+  },
+  10: {
+    from: 10,
+    to: 11,
+    routeWaypoints: [],
+    cameraZoom: [],
+  },
+  11: {
+    from: 11,
+    to: 12,
+    routeWaypoints: [],
+    cameraZoom: [],
+  },
+  12: {
+    from: 12,
+    to: 13,
+    routeWaypoints: [],
+    cameraZoom: [],
+  },
+  13: {
+    from: 13,
+    to: 14,
+    routeWaypoints: [],
+    cameraZoom: [],
+  },
+  14: {
+    from: 14,
+    to: 15,
+    routeWaypoints: [],
+    cameraZoom: [],
+    scene: "council",
+  },
 };
 
-const navigationOrder = ["intro", "1", "2", "3", "4", "all"];
+const navigationOrder = [
+  "intro",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "11",
+  "12",
+  "13",
+  "14",
+  "all",
+];
 
 const timing = {
   introHold: 2500,
@@ -331,6 +442,25 @@ const timing = {
   storyFinalHold: 900,
   storyFinalOverview: 2000,
 };
+
+const councilTiming = {
+  crossfade: 2200,
+  regionMove: 2200,
+  clusterHold: 1000,
+  finalOverview: 2000,
+  questReveal: 900,
+  finalHold: 1500,
+};
+
+const COUNCIL_TARGET_KEYS = [
+  "local-preparation",
+  "publishing-kubernetes",
+  "live-application",
+  "persistent-state",
+];
+const COUNCIL_TARGET_PADDING = 90;
+const COUNCIL_MIN_ZOOM_SCALE = 0.08;
+const DRAG_THRESHOLD = 3;
 
 const markerElements = new Map();
 const routeElements = new Map();
@@ -344,13 +474,98 @@ let waypoints = [];
 
 let animationRun = 0;
 let currentFrameId = null;
+let currentAnimationResolve = null;
 let isAnimating = false;
 let isPaused = false;
 let isStoryPlaying = false;
 let browseOverview = true;
 
+let councilDocument = null;
+let councilSvg = null;
+let councilFullView = null;
+let councilView = null;
+let councilQuestRoute = null;
+let councilQuestLabel = null;
+let councilReadySettled = false;
+let resolveCouncilReady;
+let councilDrag = null;
+let councilInteractionRoot = null;
+let suppressCouncilClick = false;
+
+const councilReady = new Promise((resolve) => {
+  resolveCouncilReady = resolve;
+});
+
+function settleCouncilReady(ready) {
+  if (councilReadySettled) return;
+  councilReadySettled = true;
+  resolveCouncilReady(ready);
+}
+
+function initializeCouncilScene() {
+  try {
+    const documentNode = councilObject.contentDocument;
+    const root = documentNode?.documentElement;
+
+    if (!root || root.localName !== "svg") return false;
+
+    const fullView = readSvgViewBox(root);
+    if (!fullView) return false;
+
+    councilDocument = documentNode;
+    councilSvg = root;
+    councilFullView = fullView;
+    councilView = { ...fullView };
+    councilQuestRoute = councilDocument.querySelector(
+      '[data-route-id="quest"]'
+    );
+    councilQuestLabel = councilDocument.querySelector(
+      '[data-route-label-id="quest"]'
+    );
+
+    applyCouncilView();
+    setCouncilQuestVisible(false);
+    installCouncilInteractions();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+councilObject.addEventListener("load", () => {
+  const ready = initializeCouncilScene();
+  settleCouncilReady(ready);
+
+  if (
+    ready &&
+    selectedState === "14" &&
+    browseOverview &&
+    !isAnimating
+  ) {
+    renderEpilogueOverview();
+  }
+});
+
+councilObject.addEventListener("error", () => {
+  settleCouncilReady(false);
+});
+
+window.setTimeout(() => {
+  if (!councilReadySettled && initializeCouncilScene()) {
+    settleCouncilReady(true);
+  }
+}, 0);
+
+window.setTimeout(() => {
+  settleCouncilReady(false);
+}, 5000);
+
 function stateIsChapter(state) {
-  return /^[1-4]$/.test(String(state));
+  return /^(?:[1-9]|1[0-4])$/.test(String(state));
+}
+
+function chapterUsesCouncilScene(chapterNumber) {
+  return chapters[chapterNumber]?.scene === "council";
 }
 
 function normalizeState(value) {
@@ -435,6 +650,256 @@ function applyView() {
   );
   updateMarkerScales();
   updateMarkerLabels();
+}
+
+function applyCouncilView() {
+  if (!councilSvg || !councilView) return;
+
+  councilSvg.setAttribute(
+    "viewBox",
+    `${councilView.x} ${councilView.y} ` +
+      `${councilView.width} ${councilView.height}`
+  );
+}
+
+function clamp(value, minimum, maximum) {
+  return Math.max(minimum, Math.min(value, maximum));
+}
+
+function constrainCouncilView(candidate) {
+  if (!councilFullView) return candidate;
+
+  const full = councilFullView;
+  const aspect = full.height / full.width;
+  const minimumWidth = full.width * COUNCIL_MIN_ZOOM_SCALE;
+  const width = clamp(candidate.width, minimumWidth, full.width);
+  const height = width * aspect;
+
+  return {
+    x: clamp(candidate.x, full.x, full.x + full.width - width),
+    y: clamp(candidate.y, full.y, full.y + full.height - height),
+    width,
+    height,
+  };
+}
+
+function councilPointFromClient(clientX, clientY) {
+  const point = councilSvg.createSVGPoint();
+  point.x = clientX;
+  point.y = clientY;
+  return point.matrixTransform(councilSvg.getScreenCTM().inverse());
+}
+
+function zoomCouncilAtPoint(point, factor) {
+  councilView = constrainCouncilView({
+    x: point.x - (point.x - councilView.x) * factor,
+    y: point.y - (point.y - councilView.y) * factor,
+    width: councilView.width * factor,
+    height: councilView.height * factor,
+  });
+  applyCouncilView();
+}
+
+function councilInteractionAllowed() {
+  return (
+    selectedState === "14" &&
+    !isAnimating &&
+    councilObject.style.pointerEvents !== "none"
+  );
+}
+
+function installCouncilInteractions() {
+  if (!councilSvg || councilInteractionRoot === councilSvg) return;
+
+  councilInteractionRoot = councilSvg;
+
+  councilSvg.addEventListener(
+    "wheel",
+    (event) => {
+      if (!councilInteractionAllowed()) return;
+
+      event.preventDefault();
+      zoomCouncilAtPoint(
+        councilPointFromClient(event.clientX, event.clientY),
+        event.deltaY < 0 ? 0.85 : 1.15
+      );
+    },
+    { passive: false }
+  );
+
+  councilSvg.addEventListener("pointerdown", (event) => {
+    if (!councilInteractionAllowed()) return;
+
+    councilDrag = {
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      startViewX: councilView.x,
+      startViewY: councilView.y,
+      moved: false,
+    };
+    councilSvg.setPointerCapture(event.pointerId);
+  });
+
+  councilSvg.addEventListener("pointermove", (event) => {
+    if (!councilDrag || councilDrag.pointerId !== event.pointerId) return;
+
+    const dx = event.clientX - councilDrag.x;
+    const dy = event.clientY - councilDrag.y;
+
+    if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+      councilDrag.moved = true;
+    }
+
+    if (!councilDrag.moved) return;
+
+    const rect = councilSvg.getBoundingClientRect();
+    councilView = constrainCouncilView({
+      x: councilDrag.startViewX - dx * (councilView.width / rect.width),
+      y: councilDrag.startViewY - dy * (councilView.height / rect.height),
+      width: councilView.width,
+      height: councilView.height,
+    });
+    councilSvg.style.cursor = "grabbing";
+    event.preventDefault();
+    applyCouncilView();
+  });
+
+  function endCouncilDrag(event) {
+    if (!councilDrag || councilDrag.pointerId !== event.pointerId) return;
+
+    const wasMoved = councilDrag.moved;
+    councilDrag = null;
+    councilSvg.style.cursor = "";
+
+    if (councilSvg.hasPointerCapture(event.pointerId)) {
+      councilSvg.releasePointerCapture(event.pointerId);
+    }
+
+    if (wasMoved && event.type === "pointerup") {
+      suppressCouncilClick = true;
+      window.setTimeout(() => {
+        suppressCouncilClick = false;
+      }, 0);
+    }
+  }
+
+  councilSvg.addEventListener("pointerup", endCouncilDrag);
+  councilSvg.addEventListener("pointercancel", endCouncilDrag);
+
+  councilSvg.addEventListener(
+    "click",
+    (event) => {
+      if (!suppressCouncilClick) return;
+      suppressCouncilClick = false;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    },
+    true
+  );
+}
+
+function resetCouncilDrag() {
+  if (councilDrag && councilSvg?.hasPointerCapture(councilDrag.pointerId)) {
+    councilSvg.releasePointerCapture(councilDrag.pointerId);
+  }
+
+  councilDrag = null;
+  suppressCouncilClick = false;
+
+  if (councilSvg) councilSvg.style.cursor = "";
+}
+
+function setSceneOpacities(middleEarthOpacity, councilOpacity) {
+  svg.style.opacity = String(middleEarthOpacity);
+  councilObject.style.opacity = String(councilOpacity);
+}
+
+function showMiddleEarthScene() {
+  resetCouncilDrag();
+  setSceneOpacities(1, 0);
+  svg.style.pointerEvents = "auto";
+  councilObject.style.pointerEvents = "none";
+  svg.setAttribute("aria-hidden", "false");
+  councilObject.setAttribute("aria-hidden", "true");
+}
+
+function showCouncilScene(interactive = true) {
+  setSceneOpacities(0, 1);
+  svg.style.pointerEvents = "none";
+  councilObject.style.pointerEvents = interactive ? "auto" : "none";
+  svg.setAttribute("aria-hidden", "true");
+  councilObject.setAttribute("aria-hidden", "false");
+}
+
+function showSceneCrossfade(progress) {
+  setSceneOpacities(1 - progress, progress);
+  svg.style.pointerEvents = "none";
+  councilObject.style.pointerEvents = "none";
+  svg.setAttribute("aria-hidden", "false");
+  councilObject.setAttribute("aria-hidden", "false");
+}
+
+function setCouncilQuestVisible(visible) {
+  if (councilQuestRoute) {
+    councilQuestRoute.style.opacity = visible ? "1" : "0";
+  }
+
+  if (councilQuestLabel) {
+    councilQuestLabel.classList.toggle("route-label-visible", visible);
+    councilQuestLabel.style.display = visible ? "inline" : "";
+    councilQuestLabel.style.opacity = visible ? "1" : "0";
+  }
+}
+
+function councilViewForBounds(bounds) {
+  const full = councilFullView;
+  const aspect = full.height / full.width;
+  const centerX = bounds.x + bounds.width / 2;
+  const centerY = bounds.y + bounds.height / 2;
+
+  let width = bounds.width + COUNCIL_TARGET_PADDING * 2;
+  let height = bounds.height + COUNCIL_TARGET_PADDING * 2;
+
+  if (height / width < aspect) {
+    height = width * aspect;
+  } else {
+    width = height / aspect;
+  }
+
+  width = Math.min(width, full.width);
+  height = Math.min(height, full.height);
+
+  const maxX = full.x + full.width - width;
+  const maxY = full.y + full.height - height;
+
+  return {
+    x: Math.max(full.x, Math.min(centerX - width / 2, maxX)),
+    y: Math.max(full.y, Math.min(centerY - height / 2, maxY)),
+    width,
+    height,
+  };
+}
+
+function councilTargetViews() {
+  if (!councilDocument || !councilFullView) return null;
+
+  const targets = [];
+
+  for (const key of COUNCIL_TARGET_KEYS) {
+    const group = councilDocument.querySelector(
+      `.cluster-fill[data-element-id="${key}"]`
+    );
+
+    if (!group) return null;
+
+    const bounds = group.getBBox();
+    if (!(bounds.width > 0 && bounds.height > 0)) return null;
+
+    targets.push(councilViewForBounds(bounds));
+  }
+
+  return targets;
 }
 
 function formatWaypoint(point) {
@@ -531,10 +996,19 @@ function animateProgress(duration, onProgress, runId) {
     let elapsed = 0;
     let lastTime = performance.now();
 
+    function finish(completed) {
+      if (currentAnimationResolve === finish) {
+        currentAnimationResolve = null;
+      }
+      resolve(completed);
+    }
+
+    currentAnimationResolve = finish;
+
     function frame(now) {
       if (runId !== animationRun) {
         currentFrameId = null;
-        resolve(false);
+        finish(false);
         return;
       }
 
@@ -554,7 +1028,7 @@ function animateProgress(duration, onProgress, runId) {
         currentFrameId = requestAnimationFrame(frame);
       } else {
         currentFrameId = null;
-        resolve(true);
+        finish(true);
       }
     }
 
@@ -579,11 +1053,66 @@ function animateViewTo(target, duration, runId) {
   );
 }
 
+function animateCouncilViewTo(target, duration, runId) {
+  const start = { ...councilView };
+
+  return animateProgress(
+    duration,
+    (progress) => {
+      councilView = interpolateView(start, target, easeInOut(progress));
+      applyCouncilView();
+    },
+    runId
+  );
+}
+
+function crossfadeToCouncil(runId) {
+  return animateProgress(
+    councilTiming.crossfade,
+    (progress) => {
+      showSceneCrossfade(easeInOut(progress));
+    },
+    runId
+  );
+}
+
+async function revealCouncilQuest(runId) {
+  if (!councilQuestRoute || !councilQuestLabel) return false;
+
+  councilQuestRoute.style.opacity = "0";
+  councilQuestLabel.classList.add("route-label-visible");
+  councilQuestLabel.style.display = "inline";
+  councilQuestLabel.style.opacity = "0";
+
+  const revealed = await animateProgress(
+    councilTiming.questReveal,
+    (progress) => {
+      const opacity = String(easeInOut(progress));
+      councilQuestRoute.style.opacity = opacity;
+      councilQuestLabel.style.opacity = opacity;
+    },
+    runId
+  );
+
+  if (!revealed) return false;
+
+  setCouncilQuestVisible(true);
+  return wait(councilTiming.finalHold, runId);
+}
+
 function zoomAtSvgPoint(point, factor) {
-  view.x = point.x - (point.x - view.x) * factor;
-  view.y = point.y - (point.y - view.y) * factor;
-  view.width *= factor;
-  view.height *= factor;
+  const nextView = {
+    x: point.x - (point.x - view.x) * factor,
+    y: point.y - (point.y - view.y) * factor,
+    width: view.width * factor,
+    height: view.height * factor,
+  };
+
+  // This helper is used only by the manual wheel handler. Snap the outward
+  // limit to the canonical overview rather than preserving a shifted viewBox.
+  view = nextView.width >= fullView.width
+    ? { ...fullView }
+    : nextView;
   applyView();
 }
 
@@ -609,6 +1138,13 @@ function splinePath(points, tension) {
   }
 
   return d.join(" ");
+}
+
+function chapterHasRoute(chapter) {
+  return (
+    chapter.routeWaypoints.length >= 2 &&
+    chapter.cameraZoom.length > 0
+  );
 }
 
 function buildMarkers() {
@@ -663,6 +1199,8 @@ function buildMarkers() {
 
 function buildRoutes() {
   for (const [key, chapter] of Object.entries(chapters)) {
+    if (!chapterHasRoute(chapter)) continue;
+
     const chapterNumber = Number(key);
     const pathData = splinePath(
       chapter.routeWaypoints,
@@ -738,6 +1276,8 @@ function setRouteState(chapterNumber, state) {
 }
 
 function renderIntroductionStart() {
+  showMiddleEarthScene();
+
   for (const number of Object.keys(locations).map(Number)) {
     setMarkerVisible(number, false);
   }
@@ -753,6 +1293,31 @@ function renderIntroductionStart() {
 
 function renderChapterStart(chapterNumber, fullMap) {
   const chapter = chapters[chapterNumber];
+
+  showMiddleEarthScene();
+
+  if (!chapterHasRoute(chapter)) {
+    for (const number of Object.keys(locations).map(Number)) {
+      setMarkerVisible(number, number <= chapter.from);
+      setMarkerOpacity(number, 1);
+    }
+
+    for (const number of Object.keys(chapters).map(Number)) {
+      setRouteState(
+        number,
+        number < chapterNumber ? "complete" : "hidden"
+      );
+    }
+
+    const startLocation = locations[chapter.from];
+    view = fullMap || !startLocation
+      ? { ...fullView }
+      : { ...startLocation.view };
+
+    chapterSelect.value = String(chapterNumber);
+    applyView();
+    return;
+  }
 
   for (const number of Object.keys(locations).map(Number)) {
     setMarkerVisible(number, number <= chapter.from);
@@ -774,7 +1339,21 @@ function renderChapterStart(chapterNumber, fullMap) {
   applyView();
 }
 
+function renderChapterComplete(chapterNumber) {
+  const chapter = chapters[chapterNumber];
+  if (!chapter || !chapterHasRoute(chapter)) return;
+
+  renderChapterStart(chapterNumber, false);
+  setRouteState(chapterNumber, "complete");
+  setMarkerVisible(chapter.to, true);
+  setMarkerOpacity(chapter.to, 1);
+  view = { ...locations[chapter.to].view };
+  applyView();
+}
+
 function renderCompleteJourney() {
+  showMiddleEarthScene();
+
   for (const number of Object.keys(locations).map(Number)) {
     setMarkerVisible(number, true);
     setMarkerOpacity(number, 1);
@@ -789,6 +1368,49 @@ function renderCompleteJourney() {
   applyView();
 }
 
+function resetCouncilEpilogue() {
+  if (!councilFullView) return;
+
+  councilView = { ...councilFullView };
+  applyCouncilView();
+  setCouncilQuestVisible(false);
+}
+
+function renderEpilogueStart() {
+  chapterSelect.value = "14";
+  resetCouncilEpilogue();
+  showMiddleEarthScene();
+}
+
+function renderEpilogueOverview() {
+  chapterSelect.value = "14";
+
+  if (councilSvg && councilFullView) {
+    councilView = { ...councilFullView };
+    applyCouncilView();
+    setCouncilQuestVisible(true);
+    showCouncilScene();
+    return;
+  }
+
+  showMiddleEarthScene();
+  const renderRun = animationRun;
+
+  councilReady.then((ready) => {
+    if (
+      !ready ||
+      renderRun !== animationRun ||
+      selectedState !== "14" ||
+      isAnimating
+    ) return;
+
+    councilView = { ...councilFullView };
+    applyCouncilView();
+    setCouncilQuestVisible(true);
+    showCouncilScene();
+  });
+}
+
 function renderSelectedStart(fullMap) {
   if (selectedState === "intro") {
     renderIntroductionStart();
@@ -797,6 +1419,15 @@ function renderSelectedStart(fullMap) {
 
   if (selectedState === "all") {
     renderCompleteJourney();
+    return;
+  }
+
+  if (chapterUsesCouncilScene(Number(selectedState))) {
+    if (fullMap) {
+      renderEpilogueOverview();
+    } else {
+      renderEpilogueStart();
+    }
     return;
   }
 
@@ -811,19 +1442,47 @@ function cancelPlayback() {
   }
 
   currentFrameId = null;
+
+  if (currentAnimationResolve) {
+    const resolveAnimation = currentAnimationResolve;
+    currentAnimationResolve = null;
+    resolveAnimation(false);
+  }
+
   isAnimating = false;
   isPaused = false;
   isStoryPlaying = false;
 }
 
-function updateControls() {
-  const index = navigationOrder.indexOf(selectedState);
+function stopPlayback() {
+  if (!isAnimating) return;
 
-  previousButton.disabled = isAnimating || index <= 0;
-  nextButton.disabled =
-    isAnimating || index >= navigationOrder.length - 1;
+  const stoppedState = selectedState;
+  cancelPlayback();
+
+  if (stoppedState === "intro") {
+    renderIntroductionStart();
+    view = { ...locations[1].view };
+    setMarkerVisible(1, true);
+    setMarkerOpacity(1, 1);
+    applyView();
+    browseOverview = false;
+  } else if (chapterUsesCouncilScene(Number(stoppedState))) {
+    renderEpilogueOverview();
+    browseOverview = true;
+  } else if (stateIsChapter(stoppedState)) {
+    renderChapterComplete(Number(stoppedState));
+    browseOverview = false;
+  }
+
+  setUrlState(stoppedState, false, "replace");
+  updateControls();
+}
+
+function updateControls() {
   chapterSelect.disabled = isAnimating && !isPaused;
   playStoryButton.disabled = isAnimating;
+  stopPlaybackButton.disabled = !isAnimating;
 
   if (selectedState === "all" && !isStoryPlaying) {
     playPauseButton.disabled = true;
@@ -991,9 +1650,12 @@ async function playIntroduction(runId) {
 
 async function playChapter(chapterNumber, runId, startFromOverview) {
   const chapter = chapters[chapterNumber];
-  const startLocation = locations[chapter.from];
 
   renderChapterStart(chapterNumber, startFromOverview);
+
+  if (!chapterHasRoute(chapter)) return false;
+
+  const startLocation = locations[chapter.from];
 
   if (startFromOverview) {
     if (!(await animateViewTo(
@@ -1013,8 +1675,64 @@ async function playChapter(chapterNumber, runId, startFromOverview) {
   return true;
 }
 
+async function playEpilogue(runId) {
+  renderEpilogueStart();
+
+  const ready = councilSvg ? true : await councilReady;
+  if (runId !== animationRun) return false;
+
+  const targets = ready ? councilTargetViews() : null;
+  if (
+    !targets ||
+    !councilQuestRoute ||
+    !councilQuestLabel
+  ) {
+    showMiddleEarthScene();
+    return false;
+  }
+
+  resetCouncilEpilogue();
+
+  if (!(await crossfadeToCouncil(runId))) return false;
+  showCouncilScene(false);
+
+  for (const target of targets) {
+    if (!(await animateCouncilViewTo(
+      target,
+      councilTiming.regionMove,
+      runId
+    ))) return false;
+
+    if (!(await wait(councilTiming.clusterHold, runId))) return false;
+  }
+
+  if (!(await animateCouncilViewTo(
+    councilFullView,
+    councilTiming.finalOverview,
+    runId
+  ))) return false;
+
+  if (!(await revealCouncilQuest(runId))) return false;
+
+  showCouncilScene();
+  return true;
+}
+
+function playChapterState(chapterNumber, runId, startFromOverview) {
+  if (chapterUsesCouncilScene(chapterNumber)) {
+    return playEpilogue(runId);
+  }
+
+  return playChapter(chapterNumber, runId, startFromOverview);
+}
+
 async function playSelected({ startFromOverview = false } = {}) {
   if (isAnimating || selectedState === "all") return;
+  if (
+    selectedState !== "intro" &&
+    !chapterUsesCouncilScene(Number(selectedState)) &&
+    !chapterHasRoute(chapters[Number(selectedState)])
+  ) return;
 
   cancelPlayback();
   isAnimating = true;
@@ -1031,17 +1749,26 @@ async function playSelected({ startFromOverview = false } = {}) {
   if (selectedState === "intro") {
     completed = await playIntroduction(runId);
   } else {
-    completed = await playChapter(
+    completed = await playChapterState(
       Number(selectedState),
       runId,
       startFromOverview
     );
   }
 
-  if (!completed || runId !== animationRun) return;
+  if (!completed || runId !== animationRun) {
+    if (runId === animationRun) {
+      isAnimating = false;
+      isPaused = false;
+      isStoryPlaying = false;
+      updateControls();
+    }
+    return;
+  }
 
   isAnimating = false;
   isPaused = false;
+  browseOverview = chapterUsesCouncilScene(Number(selectedState));
   updateControls();
 }
 
@@ -1066,14 +1793,32 @@ async function playStory() {
   let completed = await playIntroduction(runId);
   if (!completed || runId !== animationRun) return;
 
-  for (let chapterNumber = 1; chapterNumber <= 4; chapterNumber += 1) {
+  for (const chapterNumber of Object.keys(chapters).map(Number)) {
     selectedState = String(chapterNumber);
     chapterSelect.value = selectedState;
     setUrlState(selectedState, true, "replace");
     updateControls();
 
-    completed = await playChapter(chapterNumber, runId, false);
-    if (!completed || runId !== animationRun) return;
+    completed = await playChapterState(chapterNumber, runId, false);
+    if (!completed || runId !== animationRun) {
+      if (runId === animationRun) {
+        isAnimating = false;
+        isPaused = false;
+        isStoryPlaying = false;
+        updateControls();
+      }
+      return;
+    }
+  }
+
+  if (chapterUsesCouncilScene(Number(selectedState))) {
+    browseOverview = true;
+    isAnimating = false;
+    isPaused = false;
+    isStoryPlaying = false;
+    setUrlState(selectedState, false, "replace");
+    updateControls();
+    return;
   }
 
   if (!(await wait(timing.storyFinalHold, runId))) return;
@@ -1151,20 +1896,7 @@ function togglePlayPause() {
 
 playStoryButton.addEventListener("click", playStory);
 playPauseButton.addEventListener("click", togglePlayPause);
-
-previousButton.addEventListener("click", () => {
-  const index = navigationOrder.indexOf(selectedState);
-  if (index > 0) {
-    selectForBrowsing(navigationOrder[index - 1]);
-  }
-});
-
-nextButton.addEventListener("click", () => {
-  const index = navigationOrder.indexOf(selectedState);
-  if (index < navigationOrder.length - 1) {
-    selectForBrowsing(navigationOrder[index + 1]);
-  }
-});
+stopPlaybackButton.addEventListener("click", stopPlayback);
 
 chapterSelect.addEventListener("change", () => {
   selectAndAutoplay(chapterSelect.value);
@@ -1227,7 +1959,7 @@ svg.addEventListener("pointermove", (event) => {
   const dx = event.clientX - drag.x;
   const dy = event.clientY - drag.y;
 
-  if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+  if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
     drag.moved = true;
   }
 
