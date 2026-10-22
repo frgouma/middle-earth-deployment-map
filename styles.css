@@ -84,6 +84,7 @@ body {
 }
 
 .controls button,
+.download-button,
 .chapter-selector,
 .waypoint-tools {
   min-height: 38px;
@@ -108,6 +109,19 @@ body {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.download-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.download-button[hidden] {
+  display: none;
 }
 
 .controls button:disabled {
@@ -204,8 +218,8 @@ body {
 }
 
 .chapter-marker .label-backdrop {
-  fill: #efe3c2;
-  fill-opacity: 0.80;
+  fill: #cfddc6;
+  fill-opacity: 0.85;
 }
 
 .chapter-marker .anchor-dot {
@@ -219,10 +233,11 @@ body {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 17px;
   font-weight: 700;
-  paint-order: stroke;
-  stroke: #efe3c2;
-  stroke-width: 7px;
+  paint-order: stroke fill;
+  stroke: #4b3426;
+  stroke-width: 1px;
   stroke-linejoin: round;
+  pointer-events: auto;
 }
 
 .chapter-marker.marker-muted {
@@ -254,3 +269,8 @@ body {
 .map-tint-mordor {
   opacity: 0.11;
 }
+
+.waypoint-tools {
+  display: none;
+}
+

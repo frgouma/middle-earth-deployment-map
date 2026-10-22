@@ -8,6 +8,7 @@ const chapterSelect = document.getElementById("chapter-select");
 const playStoryButton = document.getElementById("play-story");
 const playPauseButton = document.getElementById("play-pause");
 const stopPlaybackButton = document.getElementById("stop-playback");
+const councilDownloadLink = document.getElementById("download-council-svg");
 const waypointLog = document.getElementById("waypoint-log");
 const undoWaypointButton = document.getElementById("undo-waypoint");
 const clearWaypointsButton = document.getElementById("clear-waypoints");
@@ -19,6 +20,8 @@ const VIEW_ASPECT = MAP_HEIGHT / MAP_WIDTH;
 const MARKER_REFERENCE_WIDTH = 1250;
 const COMPACT_LABEL_VIEW_WIDTH = 3000;
 const CAMERA_POSITION_KEYFRAMES = 5;
+const SUMMARY_CHAPTER_NUMBER = 13;
+const EPILOGUE_STATE = "14";
 
 const fullView = {
   x: 0,
@@ -105,13 +108,69 @@ const locations = {
     y: 1018.9,
     view: centeredView(1303.4, 1018.9, 950),
   },
+  6: {
+    roman: "VI",
+    title: "The Balrog of Database Connectivity",
+    x: 1940.8,
+    y: 1570.8,
+    view: centeredView(1940.8, 1570.8, 950),
+  },
+  7: {
+    roman: "VII",
+    title: "The Entmoot of Migration Warnings",
+    x: 2082.5,
+    y: 1659.3,
+    view: centeredView(2082.5, 1659.3, 950),
+  },
+  8: {
+    roman: "VIII",
+    title: "The Mines of Persistence",
+    x: 1359.1,
+    y: 2227.0,
+    view: centeredView(1359.1, 2227.0, 950),
+  },
+  9: {
+    roman: "IX",
+    title: "A Long-expected Detour",
+    x: 550.9,
+    y: 522.7,
+    view: centeredView(550.9, 522.7, 950),
+  },
+  10: {
+    roman: "X",
+    title: "The Two Containers",
+    x: 3654.3,
+    y: 1440.8,
+    view: centeredView(3654.3, 1440.8, 950),
+  },
+  11: {
+    roman: "XI",
+    title: "A Short Cut to Kubernetes",
+    x: 2303.5,
+    y: 1932.7,
+    view: centeredView(2303.5, 1932.7, 950),
+  },
+  12: {
+    roman: "XII",
+    title: "The Return of the Pod",
+    x: 2694.5,
+    y: 2213.3,
+    view: centeredView(2694.5, 2213.3, 950),
+  },
+  13: {
+    roman: "XIII",
+    title: "The Last Stage",
+    x: 1146.1,
+    y: 560.1,
+    view: centeredView(1146.1, 560.1, 950),
+  },
 };
 
 const chapters = {
   1: {
     from: 1,
     to: 2,
-    duration: 7000,
+    duration: 6000,
     curveTension: 0.10,
     routeWaypoints: [
       { x: 2069.5, y: 846.9 },
@@ -249,7 +308,7 @@ const chapters = {
   3: {
     from: 3,
     to: 4,
-    duration: 13500,
+    duration: 9000,
     curveTension: 0.10,
     routeWaypoints: [
       { x: 3014.4, y: 2144.1 },
@@ -333,7 +392,7 @@ const chapters = {
   4: {
     from: 4,
     to: 5,
-    duration: 9000,
+    duration: 4000,
     curveTension: 0.10,
     routeWaypoints: [
       { x: 748.2, y: 847.0 },
@@ -354,63 +413,479 @@ const chapters = {
   5: {
     from: 5,
     to: 6,
-    routeWaypoints: [],
-    cameraZoom: [],
+    duration: 6000,
+    curveTension: 0.10,
+    routeWaypoints: [
+      { x: 1305.5, y: 1018.6 },
+      { x: 1227.6, y: 1038.2 },
+      { x: 1110.4, y: 1068.2 },
+      { x: 993.2, y: 1081.0 },
+      { x: 969.3, y: 1087.0 },
+      { x: 924.8, y: 1134.9 },
+      { x: 913.8, y: 1206.7 },
+      { x: 965.9, y: 1255.5 },
+      { x: 1035.2, y: 1231.5 },
+      { x: 1089.9, y: 1163.1 },
+      { x: 1150.7, y: 1158.0 },
+      { x: 1223.4, y: 1222.1 },
+      { x: 1255.9, y: 1289.7 },
+      { x: 1287.6, y: 1312.8 },
+      { x: 1323.5, y: 1336.7 },
+      { x: 1349.2, y: 1349.6 },
+      { x: 1403.9, y: 1361.5 },
+      { x: 1427.8, y: 1364.1 },
+      { x: 1438.2, y: 1353.8 },
+      { x: 1450.2, y: 1341.0 },
+      { x: 1480.1, y: 1322.2 },
+      { x: 1498.1, y: 1300.8 },
+      { x: 1528.9, y: 1305.9 },
+      { x: 1566.5, y: 1328.2 },
+      { x: 1566.5, y: 1381.2 },
+      { x: 1575.1, y: 1411.1 },
+      { x: 1575.1, y: 1459.0 },
+      { x: 1574.2, y: 1565.9 },
+      { x: 1568.2, y: 1632.7 },
+      { x: 1570.8, y: 1678.8 },
+      { x: 1579.6, y: 1691.6 },
+      { x: 1599.1, y: 1746.2 },
+      { x: 1630.3, y: 1767.0 },
+      { x: 1665.5, y: 1764.4 },
+      { x: 1751.3, y: 1788.6 },
+      { x: 1770.8, y: 1688.4 },
+      { x: 1815.1, y: 1641.6 },
+      { x: 1845.1, y: 1637.7 },
+      { x: 1880.2, y: 1627.3 },
+      { x: 1912.8, y: 1620.8 },
+      { x: 1940.1, y: 1605.2 },
+      { x: 1940.8, y: 1570.8},
+
+    ],
+    cameraZoom: [
+      { progress: 0.00, width: 950 },
+      { progress: 0.28, width: 1400 },
+      { progress: 0.58, width: 1400 },
+      { progress: 0.82, width: 1325 },
+      { progress: 1.00, width: 950 },
+    ],
   },
+
   6: {
     from: 6,
     to: 7,
-    routeWaypoints: [],
-    cameraZoom: [],
+    duration: 7000,
+    curveTension: 0.10,
+    routeWaypoints: [
+      { x: 1941.4, y: 1570.1 },
+      { x: 1940.0, y: 1540.4 },
+      { x: 1947.9, y: 1502.0 },
+      { x: 1957.0, y: 1453.3 },
+      { x: 1975.1, y: 1385.5 },
+      { x: 1983.0, y: 1360.6 },
+      { x: 1992.1, y: 1328.9 },
+      { x: 1988.7, y: 1276.9 },
+      { x: 1977.3, y: 1230.5 },
+      { x: 1974.0, y: 1188.7 },
+      { x: 1996.6, y: 1154.7 },
+      { x: 2047.5, y: 1149.1 },
+      { x: 2095.1, y: 1150.2 },
+      { x: 2127.9, y: 1144.5 },
+      { x: 2144.9, y: 1091.4 },
+      { x: 2163.7, y: 1052.3 },
+      { x: 2197.5, y: 1048.4 },
+      { x: 2209.3, y: 1036.7 },
+      { x: 2260.0, y: 1013.2 },
+      { x: 2301.8, y: 1004.1 },
+      { x: 2321.3, y: 1027.6 },
+      { x: 2340.8, y: 1028.9 },
+      { x: 2353.9, y: 1025.0 },
+      { x: 2378.6, y: 1052.3 },
+      { x: 2392.9, y: 1069.2 },
+      { x: 2392.9, y: 1087.4 },
+      { x: 2395.5, y: 1108.2 },
+      { x: 2398.1, y: 1138.1 },
+      { x: 2382.5, y: 1160.2 },
+      { x: 2381.2, y: 1184.9 },
+      { x: 2351.3, y: 1208.4 },
+      { x: 2314.9, y: 1248.7 },
+      { x: 2324.0, y: 1270.8 },
+      { x: 2308.4, y: 1295.5 },
+      { x: 2287.5, y: 1315.0 },
+      { x: 2278.4, y: 1355.4 },
+      { x: 2281.1, y: 1384.0 },
+      { x: 2291.5, y: 1428.2 },
+      { x: 2303.2, y: 1443.8 },
+      { x: 2324.1, y: 1443.8 },
+      { x: 2346.2, y: 1449.0 },
+      { x: 2367.0, y: 1469.8 },
+      { x: 2381.3, y: 1486.7 },
+      { x: 2407.3, y: 1502.3 },
+      { x: 2432.0, y: 1506.2 },
+      { x: 2438.5, y: 1518.0 },
+      { x: 2429.4, y: 1538.8 },
+      { x: 2421.6, y: 1558.3 },
+      { x: 2421.6, y: 1575.2 },
+      { x: 2413.8, y: 1594.7 },
+      { x: 2399.5, y: 1623.3 },
+      { x: 2356.6, y: 1624.6 },
+      { x: 2312.3, y: 1640.2 },
+      { x: 2242.1, y: 1688.4 },
+      { x: 2196.6, y: 1722.2 },
+      { x: 2169.3, y: 1715.7 },
+      { x: 2152.3, y: 1707.9 },
+      { x: 2115.9, y: 1694.9 },
+      { x: 2082.1, y: 1661.0 },
+    ],
+    cameraZoom: [
+      { progress: 0.00, width: 950 },
+      { progress: 0.28, width: 1400 },
+      { progress: 0.58, width: 1400 },
+      { progress: 0.82, width: 1325 },
+      { progress: 1.00, width: 950 },
+    ],
   },
   7: {
     from: 7,
     to: 8,
-    routeWaypoints: [],
-    cameraZoom: [],
+    duration: 7000,
+    curveTension: 0.10,
+    routeWaypoints: [
+      { x: 2080.1, y: 1666.5 },
+      { x: 2055.5, y: 1682.2 },
+      { x: 2024.1, y: 1706.8 },
+      { x: 2000.4, y: 1722.5 },
+      { x: 1976.8, y: 1733.3 },
+      { x: 1970.9, y: 1759.9 },
+      { x: 1943.4, y: 1778.6 },
+      { x: 1932.6, y: 1797.3 },
+      { x: 1904.1, y: 1848.4 },
+      { x: 1882.4, y: 1866.1 },
+      { x: 1868.6, y: 1870.1 },
+      { x: 1843.1, y: 1874.0 },
+      { x: 1818.5, y: 1875.0 },
+      { x: 1811.6, y: 1875.0 },
+      { x: 1794.9, y: 1871.0 },
+      { x: 1780.1, y: 1875.0 },
+      { x: 1767.3, y: 1866.1 },
+      { x: 1758.5, y: 1860.2 },
+      { x: 1743.7, y: 1858.3 },
+      { x: 1732.9, y: 1863.2 },
+      { x: 1721.1, y: 1863.2 },
+      { x: 1705.4, y: 1879.9 },
+      { x: 1646.4, y: 1873.0 },
+      { x: 1624.7, y: 1875.0 },
+      { x: 1610.9, y: 1865.1 },
+      { x: 1607.0, y: 1876.0 },
+      { x: 1588.3, y: 1887.8 },
+      { x: 1582.4, y: 1907.4 },
+      { x: 1581.4, y: 1914.3 },
+      { x: 1574.5, y: 1938.9 },
+      { x: 1569.6, y: 1956.6 },
+      { x: 1548.0, y: 1994.0 },
+      { x: 1524.4, y: 2046.1 },
+      { x: 1499.8, y: 2086.5 },
+      { x: 1499.8, y: 2107.1 },
+      { x: 1500.8, y: 2155.3 },
+      { x: 1502.7, y: 2191.7 },
+      { x: 1488.0, y: 2197.6 },
+      { x: 1474.2, y: 2209.4 },
+      { x: 1465.4, y: 2226.1 },
+      { x: 1448.7, y: 2249.7 },
+      { x: 1451.6, y: 2266.4 },
+      { x: 1448.7, y: 2279.2 },
+      { x: 1432.9, y: 2284.2 },
+      { x: 1420.1, y: 2296.0 },
+      { x: 1395.5, y: 2301.9 },
+      { x: 1375.9, y: 2299.9 },
+      { x: 1348.3, y: 2298.9 },
+      { x: 1324.7, y: 2306.8 },
+      { x: 1294.2, y: 2309.7 },
+      { x: 1274.5, y: 2297.9 },
+      { x: 1277.4, y: 2277.3 },
+      { x: 1290.2, y: 2267.4 },
+      { x: 1317.8, y: 2256.6 },
+      { x: 1338.4, y: 2246.8 },
+      { x: 1361.0, y: 2227.1 },
+    ],
+    cameraZoom: [
+      { progress: 0.00, width: 950 },
+      { progress: 0.28, width: 1400 },
+      { progress: 0.58, width: 1400 },
+      { progress: 0.82, width: 1325 },
+      { progress: 1.00, width: 950 },
+    ],
   },
   8: {
     from: 8,
     to: 9,
-    routeWaypoints: [],
-    cameraZoom: [],
+    duration: 6000,
+    curveTension: 0.10,
+    routeWaypoints: [
+      { x: 1358.5, y: 2225.9 },
+      { x: 1346.1, y: 2155.8 },
+      { x: 1331.4, y: 2103.8 },
+      { x: 1318.9, y: 2049.5 },
+      { x: 1309.9, y: 1995.2 },
+      { x: 1286.1, y: 1901.3 },
+      { x: 1260.1, y: 1810.8 },
+      { x: 1249.9, y: 1748.6 },
+      { x: 1204.7, y: 1695.4 },
+      { x: 1136.7, y: 1704.5 },
+      { x: 1082.5, y: 1732.8 },
+      { x: 1023.6, y: 1726.0 },
+      { x: 1014.6, y: 1714.7 },
+      { x: 1006.7, y: 1687.5 },
+      { x: 1007.8, y: 1650.2 },
+      { x: 1022.5, y: 1598.1 },
+      { x: 1008.9, y: 1521.2 },
+      { x: 996.5, y: 1479.4 },
+      { x: 949.0, y: 1428.5 },
+      { x: 870.9, y: 1403.6 },
+      { x: 655.7, y: 1379.8 },
+      { x: 617.3, y: 1347.0 },
+      { x: 586.7, y: 1265.6 },
+      { x: 531.1, y: 1126.7 },
+      { x: 528.9, y: 1071.8 },
+      { x: 544.3, y: 1025.7 },
+      { x: 588.2, y: 990.5 },
+      { x: 623.4, y: 981.7 },
+      { x: 680.5, y: 929.0 },
+      { x: 669.5, y: 885.1 },
+      { x: 654.1, y: 874.1 },
+      { x: 581.7, y: 869.7 },
+      { x: 504.8, y: 856.6 },
+      { x: 463.1, y: 828.0 },
+      { x: 432.3, y: 795.1 },
+      { x: 359.8, y: 766.5 },
+      { x: 346.6, y: 727.0 },
+      { x: 355.4, y: 683.0 },
+      { x: 379.6, y: 630.3 },
+      { x: 399.4, y: 593.0 },
+      { x: 452.1, y: 562.3 },
+      { x: 485.0, y: 540.3 },
+      { x: 561.9, y: 524.9 },
+    ],
+    cameraZoom: [
+      { progress: 0.00, width: 950 },
+      { progress: 0.28, width: 1400 },
+      { progress: 0.58, width: 1400 },
+      { progress: 0.82, width: 1325 },
+      { progress: 1.00, width: 950 },
+    ]
   },
   9: {
     from: 9,
     to: 10,
-    routeWaypoints: [],
-    cameraZoom: [],
+    duration: 10000,
+    curveTension: 0.10,
+    routeWaypoints: [
+      { x: 557.5, y: 535.9 },
+      { x: 557.5, y: 478.8 },
+      { x: 572.9, y: 439.3 },
+      { x: 588.2, y: 417.3 },
+      { x: 603.6, y: 386.5 },
+      { x: 632.2, y: 338.2 },
+      { x: 656.3, y: 294.3 },
+      { x: 702.4, y: 250.4 },
+      { x: 739.8, y: 232.8 },
+      { x: 792.5, y: 210.8 },
+      { x: 836.4, y: 177.9 },
+      { x: 876.0, y: 208.6 },
+      { x: 897.9, y: 221.8 },
+      { x: 906.7, y: 261.4 },
+      { x: 970.4, y: 257.0 },
+      { x: 1009.9, y: 250.4 },
+      { x: 1049.5, y: 248.2 },
+      { x: 1100.0, y: 261.4 },
+      { x: 1121.9, y: 235.0 },
+      { x: 1146.1, y: 237.2 },
+      { x: 1247.1, y: 235.0 },
+      { x: 1295.4, y: 215.2 },
+      { x: 1396.5, y: 210.8 },
+      { x: 1444.8, y: 193.3 },
+      { x: 1576.6, y: 191.1 },
+      { x: 1618.3, y: 188.9 },
+      { x: 1708.4, y: 195.5 },
+      { x: 1829.1, y: 257.0 },
+      { x: 1899.4, y: 263.6 },
+      { x: 1928.0, y: 283.3 },
+      { x: 1985.1, y: 294.3 },
+      { x: 2037.8, y: 318.5 },
+      { x: 2064.2, y: 366.8 },
+      { x: 2147.6, y: 382.2 },
+      { x: 2239.9, y: 380.0 },
+      { x: 2305.7, y: 384.4 },
+      { x: 2327.7, y: 408.5 },
+      { x: 2384.8, y: 472.2 },
+      { x: 2472.7, y: 518.3 },
+      { x: 2536.4, y: 573.2 },
+      { x: 2615.4, y: 595.2 },
+      { x: 2703.3, y: 615.0 },
+      { x: 2694.5, y: 628.1 },
+      { x: 2661.5, y: 663.3 },
+      { x: 2661.5, y: 696.2 },
+      { x: 2681.3, y: 711.6 },
+      { x: 2709.9, y: 709.4 },
+      { x: 2764.8, y: 722.6 },
+      { x: 2819.7, y: 733.6 },
+      { x: 2854.8, y: 738.0 },
+      { x: 2890.0, y: 801.6 },
+      { x: 2942.7, y: 860.9 },
+      { x: 2993.2, y: 882.9 },
+      { x: 3004.2, y: 926.8 },
+      { x: 3041.5, y: 1065.2 },
+      { x: 3135.9, y: 1234.3 },
+      { x: 3217.2, y: 1473.7 },
+      { x: 3278.7, y: 1594.5 },
+      { x: 3276.5, y: 1822.9 },
+      { x: 3368.7, y: 1833.9 },
+      { x: 3507.1, y: 1825.1 },
+      { x: 3579.6, y: 1811.9 },
+      { x: 3748.7, y: 1702.1 },
+      { x: 3759.7, y: 1647.2 },
+      { x: 3748.7, y: 1598.9 },
+      { x: 3685.0, y: 1566.0 },
+      { x: 3669.6, y: 1530.8 },
+      { x: 3658.7, y: 1495.7 },
+      { x: 3656.5, y: 1443.0 },
+    ],
+    cameraZoom: [
+      { progress: 0.00, width: 950 },
+      { progress: 0.28, width: 1400 },
+      { progress: 0.58, width: 1400 },
+      { progress: 0.82, width: 1325 },
+      { progress: 1.00, width: 950 },
+    ],
   },
   10: {
     from: 10,
     to: 11,
-    routeWaypoints: [],
-    cameraZoom: [],
+    duration: 6000,
+    curveTension: 0.10,
+    routeWaypoints: [
+      { x: 3656.5, y: 1447.4 },
+      { x: 3603.8, y: 1399.0 },
+      { x: 3557.6, y: 1399.0 },
+      { x: 3450.0, y: 1412.2 },
+      { x: 3390.7, y: 1467.1 },
+      { x: 3377.5, y: 1511.1 },
+      { x: 3373.1, y: 1594.5 },
+      { x: 3289.7, y: 1699.9 },
+      { x: 3228.2, y: 1726.3 },
+      { x: 3114.0, y: 1706.5 },
+      { x: 3030.5, y: 1699.9 },
+      { x: 2896.5, y: 1691.1 },
+      { x: 2815.3, y: 1673.6 },
+      { x: 2742.8, y: 1671.4 },
+      { x: 2655.0, y: 1695.5 },
+      { x: 2615.4, y: 1717.5 },
+      { x: 2571.5, y: 1748.2 },
+      { x: 2525.4, y: 1796.6 },
+      { x: 2492.4, y: 1842.7 },
+      { x: 2466.1, y: 1851.5 },
+      { x: 2428.7, y: 1860.3 },
+      { x: 2378.2, y: 1869.0 },
+      { x: 2329.9, y: 1871.2 },
+      { x: 2297.0, y: 1895.4 },
+      { x: 2303.5, y: 1934.9 },
+    ],
+    cameraZoom: [
+      { progress: 0.00, width: 950 },
+      { progress: 0.28, width: 1400 },
+      { progress: 0.58, width: 1400 },
+      { progress: 0.82, width: 1325 },
+      { progress: 1.00, width: 950 },
+    ],
   },
   11: {
     from: 11,
     to: 12,
-    routeWaypoints: [],
-    cameraZoom: [],
+    duration: 5000,
+    curveTension: 0.5,
+    routeWaypoints: [
+      { x: 2304.4, y: 1932.2 },
+      { x: 2300.5, y: 1954.2 },
+      { x: 2301.5, y: 1976.2 },
+      { x: 2311.2, y: 2018.7 },
+      { x: 2318.1, y: 2030.5 },
+      { x: 2333.8, y: 2036.8 },
+      { x: 2370.5, y: 2042.2 },
+      { x: 2423.3, y: 2064.2 },
+      { x: 2477.1, y: 2077.9 },
+      { x: 2507.4, y: 2080.3 },
+      { x: 2546.0, y: 2085.2 },
+      { x: 2589.5, y: 2092.1 },
+      { x: 2600.3, y: 2134.6 },
+      { x: 2600.8, y: 2181.1 },
+      { x: 2630.1, y: 2195.7 },
+      { x: 2651.2, y: 2207.5 },
+      { x: 2697.1, y: 2215.8 },
+    ],
+     cameraZoom: [
+      { progress: 0.00, width: 950 },
+      { progress: 0.28, width: 1400 },
+      { progress: 0.58, width: 1400 },
+      { progress: 0.82, width: 1325 },
+      { progress: 1.00, width: 950 },
+    ],
   },
   12: {
     from: 12,
     to: 13,
-    routeWaypoints: [],
-    cameraZoom: [],
+    duration: 10000,
+    curveTension: 0.10,
+    routeWaypoints: [
+      { x: 2696.2, y: 2219.3 },
+      { x: 2733.8, y: 2169.8 },
+      { x: 2783.2, y: 2175.7 },
+      { x: 2807.0, y: 2140.1 },
+      { x: 2809.0, y: 2090.7 },
+      { x: 2810.9, y: 2029.3 },
+      { x: 2824.8, y: 1948.2 },
+      { x: 2913.8, y: 1952.2 },
+      { x: 3012.7, y: 1950.2 },
+      { x: 3091.9, y: 1968.0 },
+      { x: 3167.0, y: 1966.0 },
+      { x: 3204.6, y: 1839.4 },
+      { x: 3194.7, y: 1675.2 },
+      { x: 3173.0, y: 1499.1 },
+      { x: 3173.0, y: 1269.6 },
+      { x: 3167.0, y: 1111.4 },
+      { x: 3174.9, y: 986.7 },
+      { x: 2927.3, y: 962.0 },
+      { x: 2907.5, y: 887.3 },
+      { x: 2857.0, y: 878.5 },
+      { x: 2786.7, y: 865.3 },
+      { x: 2729.6, y: 847.8 },
+      { x: 2633.0, y: 834.6 },
+      { x: 2534.2, y: 810.4 },
+      { x: 2477.1, y: 812.6 },
+      { x: 2444.1, y: 810.4 },
+      { x: 2343.1, y: 795.1 },
+      { x: 2286.0, y: 812.6 },
+      { x: 2217.9, y: 817.0 },
+      { x: 2112.5, y: 812.6 },
+      { x: 2057.6, y: 768.7 },
+      { x: 1960.9, y: 713.8 },
+      { x: 1877.5, y: 680.9 },
+      { x: 1818.2, y: 630.3 },
+      { x: 1693.0, y: 586.4 },
+      { x: 1541.4, y: 531.5 },
+      { x: 1447.0, y: 476.6 },
+      { x: 1308.6, y: 434.9 },
+      { x: 1255.9, y: 419.5 },
+      { x: 1104.4, y: 415.1 },
+      { x: 1153.0, y: 561.9 },
+    ],
+     cameraZoom: [
+      { progress: 0.00, width: 950 },
+      { progress: 0.28, width: 1400 },
+      { progress: 0.58, width: 1400 },
+      { progress: 0.82, width: 1325 },
+      { progress: 1.00, width: 950 },
+    ],
   },
   13: {
-    from: 13,
-    to: 14,
-    routeWaypoints: [],
-    cameraZoom: [],
-  },
-  14: {
-    from: 14,
-    to: 15,
-    routeWaypoints: [],
-    cameraZoom: [],
-    scene: "council",
+    scene: "summary",
   },
 };
 
@@ -430,7 +905,6 @@ const navigationOrder = [
   "12",
   "13",
   "14",
-  "all",
 ];
 
 const timing = {
@@ -439,8 +913,11 @@ const timing = {
   markerReveal: 850,
   startHold: 900,
   overviewToStart: 1400,
-  storyFinalHold: 900,
-  storyFinalOverview: 2000,
+  summaryInitialHold: 1500,
+  summaryOverview: 4000,
+  summaryRouteStartHold: 500,
+  summaryJourneyRedraw: 12000,
+  summaryFinalHold: 1000,
 };
 
 const councilTiming = {
@@ -538,7 +1015,7 @@ councilObject.addEventListener("load", () => {
 
   if (
     ready &&
-    selectedState === "14" &&
+    selectedState === EPILOGUE_STATE &&
     browseOverview &&
     !isAnimating
   ) {
@@ -561,15 +1038,20 @@ window.setTimeout(() => {
 }, 5000);
 
 function stateIsChapter(state) {
-  return /^(?:[1-9]|1[0-4])$/.test(String(state));
+  return /^(?:[1-9]|1[0-3])$/.test(String(state));
 }
 
 function chapterUsesCouncilScene(chapterNumber) {
-  return chapters[chapterNumber]?.scene === "council";
+  return String(chapterNumber) === EPILOGUE_STATE;
+}
+
+function chapterUsesSummaryScene(chapterNumber) {
+  return chapters[chapterNumber]?.scene === "summary";
 }
 
 function normalizeState(value) {
   const stringValue = String(value ?? "");
+  if (stringValue === "all") return String(SUMMARY_CHAPTER_NUMBER);
   return navigationOrder.includes(stringValue) ? stringValue : "intro";
 }
 
@@ -702,7 +1184,7 @@ function zoomCouncilAtPoint(point, factor) {
 
 function councilInteractionAllowed() {
   return (
-    selectedState === "14" &&
+    selectedState === EPILOGUE_STATE &&
     !isAnimating &&
     councilObject.style.pointerEvents !== "none"
   );
@@ -738,7 +1220,6 @@ function installCouncilInteractions() {
       startViewY: councilView.y,
       moved: false,
     };
-    councilSvg.setPointerCapture(event.pointerId);
   });
 
   councilSvg.addEventListener("pointermove", (event) => {
@@ -747,8 +1228,12 @@ function installCouncilInteractions() {
     const dx = event.clientX - councilDrag.x;
     const dy = event.clientY - councilDrag.y;
 
-    if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+    if (
+      !councilDrag.moved &&
+      (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)
+    ) {
       councilDrag.moved = true;
+      councilSvg.setPointerCapture(event.pointerId);
     }
 
     if (!councilDrag.moved) return;
@@ -815,8 +1300,13 @@ function setSceneOpacities(middleEarthOpacity, councilOpacity) {
   councilObject.style.opacity = String(councilOpacity);
 }
 
+function setCouncilDownloadVisible(visible) {
+  councilDownloadLink.hidden = !visible;
+}
+
 function showMiddleEarthScene() {
   resetCouncilDrag();
+  setCouncilDownloadVisible(false);
   setSceneOpacities(1, 0);
   svg.style.pointerEvents = "auto";
   councilObject.style.pointerEvents = "none";
@@ -825,6 +1315,7 @@ function showMiddleEarthScene() {
 }
 
 function showCouncilScene(interactive = true) {
+  setCouncilDownloadVisible(true);
   setSceneOpacities(0, 1);
   svg.style.pointerEvents = "none";
   councilObject.style.pointerEvents = interactive ? "auto" : "none";
@@ -833,6 +1324,7 @@ function showCouncilScene(interactive = true) {
 }
 
 function showSceneCrossfade(progress) {
+  setCouncilDownloadVisible(false);
   setSceneOpacities(1 - progress, progress);
   svg.style.pointerEvents = "none";
   councilObject.style.pointerEvents = "none";
@@ -1142,7 +1634,9 @@ function splinePath(points, tension) {
 
 function chapterHasRoute(chapter) {
   return (
+    Array.isArray(chapter?.routeWaypoints) &&
     chapter.routeWaypoints.length >= 2 &&
+    Array.isArray(chapter.cameraZoom) &&
     chapter.cameraZoom.length > 0
   );
 }
@@ -1191,6 +1685,20 @@ function buildMarkers() {
       compactText,
       fullBounds,
       compactBounds,
+    });
+
+    group.addEventListener("pointerenter", () => {
+      if (!compactLabelsActive) return;
+
+      label.textContent = fullText;
+      setBackdropBounds(backdrop, fullBounds);
+    });
+
+    group.addEventListener("pointerleave", () => {
+      if (!compactLabelsActive) return;
+
+      label.textContent = compactText;
+      setBackdropBounds(backdrop, compactBounds);
     });
   }
 
@@ -1282,7 +1790,7 @@ function renderIntroductionStart() {
     setMarkerVisible(number, false);
   }
 
-  for (const number of Object.keys(chapters).map(Number)) {
+  for (const number of routeElements.keys()) {
     setRouteState(number, "hidden");
   }
 
@@ -1296,35 +1804,12 @@ function renderChapterStart(chapterNumber, fullMap) {
 
   showMiddleEarthScene();
 
-  if (!chapterHasRoute(chapter)) {
-    for (const number of Object.keys(locations).map(Number)) {
-      setMarkerVisible(number, number <= chapter.from);
-      setMarkerOpacity(number, 1);
-    }
-
-    for (const number of Object.keys(chapters).map(Number)) {
-      setRouteState(
-        number,
-        number < chapterNumber ? "complete" : "hidden"
-      );
-    }
-
-    const startLocation = locations[chapter.from];
-    view = fullMap || !startLocation
-      ? { ...fullView }
-      : { ...startLocation.view };
-
-    chapterSelect.value = String(chapterNumber);
-    applyView();
-    return;
-  }
-
   for (const number of Object.keys(locations).map(Number)) {
     setMarkerVisible(number, number <= chapter.from);
     setMarkerOpacity(number, 1);
   }
 
-  for (const number of Object.keys(chapters).map(Number)) {
+  for (const number of routeElements.keys()) {
     setRouteState(
       number,
       number < chapterNumber ? "complete" : "hidden"
@@ -1351,7 +1836,7 @@ function renderChapterComplete(chapterNumber) {
   applyView();
 }
 
-function renderCompleteJourney() {
+function renderCompletedMiddleEarth(targetView, selectedValue) {
   showMiddleEarthScene();
 
   for (const number of Object.keys(locations).map(Number)) {
@@ -1359,13 +1844,31 @@ function renderCompleteJourney() {
     setMarkerOpacity(number, 1);
   }
 
-  for (const number of Object.keys(chapters).map(Number)) {
+  for (const number of routeElements.keys()) {
     setRouteState(number, "complete");
   }
 
-  view = { ...fullView };
-  chapterSelect.value = "all";
+  view = { ...targetView };
+  chapterSelect.value = selectedValue;
   applyView();
+}
+
+function renderSummaryStart() {
+  renderCompletedMiddleEarth(
+    locations[SUMMARY_CHAPTER_NUMBER].view,
+    String(SUMMARY_CHAPTER_NUMBER)
+  );
+}
+
+function renderSummaryOverview() {
+  renderCompletedMiddleEarth(
+    fullView,
+    String(SUMMARY_CHAPTER_NUMBER)
+  );
+}
+
+function renderCompleteJourney() {
+  renderCompletedMiddleEarth(fullView, "all");
 }
 
 function resetCouncilEpilogue() {
@@ -1377,13 +1880,13 @@ function resetCouncilEpilogue() {
 }
 
 function renderEpilogueStart() {
-  chapterSelect.value = "14";
+  chapterSelect.value = EPILOGUE_STATE;
   resetCouncilEpilogue();
   showMiddleEarthScene();
 }
 
 function renderEpilogueOverview() {
-  chapterSelect.value = "14";
+  chapterSelect.value = EPILOGUE_STATE;
 
   if (councilSvg && councilFullView) {
     councilView = { ...councilFullView };
@@ -1400,7 +1903,7 @@ function renderEpilogueOverview() {
     if (
       !ready ||
       renderRun !== animationRun ||
-      selectedState !== "14" ||
+      selectedState !== EPILOGUE_STATE ||
       isAnimating
     ) return;
 
@@ -1431,10 +1934,22 @@ function renderSelectedStart(fullMap) {
     return;
   }
 
+  if (chapterUsesSummaryScene(Number(selectedState))) {
+    if (fullMap) {
+      renderSummaryOverview();
+    } else {
+      renderSummaryStart();
+    }
+    return;
+  }
+
   renderChapterStart(Number(selectedState), fullMap);
 }
 
 function cancelPlayback() {
+  const restoreSummaryOverview =
+    isAnimating && chapterUsesSummaryScene(Number(selectedState));
+
   animationRun += 1;
 
   if (currentFrameId) {
@@ -1452,6 +1967,11 @@ function cancelPlayback() {
   isAnimating = false;
   isPaused = false;
   isStoryPlaying = false;
+
+  if (restoreSummaryOverview) {
+    renderSummaryOverview();
+    browseOverview = true;
+  }
 }
 
 function stopPlayback() {
@@ -1469,6 +1989,9 @@ function stopPlayback() {
     browseOverview = false;
   } else if (chapterUsesCouncilScene(Number(stoppedState))) {
     renderEpilogueOverview();
+    browseOverview = true;
+  } else if (chapterUsesSummaryScene(Number(stoppedState))) {
+    renderSummaryOverview();
     browseOverview = true;
   } else if (stateIsChapter(stoppedState)) {
     renderChapterComplete(Number(stoppedState));
@@ -1675,6 +2198,71 @@ async function playChapter(chapterNumber, runId, startFromOverview) {
   return true;
 }
 
+async function redrawCompleteJourney(routeNumbers, runId) {
+  const routes = routeNumbers.map((chapterNumber) =>
+    routeElements.get(chapterNumber)
+  );
+  const totalLength = routes.reduce(
+    (sum, route) => sum + route.length,
+    0
+  );
+
+  for (const route of routes) {
+    route.path.style.display = "";
+    route.reveal.style.strokeDashoffset = `${route.length}`;
+  }
+
+  const completed = await animateProgress(
+    timing.summaryJourneyRedraw,
+    (progress) => {
+      let remainingDistance = totalLength * progress;
+
+      for (const route of routes) {
+        const revealedLength = Math.min(
+          route.length,
+          Math.max(0, remainingDistance)
+        );
+
+        route.reveal.style.strokeDashoffset =
+          `${route.length - revealedLength}`;
+        remainingDistance -= route.length;
+      }
+    },
+    runId
+  );
+
+  if (!completed) return false;
+
+  for (const chapterNumber of routeNumbers) {
+    setRouteState(chapterNumber, "complete");
+  }
+
+  return true;
+}
+
+async function playSummary(runId) {
+  renderSummaryStart();
+
+  if (!(await wait(timing.summaryInitialHold, runId))) return false;
+
+  const routeNumbers = [...routeElements.keys()].sort((a, b) => a - b);
+
+  for (const chapterNumber of routeNumbers) {
+    setRouteState(chapterNumber, "hidden");
+  }
+
+  if (!(await animateViewTo(
+    fullView,
+    timing.summaryOverview,
+    runId
+  ))) return false;
+
+  if (!(await wait(timing.summaryRouteStartHold, runId))) return false;
+  if (!(await redrawCompleteJourney(routeNumbers, runId))) return false;
+
+  return wait(timing.summaryFinalHold, runId);
+}
+
 async function playEpilogue(runId) {
   renderEpilogueStart();
 
@@ -1723,6 +2311,10 @@ function playChapterState(chapterNumber, runId, startFromOverview) {
     return playEpilogue(runId);
   }
 
+  if (chapterUsesSummaryScene(chapterNumber)) {
+    return playSummary(runId);
+  }
+
   return playChapter(chapterNumber, runId, startFromOverview);
 }
 
@@ -1731,6 +2323,7 @@ async function playSelected({ startFromOverview = false } = {}) {
   if (
     selectedState !== "intro" &&
     !chapterUsesCouncilScene(Number(selectedState)) &&
+    !chapterUsesSummaryScene(Number(selectedState)) &&
     !chapterHasRoute(chapters[Number(selectedState)])
   ) return;
 
@@ -1768,7 +2361,9 @@ async function playSelected({ startFromOverview = false } = {}) {
 
   isAnimating = false;
   isPaused = false;
-  browseOverview = chapterUsesCouncilScene(Number(selectedState));
+  browseOverview =
+    chapterUsesCouncilScene(Number(selectedState)) ||
+    chapterUsesSummaryScene(Number(selectedState));
   updateControls();
 }
 
@@ -1811,34 +2406,28 @@ async function playStory() {
     }
   }
 
-  if (chapterUsesCouncilScene(Number(selectedState))) {
-    browseOverview = true;
-    isAnimating = false;
-    isPaused = false;
-    isStoryPlaying = false;
-    setUrlState(selectedState, false, "replace");
-    updateControls();
+  selectedState = EPILOGUE_STATE;
+  chapterSelect.value = EPILOGUE_STATE;
+  setUrlState(selectedState, true, "replace");
+  updateControls();
+
+  completed = await playEpilogue(runId);
+  if (!completed || runId !== animationRun) {
+    if (runId === animationRun) {
+      isAnimating = false;
+      isPaused = false;
+      isStoryPlaying = false;
+      updateControls();
+    }
     return;
   }
 
-  if (!(await wait(timing.storyFinalHold, runId))) return;
-  if (!(await animateViewTo(
-    fullView,
-    timing.storyFinalOverview,
-    runId
-  ))) return;
-
-  if (runId !== animationRun) return;
-
-  selectedState = "all";
-  chapterSelect.value = "all";
   browseOverview = true;
   isAnimating = false;
   isPaused = false;
   isStoryPlaying = false;
 
-  renderCompleteJourney();
-  setUrlState("all", false, "replace");
+  setUrlState(selectedState, false, "replace");
   updateControls();
 }
 
@@ -1965,8 +2554,17 @@ svg.addEventListener("pointermove", (event) => {
 
   const rect = svg.getBoundingClientRect();
 
-  view.x = drag.startViewX - dx * (view.width / rect.width);
-  view.y = drag.startViewY - dy * (view.height / rect.height);
+  view.x = clamp(
+    drag.startViewX - dx * (view.width / rect.width),
+    fullView.x,
+    fullView.x + fullView.width - view.width
+  );
+
+  view.y = clamp(
+    drag.startViewY - dy * (view.height / rect.height),
+    fullView.y,
+    fullView.y + fullView.height - view.height
+  );
 
   applyView();
 });
