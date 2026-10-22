@@ -218,8 +218,8 @@ body {
 }
 
 .chapter-marker .label-backdrop {
-  fill: #cfddc6;
-  fill-opacity: 0.85;
+  fill: #d4e2cc;
+  fill-opacity: 0.60;
 }
 
 .chapter-marker .anchor-dot {
@@ -231,11 +231,11 @@ body {
 .chapter-marker .chapter-label {
   fill: #941b1f;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 17px;
+  font-size: 30px;
   font-weight: 700;
   paint-order: stroke fill;
-  stroke: #4b3426;
-  stroke-width: 1px;
+  stroke: #ffffff;
+  stroke-width: 2px;
   stroke-linejoin: round;
   pointer-events: auto;
 }
